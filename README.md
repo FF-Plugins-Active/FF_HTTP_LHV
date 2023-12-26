@@ -2,7 +2,6 @@
 
 ## GOAL
 Our goal is implementing non-blocking and Async HTTP servers to Unreal Engine 5 and running them on FRunnableThread to make high performance (both Unreal project and HTTP server) services with 3D capabilities.<br />
-
 We integrated these libraries
 
 - Oatpp (swagger - zLib - openssl plugins included)
