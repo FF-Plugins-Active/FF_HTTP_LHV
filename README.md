@@ -22,5 +22,6 @@ Right now plugin doesn't have server implementations. We will implement them in 
 
 ## WON'T HAVE THESE
 We won't integrate any database libraries to this plugin. Because we believe that accessing databases or any other datasources is NOT HTTP server's job.
-We will intentionally broadcast requests as a multicast delegate from FRunnableThread. (It's execution chain will come from FRunnableThread. For this reason, be cautious when about if you need specifically Game/Render or Audio Thread).
+
+We will intentionally broadcast requests as a multicast delegate from FRunnableThread. (It's execution chain will come from FRunnableThread. For this reason, be cautious when about if you need specifically Game/Render or Audio Thread).<br />
 So, you can implement your data access method and give a response with blueprints. (In our use case, we store our datas in a TMap and send that data.)
