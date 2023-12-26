@@ -8,31 +8,23 @@
 #include "HAL/Runnable.h"
 
 THIRD_PARTY_INCLUDES_START
-#define UI UI_ST
-#include "workflow/Workflow.h"
-#include "workflow/HttpMessage.h"
-#include "workflow/HttpUtil.h"
-#include "workflow/WFServer.h"
-#include "workflow/WFHttpServer.h"
-#include "workflow/WFFacilities.h"
-#include "workflow/WFTaskFactory.h"
-#undef UI
+
 THIRD_PARTY_INCLUDES_END
 
 // Fordward Declerations.
 class FRunnableThread;
 class AFF_HTTP_Actor;
 
-class FHTTP_Thread_Workflow : public FRunnable
+class FHTTP_Thread_IXWeb : public FRunnable
 {
 	
 public:	
 	
 	// Sets default values for this actor's properties
-	FHTTP_Thread_Workflow(AFF_HTTP_Actor* In_Parent_Actor);
+	FHTTP_Thread_IXWeb(AFF_HTTP_Actor* In_Parent_Actor);
 
 	// Destructor.
-	virtual ~FHTTP_Thread_Workflow() override;
+	virtual ~FHTTP_Thread_IXWeb() override;
 
 	virtual bool Init() override;
 

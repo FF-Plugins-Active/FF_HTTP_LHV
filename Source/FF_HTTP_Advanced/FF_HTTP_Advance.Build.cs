@@ -3,9 +3,9 @@
 using System;
 using System.IO;
 using UnrealBuildTool;
-public class FF_HTTP_Advanced : ModuleRules
+public class FF_HTTP_Advance : ModuleRules
 {
-	public FF_HTTP_Advanced(ReadOnlyTargetRules Target) : base(Target)
+	public FF_HTTP_Advance(ReadOnlyTargetRules Target) : base(Target)
 	{
         PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 

@@ -1,11 +1,11 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "FF_HTTP_Advanced.h"
+#include "FF_HTTP_Advance.h"
 #include "Interfaces/IPluginManager.h"
 
-#define LOCTEXT_NAMESPACE "FFF_HTTP_AdvancedModule"
+#define LOCTEXT_NAMESPACE "FFF_HTTP_AdvanceModule"
 
-void FFF_HTTP_AdvancedModule::StartupModule()
+void FFF_HTTP_AdvanceModule::StartupModule()
 {
 #if defined(_WIN64) && LIBHV_SHARED == 1
 
@@ -27,7 +27,7 @@ void FFF_HTTP_AdvancedModule::StartupModule()
 #endif
 }
 
-void FFF_HTTP_AdvancedModule::ShutdownModule()
+void FFF_HTTP_AdvanceModule::ShutdownModule()
 {
 #if defined(_WIN64) && LIBHV_SHARED == 1
 	FPlatformProcess::FreeDllHandle(Libhv_Handle);
@@ -37,4 +37,4 @@ void FFF_HTTP_AdvancedModule::ShutdownModule()
 
 #undef LOCTEXT_NAMESPACE
 	
-IMPLEMENT_MODULE(FFF_HTTP_AdvancedModule, FF_HTTP_Advanced)
+IMPLEMENT_MODULE(FFF_HTTP_AdvanceModule, FF_HTTP_Advance)

@@ -6,7 +6,7 @@
 
 #define LIBHV_SHARED 1
 
-class FFF_HTTP_AdvancedModule : public IModuleInterface
+class FFF_HTTP_AdvanceModule : public IModuleInterface
 {
 public:
 
