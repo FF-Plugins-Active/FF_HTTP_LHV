@@ -21,14 +21,14 @@ Each library has their unique `FRunnableThread` class which named like `HTTP_Thr
 Right now plugin doesn't have server implementations. We will implement them in time.
 
 ## NOT-SUPPORTED FEATURES
-We won't integrate any database libraries to this plugin. Because we believe that accessing databases or any other datasources is NOT HTTP server's job.
+We won't integrate any database libraries to this plugin. Because we believe that accessing databases or any other datasources is NOT HTTP server plugin's job.
 
 ## BASIC INTRODUCTION
 (We will improve this after finishing implementation.)<br />
 
 We will intentionally expose server start, server stop and requests notifications to blueprints from `FRunnableThread` with `multicast delegate broadcast` and/or `blueprint implementable event`.<br />
-Execution chain will come from that thread and when you put your mechanics (data access or other stuffs), that thread will do necessary calculations. <br />
-So, be cautious if you need specific thread (like game, render or audio) for your operation.
+Execution chain will come from that thread and when you put your mechanics (data access or other stuffs), `that thread` will do necessary calculations. <br />
+So, there will be no impact on `Unreal project's` performance but be cautious if you need specific thread (like game, render or audio) for your operations.
 
 ## PLATFORM SUPPORT
 We won't have a plan to support other platforms like Linux, Mac, Android and iOS. If you need other platform, build your library and implement it to your fork.
