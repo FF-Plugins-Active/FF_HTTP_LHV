@@ -9,8 +9,7 @@ void FFF_HTTP_AdvanceModule::StartupModule()
 {
 #if defined(_WIN64) && LIBHV_SHARED == 1
 
-	const FString BasePluginDir = IPluginManager::Get().FindPlugin("FF_HTTP_Advanced")->GetBaseDir();
-	//const FString DLL_Path = FPaths::Combine(*BasePluginDir, TEXT("Source/FF_HTTP_Advanced/ThirdParty/LibHv/Win64/lib/hv.dll"));
+	const FString BasePluginDir = IPluginManager::Get().FindPlugin("FF_HTTP_Advance")->GetBaseDir();
 	const FString DLL_Path = FPaths::Combine(*BasePluginDir, TEXT("Source/LibHv/Win64/lib/hv.dll"));
 	Libhv_Handle = FPlatformProcess::GetDllHandle(*DLL_Path);
 

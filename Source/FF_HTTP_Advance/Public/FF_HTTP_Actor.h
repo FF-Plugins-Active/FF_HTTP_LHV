@@ -27,7 +27,7 @@ public:
 	EHttpServers ServerLibrary = EHttpServers::Server_Oatpp;
 
 	UFUNCTION(BlueprintCallable)
-	virtual void SendResponse(FString Response, TMap<FString, FString> In_Header, bool bAddAllowOrigin = true, int32 Status_Code = 200)
+	virtual void SendResponse(FString Response, const TMap<FString, FString> In_Header, bool bAddAllowOrigin = true, int32 Status_Code = 200)
 	{
 		switch (this->ServerLibrary)
 		{
@@ -48,8 +48,8 @@ public:
 	}
 };
 
-UCLASS(BlueprintType)
-class FF_HTTP_ADVANCE_API UHttpAdvanceMessage : public UObject
+USTRUCT(BlueprintType)
+struct FF_HTTP_ADVANCE_API FHttpAdvanceMessage
 {
 	GENERATED_BODY()
 
@@ -58,31 +58,33 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	UHttpAdvanceConnection* Connection;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadOnly)
 	FString Body;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadOnly)
 	FString Head;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadOnly)
 	TMap<FString, FString> Headers;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadOnly)
 	FString Message;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadOnly)
 	FString Method;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadOnly)
 	FString Proto;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadOnly)
 	FString Query;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadOnly)
 	FString Uri;
 
 };
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegateHttpAdvMessage, FHttpAdvanceMessage, Out_Message);
 
 UCLASS()
 class FF_HTTP_ADVANCE_API AFF_HTTP_Actor : public AActor
@@ -104,30 +106,46 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	class FHTTP_Server_Oatpp_Thread* Oatpp_Thread = nullptr;
 	FString ThreadName = "";
+
+	class FHTTP_Thread_IXWeb* Thread_IXWeb = nullptr;
+	class FHTTP_Thread_LibHv* Thread_LibHv = nullptr;
+	class FHTTP_Thread_Oatpp* Thread_Oatpp = nullptr;
+	class FHTTP_Thread_Workflow* Thread_Workflow = nullptr;
 
 public:
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ToolTip = "", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP Server|Advance")
+	UFUNCTION(BlueprintImplementableEvent, meta = (Description = ""), Category = "Frozen Forest|HTTP Server|Advance")
+	void OnHttpAdvStart();
+
+	UFUNCTION(BlueprintImplementableEvent, meta = (Description = ""), Category = "Frozen Forest|HTTP Server|Advance")
+	void OnHttpAdvStop();
+
+	UFUNCTION(BlueprintImplementableEvent, meta = (Description = ""), Category = "Frozen Forest|HTTP Server|Advance")
+	void OnHttpAdvMessage(const FHttpAdvanceMessage Out_Message);
+
+	UPROPERTY(BlueprintAssignable, Category = "Frozen Forest|HTTP Server|Advance")
+	FDelegateHttpAdvMessage DelegateHttpAdvanceMessage;
+
+	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP Server|Advance")
 	FString Server_Path_Root = "";
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ToolTip = "", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP Server|Advance")
+	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP Server|Advance")
 	FString Server_Path_404 = "";
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ToolTip = "", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP Server|Advance")
+	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP Server|Advance")
 	FString Server_Address_HTTP = "http://0.0.0.0:8081";
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ToolTip = "", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP Server|Advance")
+	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP Server|Advance")
 	FString Server_Address_HTTPS = "http://0.0.0.0:8081";
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ToolTip = "If you want to change API parameter, just put /* to the end. If you don't do that, server won't detect dynamic API requests.", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP Server|Advance")
+	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "If you want to change API parameter, just put /* to the end. If you don't do that, server won't detect dynamic API requests.", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP Server|Advance")
 	FString API_URI = "api/*";
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ToolTip = "It shouldn't bigger than 15 chars and it has to be unique.", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP Server|Advance")
+	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "It shouldn't bigger than 15 chars and it has to be unique.", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP Server|Advance")
 	FString Server_Name = "";
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "", ExposeOnSpawn = "true"))
 	EHttpServers ServerLibrary = EHttpServers::Server_Oatpp;
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "HTTP Server Advance - Start"), Category = "Frozen Forest|HTTP Server|Advance")
