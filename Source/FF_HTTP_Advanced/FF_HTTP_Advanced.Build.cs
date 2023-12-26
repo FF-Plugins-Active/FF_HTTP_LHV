@@ -20,22 +20,16 @@ public class FF_HTTP_Advanced : ModuleRules
                 {
                     "zlib",
                     "FF_OpenSSL",
+                    "FF_MBedTLS",
 					"Oatpp",
                     "LibHv",
+                    "IXWebSocket",
                 }
                 );
 
             // Workflow
             PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "ThirdParty", "Workflow", "Win64", "include"));
             PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "ThirdParty", "Workflow", "Win64", "lib", "workflow.lib"));
-
-            /*
-            // LibHv
-            PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "ThirdParty", "LibHv", "Win64", "include"));
-            PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "ThirdParty", "LibHv", "Win64", "lib", "hv.lib"));
-            RuntimeDependencies.Add(Path.Combine(ModuleDirectory, "ThirdParty", "LibHv", "Win64", "lib", "hv.dll"));
-            PublicDelayLoadDLLs.Add("hv.dll");
-            */
         }
 
         PublicDependencyModuleNames.AddRange(

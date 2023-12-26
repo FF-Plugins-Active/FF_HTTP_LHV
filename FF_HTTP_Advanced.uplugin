@@ -31,6 +31,10 @@
 		{
 			"Name": "FF_OpenSSL",
 			"Enabled": true
+		},
+		{
+			"Name": "FF_MBedTLS",
+			"Enabled": true
 		}
 	]
 }
