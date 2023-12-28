@@ -8,7 +8,9 @@
 #include "HAL/Runnable.h"
 
 THIRD_PARTY_INCLUDES_START
+#ifdef _WIN64
 #include "hv/HttpServer.h"
+#endif
 THIRD_PARTY_INCLUDES_END
 
 // Fordward Declerations.

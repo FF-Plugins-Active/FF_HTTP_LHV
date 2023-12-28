@@ -12,16 +12,20 @@ AFF_HTTP_Actor::AFF_HTTP_Actor()
 // Called when the game starts or when spawned
 void AFF_HTTP_Actor::BeginPlay()
 {
+#ifdef _WIN64
 	this->HTTP_Server_Start();
+#endif
 	
 	Super::BeginPlay();
 }
 
 void AFF_HTTP_Actor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	Super::EndPlay(EndPlayReason);
-
+#ifdef _WIN64
 	this->HTTP_Server_Stop();
+#endif
+
+	Super::EndPlay(EndPlayReason);
 }
 
 // Called every frame
@@ -32,6 +36,7 @@ void AFF_HTTP_Actor::Tick(float DeltaTime)
 
 bool AFF_HTTP_Actor::HTTP_Server_Start()
 {
+#ifdef _WIN64
 	if (this->Server_Name.IsEmpty() || this->Server_Name.Len() > 15)
 	{
 		return false;
@@ -112,10 +117,17 @@ bool AFF_HTTP_Actor::HTTP_Server_Start()
 	}
 
 	return false;
+
+#else
+
+	return false;
+
+#endif
 }
 
 void AFF_HTTP_Actor::HTTP_Server_Stop()
 {
+#ifdef _WIN64
 	switch (this->ServerLibrary)
 	{
 
@@ -184,6 +196,10 @@ void AFF_HTTP_Actor::HTTP_Server_Stop()
 			return;
 		}
 	}
+
+#else
+
+#endif
 }
 
 void AFF_HTTP_Actor::HTTP_Server_Toggle(bool bPause)

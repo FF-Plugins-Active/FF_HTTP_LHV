@@ -8,6 +8,7 @@
 #include "HAL/Runnable.h"
 
 THIRD_PARTY_INCLUDES_START
+#ifdef _WIN64
 #define UI UI_ST
 #include "workflow/Workflow.h"
 #include "workflow/HttpMessage.h"
@@ -17,6 +18,7 @@ THIRD_PARTY_INCLUDES_START
 #include "workflow/WFFacilities.h"
 #include "workflow/WFTaskFactory.h"
 #undef UI
+#endif
 THIRD_PARTY_INCLUDES_END
 
 // Fordward Declerations.

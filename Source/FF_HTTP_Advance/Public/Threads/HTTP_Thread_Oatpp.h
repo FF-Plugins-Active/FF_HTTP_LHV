@@ -8,7 +8,9 @@
 #include "HAL/Runnable.h"
 
 THIRD_PARTY_INCLUDES_START
+#ifdef _WIN64
 #include "oatpp/network/Server.hpp"
+#endif
 THIRD_PARTY_INCLUDES_END
 
 // Fordward Declerations.

@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 
 // Custom Includes.
-#include "HTTP_Server_Enums.h"
+#include "FF_HTTP_AdvanceBPLibrary.h"
 
 // Threads.
 #include "Threads/HTTP_Thread_Oatpp.h"
@@ -23,12 +23,20 @@ class FF_HTTP_ADVANCE_API UHttpAdvanceConnection : public UObject
 
 public:
 
+#ifdef _WIN64
+
+	// Add server variables to here.
+
+#endif
+
 	UPROPERTY(BlueprintReadOnly)
 	EHttpServers ServerLibrary = EHttpServers::Server_Oatpp;
 
 	UFUNCTION(BlueprintCallable)
 	virtual void SendResponse(FString Response, const TMap<FString, FString> In_Header, bool bAddAllowOrigin = true, int32 Status_Code = 200)
 	{
+		#ifdef _WIN64
+
 		switch (this->ServerLibrary)
 		{
 		case EHttpServers::Server_Oatpp:
@@ -43,8 +51,11 @@ public:
 		case EHttpServers::Server_IxWebSocket:
 			break;
 		default:
+			
 			break;
 		}
+
+		#endif
 	}
 };
 
@@ -108,10 +119,12 @@ public:
 
 	FString ThreadName = "";
 
+#ifdef _WIN64
 	class FHTTP_Thread_IXWeb* Thread_IXWeb = nullptr;
 	class FHTTP_Thread_LibHv* Thread_LibHv = nullptr;
 	class FHTTP_Thread_Oatpp* Thread_Oatpp = nullptr;
 	class FHTTP_Thread_Workflow* Thread_Workflow = nullptr;
+#endif
 
 public:
 

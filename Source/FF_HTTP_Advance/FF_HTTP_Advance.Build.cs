@@ -13,13 +13,22 @@ public class FF_HTTP_Advance : ModuleRules
         bEnableExceptions = true;
         bUseRTTI = true;
 
+        PublicDependencyModuleNames.AddRange(
+            new string[]
+            {
+                "Core",
+                "zlib",
+                "OpenSSL",      // We don't need OpenSSL certificate functions
+                "nghttp2",      // We need it for LibCurl
+                "libcurl",
+            }
+            );
+
         if (UnrealTargetPlatform.Win64 == Target.Platform)
         {
             PublicDependencyModuleNames.AddRange(
                 new string[]
                 {
-                    "zlib",
-                    "FF_OpenSSL",
                     "FF_MBedTLS",
 					"Oatpp",
                     "LibHv",
@@ -31,13 +40,6 @@ public class FF_HTTP_Advance : ModuleRules
             PrivateIncludePaths.Add(Path.Combine(ModuleDirectory, "ThirdParty", "Workflow", "Win64", "include"));
             PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "ThirdParty", "Workflow", "Win64", "lib", "workflow.lib"));
         }
-
-        PublicDependencyModuleNames.AddRange(
-			new string[]
-			{
-				"Core",
-            }
-			);
 			
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
@@ -47,6 +49,8 @@ public class FF_HTTP_Advance : ModuleRules
 				"Slate",
 				"SlateCore",
                 "Projects",		// We need it for LibHv DLL delayed load.
+                "HTTP",
+                "HTTPServer",
             }
 			);
 		
