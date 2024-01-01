@@ -23,79 +23,105 @@ class FF_HTTP_ADVANCE_API UHttpAdvanceConnection : public UObject
 
 public:
 
-#ifdef _WIN64
+	// Define this in server's FRunnableThread.
+	void* ConnectionPointer;
 
-	// Add server variables to here.
-
-#endif
-
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY()
 	EHttpServers ServerLibrary = EHttpServers::Server_Oatpp;
 
-	UFUNCTION(BlueprintCallable)
-	virtual void SendResponse(FString Response, const TMap<FString, FString> In_Header, bool bAddAllowOrigin = true, int32 Status_Code = 200)
+private:
+
+	virtual bool SendResponse_Oatpp(const FString In_Response, const TMap<FString, FStringArrayStruct> In_Header, const bool bAddAllowOrigin, int32 Status_Code, FString ValueType)
 	{
-		#ifdef _WIN64
-
-		switch (this->ServerLibrary)
+#ifdef _WIN64
+		if (!this->ConnectionPointer)
 		{
-		case EHttpServers::Server_Oatpp:
-			break;
-
-		case EHttpServers::Server_Workflow:
-			break;
-
-		case EHttpServers::Server_LibHv:
-			break;
-
-		case EHttpServers::Server_IxWebSocket:
-			break;
-		default:
-			
-			break;
+			return false;
 		}
 
-		#endif
-	}
-};
+		return true;
 
-USTRUCT(BlueprintType)
-struct FF_HTTP_ADVANCE_API FHttpAdvanceMessage
-{
-	GENERATED_BODY()
+#else
+		return false;
+#endif
+	}
+
+	virtual bool SendResponse_Workflow(const FString In_Response, const TMap<FString, FStringArrayStruct> In_Header, const bool bAddAllowOrigin, int32 Status_Code, FString ValueType)
+	{
+#ifdef _WIN64
+		if (!this->ConnectionPointer)
+		{
+			return false;
+		}
+
+		return true;
+
+#else
+		return false;
+#endif
+	}
+
+	virtual bool SendResponse_LibHv(const FString In_Response, const TMap<FString, FStringArrayStruct> In_Header, const bool bAddAllowOrigin, int32 Status_Code, FString ValueType)
+	{
+		if (!this->ConnectionPointer)
+		{
+			return false;
+		}
+
+#ifdef _WIN64
+		HttpResponse* Response = (HttpResponse*)this->ConnectionPointer;
+		Response->String("Test");
+
+		return true;
+#else
+
+		return false;
+#endif
+	}
+
+	virtual bool SendResponse_IxWebSocket(const FString In_Response, const TMap<FString, FStringArrayStruct> In_Header, const bool bAddAllowOrigin, int32 Status_Code, FString ValueType)
+	{
+#ifdef _WIN64
+		if (!this->ConnectionPointer)
+		{
+			return false;
+		}
+
+		return true;
+
+#else
+		return false;
+#endif
+	}
 
 public:
 
-	UPROPERTY(BlueprintReadWrite)
-	UHttpAdvanceConnection* Connection;
+	UFUNCTION(BlueprintCallable)
+	virtual bool SendResponse(const FString In_Response, TMap<FString, FStringArrayStruct> In_Header, const bool bAddAllowOrigin = true, int32 Status_Code = 200, FString ValueType = "text/html")
+	{
+		switch (ServerLibrary)
+		{
+		
+		case EHttpServers::Server_Oatpp:
+			return this->SendResponse_Oatpp(In_Response, In_Header, bAddAllowOrigin, Status_Code, ValueType);
 
-	UPROPERTY(BlueprintReadOnly)
-	FString Body;
+		case EHttpServers::Server_Workflow:
+			return this->SendResponse_Workflow(In_Response, In_Header, bAddAllowOrigin, Status_Code, ValueType);
 
-	UPROPERTY(BlueprintReadOnly)
-	FString Head;
+		case EHttpServers::Server_LibHv:
+			return this->SendResponse_LibHv(In_Response, In_Header, bAddAllowOrigin, Status_Code, ValueType);
 
-	UPROPERTY(BlueprintReadOnly)
-	TMap<FString, FString> Headers;
+		case EHttpServers::Server_IxWebSocket:
+			return this->SendResponse_IxWebSocket(In_Response, In_Header, bAddAllowOrigin, Status_Code, ValueType);
 
-	UPROPERTY(BlueprintReadOnly)
-	FString Message;
-
-	UPROPERTY(BlueprintReadOnly)
-	FString Method;
-
-	UPROPERTY(BlueprintReadOnly)
-	FString Proto;
-
-	UPROPERTY(BlueprintReadOnly)
-	FString Query;
-
-	UPROPERTY(BlueprintReadOnly)
-	FString Uri;
+		default:
+			return false;
+		}
+	}
 
 };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegateHttpAdvMessage, FHttpAdvanceMessage, Out_Message);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDelegateHttpMessageAdv, UHttpAdvanceConnection*, Connection, FHttpServerMessage, Out_Message);
 
 UCLASS()
 class FF_HTTP_ADVANCE_API AFF_HTTP_Actor : public AActor
@@ -135,10 +161,12 @@ public:
 	void OnHttpAdvStop();
 
 	UFUNCTION(BlueprintImplementableEvent, meta = (Description = ""), Category = "Frozen Forest|HTTP Server|Advance")
-	void OnHttpAdvMessage(const FHttpAdvanceMessage Out_Message);
+	void OnHttpAdvMessage(const FHttpServerMessage Out_Message);
 
 	UPROPERTY(BlueprintAssignable, Category = "Frozen Forest|HTTP Server|Advance")
-	FDelegateHttpAdvMessage DelegateHttpAdvanceMessage;
+	FDelegateHttpMessageAdv DelegateHttpMessageAdv;
+
+public:
 
 	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP Server|Advance")
 	FString Server_Path_Root = "";
@@ -147,10 +175,10 @@ public:
 	FString Server_Path_404 = "";
 
 	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP Server|Advance")
-	FString Server_Address_HTTP = "http://0.0.0.0:8081";
+	int32 Port_HTTP = 8081;
 
 	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP Server|Advance")
-	FString Server_Address_HTTPS = "http://0.0.0.0:8081";
+	int32 Port_HTTPS = 8453;
 
 	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "If you want to change API parameter, just put /* to the end. If you don't do that, server won't detect dynamic API requests.", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP Server|Advance")
 	FString API_URI = "api/*";
@@ -160,6 +188,8 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "", ExposeOnSpawn = "true"))
 	EHttpServers ServerLibrary = EHttpServers::Server_Oatpp;
+
+public:
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "HTTP Server Advance - Start"), Category = "Frozen Forest|HTTP Server|Advance")
 	virtual bool HTTP_Server_Start();

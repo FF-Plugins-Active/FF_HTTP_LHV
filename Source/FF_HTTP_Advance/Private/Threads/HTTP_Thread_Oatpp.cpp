@@ -10,8 +10,8 @@ FHTTP_Thread_Oatpp::FHTTP_Thread_Oatpp(AFF_HTTP_Actor* In_Parent_Actor)
 {
 	this->Parent_Actor = In_Parent_Actor;
 	
-	this->Server_Address_HTTP = this->Parent_Actor->Server_Address_HTTP;
-	this->Server_Address_HTTPS = this->Parent_Actor->Server_Address_HTTPS;
+	this->Server_Address_HTTP = "http://0.0.0.0:" + FString::FromInt(this->Parent_Actor->Port_HTTP);
+	this->Server_Address_HTTPS = "https://0.0.0.0:" + FString::FromInt(this->Parent_Actor->Port_HTTPS);
 }
 
 FHTTP_Thread_Oatpp::~FHTTP_Thread_Oatpp()
