@@ -13,7 +13,7 @@ We integrated these libraries
 - Unreal Engine HTTP Server
 
 Workflow gives `_DllMainCRTStartup` error if we try to integrate it as `External Module`. So, you can see it in here. <br />
-`Source/FF_HTTP_Advanced/ThirdParty/Workflow`
+`Source/FF_HTTP_Manager/ThirdParty/Workflow`
 
 We integrated multiple libraries because we wanted to give freedom to other developers when they want to improve our plugin with their library choice.<br />
 Each library has their unique `FRunnableThread` class which named like `HTTP_Thread_LibraryName` and there is one blueprint exposed actor which has an enumeration to allow you to select which library you want to use.
