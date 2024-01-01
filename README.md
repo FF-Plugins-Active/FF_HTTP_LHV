@@ -32,6 +32,13 @@ We will intentionally expose server start, server stop and requests notification
 Execution chain will come from that thread and when you put your mechanics (data access or other stuffs), `that thread` will do necessary calculations. <br />
 So, there will be no impact on `Unreal project's` performance but be cautious if you need specific thread (like game, render or audio) for your operations.
 
+If you want to use Unreal's HTTP server and access it from LAN, you have to add these lines to 
+```
+Project/Config/DefaultEngine.ini
+[HTTPServer.Listeners]
+DefaultBindAddress = 0.0.0.0
+```
+
 ## PLATFORM SUPPORT
 We won't have a plan to support other platforms like Linux, Mac, Android and iOS. If you need other platforms, build your library and implement it to your fork.
 
