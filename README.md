@@ -1,4 +1,4 @@
-# FF_HTTP_Advanced
+# FF_HTTP_Manager
 
 ## GOAL
 Our goal is implementing non-blocking and Async HTTP servers to Unreal Engine 5 and running them on `FRunnableThread` to make high performance (both Unreal project and HTTP server) services with 3D capabilities.
@@ -10,6 +10,7 @@ We integrated these libraries
 - Sogou Workflow
 - Ithewei LibHv
 - Machine Zone IXWebSocket
+- Unreal Engine HTTP Server
 
 Workflow gives `_DllMainCRTStartup` error if we try to integrate it as `External Module`. So, you can see it in here. <br />
 `Source/FF_HTTP_Advanced/ThirdParty/Workflow`
@@ -18,10 +19,11 @@ We integrated multiple libraries because we wanted to give freedom to other deve
 Each library has their unique `FRunnableThread` class which named like `HTTP_Thread_LibraryName` and there is one blueprint exposed actor which has an enumeration to allow you to select which library you want to use.
 
 ## ROADMAP
-Right now plugin doesn't have server implementations. We will implement them in time.
+Right now, plugin doesn't have third party server implementations but it has Unreal Engine based working HTTP server.
+We will implement other server libraries them in time.
 
 ## NOT-SUPPORTED FEATURES
-We won't integrate any database libraries to this plugin. Because we believe that accessing databases or any other datasources is NOT HTTP server plugin's job.
+We won't integrate any database and JSON libraries to this plugin. Because we believe that accessing databases or any other datasources and parsing requests/responses are NOT HTTP server plugin's job.
 
 ## BASIC INTRODUCTION
 (We will improve this after finishing implementation.)<br />
