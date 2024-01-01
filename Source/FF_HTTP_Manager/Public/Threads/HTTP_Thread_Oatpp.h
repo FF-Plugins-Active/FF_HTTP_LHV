@@ -15,7 +15,7 @@ THIRD_PARTY_INCLUDES_END
 
 // Fordward Declerations.
 class FRunnableThread;
-class AFF_HTTP_Actor;
+class AHTTP_Server_Advance;
 
 class FHTTP_Thread_Oatpp : public FRunnable
 {
@@ -23,7 +23,7 @@ class FHTTP_Thread_Oatpp : public FRunnable
 public:	
 	
 	// Sets default values for this actor's properties
-	FHTTP_Thread_Oatpp(AFF_HTTP_Actor* In_Parent_Actor);
+	FHTTP_Thread_Oatpp(AHTTP_Server_Advance* In_Parent_Actor);
 
 	// Destructor.
 	virtual ~FHTTP_Thread_Oatpp() override;
@@ -48,6 +48,6 @@ private:
 private:
 
 	FRunnableThread* RunnableThread = nullptr;
-	AFF_HTTP_Actor* Parent_Actor = nullptr;
+	AHTTP_Server_Advance* Parent_Actor = nullptr;
 
 };

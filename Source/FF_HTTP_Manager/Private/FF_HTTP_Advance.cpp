@@ -1,16 +1,16 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "FF_HTTP_Actor.h"
+#include "FF_HTTP_Advance.h"
 
 // Sets default values
-AFF_HTTP_Actor::AFF_HTTP_Actor()
+AHTTP_Server_Advance::AHTTP_Server_Advance()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 }
 
 // Called when the game starts or when spawned
-void AFF_HTTP_Actor::BeginPlay()
+void AHTTP_Server_Advance::BeginPlay()
 {
 #ifdef _WIN64
 	this->HTTP_Server_Start();
@@ -19,7 +19,7 @@ void AFF_HTTP_Actor::BeginPlay()
 	Super::BeginPlay();
 }
 
-void AFF_HTTP_Actor::EndPlay(const EEndPlayReason::Type EndPlayReason)
+void AHTTP_Server_Advance::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 #ifdef _WIN64
 	this->HTTP_Server_Stop();
@@ -29,12 +29,12 @@ void AFF_HTTP_Actor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 }
 
 // Called every frame
-void AFF_HTTP_Actor::Tick(float DeltaTime)
+void AHTTP_Server_Advance::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
 
-bool AFF_HTTP_Actor::HTTP_Server_Start()
+bool AHTTP_Server_Advance::HTTP_Server_Start()
 {
 #ifdef _WIN64
 	if (this->Server_Name.IsEmpty() || this->Server_Name.Len() > 15)
@@ -125,7 +125,7 @@ bool AFF_HTTP_Actor::HTTP_Server_Start()
 #endif
 }
 
-void AFF_HTTP_Actor::HTTP_Server_Stop()
+void AHTTP_Server_Advance::HTTP_Server_Stop()
 {
 #ifdef _WIN64
 	switch (this->ServerLibrary)
@@ -202,7 +202,7 @@ void AFF_HTTP_Actor::HTTP_Server_Stop()
 #endif
 }
 
-void AFF_HTTP_Actor::HTTP_Server_Toggle(bool bPause)
+void AHTTP_Server_Advance::HTTP_Server_Toggle(bool bPause)
 {
 
 }

@@ -2,7 +2,7 @@
 	"FileVersion": 3,
 	"Version": 1,
 	"VersionName": "1.0",
-	"FriendlyName": "FF HTTP Advance",
+	"FriendlyName": "FF HTTP Manager",
 	"Description": "",
 	"Category": "Frozen Forest",
 	"CreatedBy": "Frozen Forest Reality Technologies",
@@ -19,7 +19,7 @@
 	],
 	"Modules": [
 		{
-			"Name": "FF_HTTP_Advance",
+			"Name": "FF_HTTP_Manager",
 			"Type": "Runtime",
 			"LoadingPhase": "PreLoadingScreen",
 			"PlatformAllowList": [

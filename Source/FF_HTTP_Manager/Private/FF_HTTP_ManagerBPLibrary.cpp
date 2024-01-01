@@ -1,7 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "FF_HTTP_AdvanceBPLibrary.h"
-#include "FF_HTTP_Advance.h"
+#include "FF_HTTP_ManagerBPLibrary.h"
+#include "FF_HTTP_Manager.h"
 
 // UE Includes.
 #include "Misc/App.h"
@@ -23,13 +23,13 @@ THIRD_PARTY_INCLUDES_START
 #include <algorithm>                        // Message Id
 THIRD_PARTY_INCLUDES_END
 
-UFF_HTTP_AdvanceBPLibrary::UFF_HTTP_AdvanceBPLibrary(const FObjectInitializer& ObjectInitializer)
+UFF_HTTP_ManagerBPLibrary::UFF_HTTP_ManagerBPLibrary(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
 {
 
 }
 
-void UFF_HTTP_AdvanceBPLibrary::FF_HTTP_Client_Basic_Bytes(FDelegateHttpClient DelegateClient, FString In_Url, TMap<FString, FString> In_Header, TArray<uint8> In_Body, EHttpRequestTypes In_Request_Type, EHttpContentTypes ContentType, bool bAddDefaultHeaders)
+void UFF_HTTP_ManagerBPLibrary::FF_HTTP_Client_Basic_Bytes(FDelegateHttpClient DelegateClient, FString In_Url, TMap<FString, FString> In_Header, TArray<uint8> In_Body, EHttpRequestTypes In_Request_Type, EHttpContentTypes ContentType, bool bAddDefaultHeaders)
 {
     if (In_Url.IsEmpty())
     {
@@ -130,7 +130,7 @@ void UFF_HTTP_AdvanceBPLibrary::FF_HTTP_Client_Basic_Bytes(FDelegateHttpClient D
     );
 }
 
-void UFF_HTTP_AdvanceBPLibrary::FF_HTTP_Client_Basic_String(FDelegateHttpClient DelegateClient, FString In_Url, TMap<FString, FString> In_Header, FString In_Body, EHttpRequestTypes In_Request_Type, EHttpContentTypes ContentType, bool bAddDefaultHeaders)
+void UFF_HTTP_ManagerBPLibrary::FF_HTTP_Client_Basic_String(FDelegateHttpClient DelegateClient, FString In_Url, TMap<FString, FString> In_Header, FString In_Body, EHttpRequestTypes In_Request_Type, EHttpContentTypes ContentType, bool bAddDefaultHeaders)
 {
     if (In_Url.IsEmpty())
     {
@@ -231,7 +231,7 @@ void UFF_HTTP_AdvanceBPLibrary::FF_HTTP_Client_Basic_String(FDelegateHttpClient 
     );
 }
 
-bool UFF_HTTP_AdvanceBPLibrary::HTTP_Server_Response_Lenght(FString& Out_Lenght, FString In_Response)
+bool UFF_HTTP_ManagerBPLibrary::HTTP_Server_Response_Lenght(FString& Out_Lenght, FString In_Response)
 {
     if (In_Response.IsEmpty())
     {
@@ -243,7 +243,7 @@ bool UFF_HTTP_AdvanceBPLibrary::HTTP_Server_Response_Lenght(FString& Out_Lenght,
     return true;
 }
 
-void UFF_HTTP_AdvanceBPLibrary::LibCurl_Send_Email(FDelegateMailSent DelegateMailSent, TArray<FMailAttachments> Attachments, TArray<FString> To, TArray<FString> Cc, TArray<FString> Bcc, FString Subject, FString Message, FString Sender, FString Password, FString CustomServer, FString In_Cert_Path, EMailServers KnownServers, EMailSecurity CustomServerSecurity)
+void UFF_HTTP_ManagerBPLibrary::LibCurl_Send_Email(FDelegateMailSent DelegateMailSent, TArray<FMailAttachments> Attachments, TArray<FString> To, TArray<FString> Cc, TArray<FString> Bcc, FString Subject, FString Message, FString Sender, FString Password, FString CustomServer, FString In_Cert_Path, EMailServers KnownServers, EMailSecurity CustomServerSecurity)
 {
     if (CustomServer.IsEmpty() && In_Cert_Path.IsEmpty())
     {

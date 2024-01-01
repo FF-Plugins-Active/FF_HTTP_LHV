@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 
 // Custom Includes.
-#include "FF_HTTP_AdvanceBPLibrary.h"
+#include "FF_HTTP_ManagerBPLibrary.h"
 
 // UE Server Includes.
 #include "IHttpRouter.h"
@@ -22,7 +22,7 @@
 */
 
 UCLASS(BlueprintType)
-class FF_HTTP_ADVANCE_API UHttpServerBasicResponse : public UObject
+class FF_HTTP_MANAGER_API UHttpServerBasicResponse : public UObject
 {
 	GENERATED_BODY()
 
@@ -66,7 +66,7 @@ public:
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDelegateHttpMessageBasic, UHttpServerBasicResponse*, Connection, FHttpServerMessage, Request);
 
 UCLASS()
-class FF_HTTP_ADVANCE_API AHTTP_Server_Basic : public AActor
+class FF_HTTP_MANAGER_API AHTTP_Server_Basic : public AActor
 {
 	GENERATED_BODY()
 	

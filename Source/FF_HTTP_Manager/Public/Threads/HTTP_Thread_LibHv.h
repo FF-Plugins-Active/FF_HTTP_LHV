@@ -9,24 +9,24 @@
 
 THIRD_PARTY_INCLUDES_START
 #ifdef _WIN64
-#include <ixwebsocket/IXHttpServer.h>
+#include "hv/HttpServer.h"
 #endif
 THIRD_PARTY_INCLUDES_END
 
 // Fordward Declerations.
 class FRunnableThread;
-class AFF_HTTP_Actor;
+class AHTTP_Server_Advance;
 
-class FHTTP_Thread_IXWeb : public FRunnable
+class FHTTP_Thread_LibHv : public FRunnable
 {
 	
 public:	
 	
 	// Sets default values for this actor's properties
-	FHTTP_Thread_IXWeb(AFF_HTTP_Actor* In_Parent_Actor);
+	FHTTP_Thread_LibHv(AHTTP_Server_Advance* In_Parent_Actor);
 
 	// Destructor.
-	virtual ~FHTTP_Thread_IXWeb() override;
+	virtual ~FHTTP_Thread_LibHv() override;
 
 	virtual bool Init() override;
 
@@ -48,6 +48,6 @@ private:
 private:
 
 	FRunnableThread* RunnableThread = nullptr;
-	AFF_HTTP_Actor* Parent_Actor = nullptr;
+	AHTTP_Server_Advance* Parent_Actor = nullptr;
 
 };

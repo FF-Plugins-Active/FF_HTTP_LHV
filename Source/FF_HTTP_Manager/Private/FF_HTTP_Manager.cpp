@@ -1,15 +1,15 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "FF_HTTP_Advance.h"
+#include "FF_HTTP_Manager.h"
 #include "Interfaces/IPluginManager.h"
 
-#define LOCTEXT_NAMESPACE "FFF_HTTP_AdvanceModule"
+#define LOCTEXT_NAMESPACE "FFF_HTTP_ManagerModule"
 
-void FFF_HTTP_AdvanceModule::StartupModule()
+void FFF_HTTP_ManagerModule::StartupModule()
 {
 #if defined(_WIN64) && LIBHV_SHARED == 1
 
-	const FString BasePluginDir = IPluginManager::Get().FindPlugin("FF_HTTP_Advance")->GetBaseDir();
+	const FString BasePluginDir = IPluginManager::Get().FindPlugin("FF_HTTP_Manager")->GetBaseDir();
 	const FString DLL_Path = FPaths::Combine(*BasePluginDir, TEXT("Source/LibHv/Win64/lib/hv.dll"));
 	Libhv_Handle = FPlatformProcess::GetDllHandle(*DLL_Path);
 
@@ -26,7 +26,7 @@ void FFF_HTTP_AdvanceModule::StartupModule()
 #endif
 }
 
-void FFF_HTTP_AdvanceModule::ShutdownModule()
+void FFF_HTTP_ManagerModule::ShutdownModule()
 {
 #if defined(_WIN64) && LIBHV_SHARED == 1
 	FPlatformProcess::FreeDllHandle(Libhv_Handle);
@@ -36,4 +36,4 @@ void FFF_HTTP_AdvanceModule::ShutdownModule()
 
 #undef LOCTEXT_NAMESPACE
 	
-IMPLEMENT_MODULE(FFF_HTTP_AdvanceModule, FF_HTTP_Advance)
+IMPLEMENT_MODULE(FFF_HTTP_ManagerModule, FF_HTTP_Manager)

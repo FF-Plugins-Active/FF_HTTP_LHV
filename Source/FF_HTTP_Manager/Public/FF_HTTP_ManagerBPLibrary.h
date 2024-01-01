@@ -7,10 +7,10 @@
 // Custom Includes
 #include "FF_HTTP_Enums.h"
 
-#include "FF_HTTP_AdvanceBPLibrary.generated.h"
+#include "FF_HTTP_ManagerBPLibrary.generated.h"
 
 USTRUCT(BlueprintType)
-struct FF_HTTP_ADVANCE_API FStringArrayStruct
+struct FF_HTTP_MANAGER_API FStringArrayStruct
 {
 	GENERATED_BODY()
 
@@ -22,7 +22,7 @@ public:
 };
 
 USTRUCT(BlueprintType)
-struct FF_HTTP_ADVANCE_API FHttpServerMessage
+struct FF_HTTP_MANAGER_API FHttpServerMessage
 {
 	GENERATED_BODY()
 
@@ -63,7 +63,7 @@ public:
 };
 
 USTRUCT(BlueprintType)
-struct FF_HTTP_ADVANCE_API FHttpClientResponse
+struct FF_HTTP_MANAGER_API FHttpClientResponse
 {
 	GENERATED_BODY()
 
@@ -93,7 +93,7 @@ public:
 };
 
 USTRUCT(BlueprintType)
-struct FF_HTTP_ADVANCE_API FMailAttachments
+struct FF_HTTP_MANAGER_API FMailAttachments
 {
 	GENERATED_BODY()
 
@@ -114,7 +114,7 @@ UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FDelegateMailSent, bool, bIsSuccessfull, FString, Out_Code);
 
 UCLASS()
-class UFF_HTTP_AdvanceBPLibrary : public UBlueprintFunctionLibrary
+class UFF_HTTP_ManagerBPLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_UCLASS_BODY()
 
@@ -122,22 +122,22 @@ class UFF_HTTP_AdvanceBPLibrary : public UBlueprintFunctionLibrary
 	* @param bAddDefaultHeaders It adds these headers "Cache-Control: no-cache & Accept:"*"/"*" & Accept-Encoding:gzip, deflate, br & Connection:keep-alive
 	*/
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "HTTP Client Basic (Content as Bytes)", Keywords = "http, web, url, post"), Category = "Frozen Forest|HTTP Client|Basic")
-	static FF_HTTP_ADVANCE_API void FF_HTTP_Client_Basic_Bytes(FDelegateHttpClient DelegateClient, FString In_Url, TMap<FString, FString> In_Header, TArray<uint8> In_Body, EHttpRequestTypes In_Request_Type = EHttpRequestTypes::GET, EHttpContentTypes ContentType = EHttpContentTypes::PDF, bool bAddDefaultHeaders = true);
+	static FF_HTTP_MANAGER_API void FF_HTTP_Client_Basic_Bytes(FDelegateHttpClient DelegateClient, FString In_Url, TMap<FString, FString> In_Header, TArray<uint8> In_Body, EHttpRequestTypes In_Request_Type = EHttpRequestTypes::GET, EHttpContentTypes ContentType = EHttpContentTypes::PDF, bool bAddDefaultHeaders = true);
 
 	/*
 	* @param bAddDefaultHeaders It adds these headers "Cache-Control: no-cache & Accept:"*"/"*" & Accept-Encoding:gzip, deflate, br & Connection:keep-alive
 	*/
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "HTTP Client Basic (Content as String)", Keywords = "http, web, url, post"), Category = "Frozen Forest|HTTP Client|Basic")
-	static FF_HTTP_ADVANCE_API void FF_HTTP_Client_Basic_String(FDelegateHttpClient DelegateClient, FString In_Url, TMap<FString, FString> In_Header, FString In_Body, EHttpRequestTypes In_Request_Type = EHttpRequestTypes::GET, EHttpContentTypes ContentType = EHttpContentTypes::PDF, bool bAddDefaultHeaders = true);
+	static FF_HTTP_MANAGER_API void FF_HTTP_Client_Basic_String(FDelegateHttpClient DelegateClient, FString In_Url, TMap<FString, FString> In_Header, FString In_Body, EHttpRequestTypes In_Request_Type = EHttpRequestTypes::GET, EHttpContentTypes ContentType = EHttpContentTypes::PDF, bool bAddDefaultHeaders = true);
 
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "HTTP Server - Response Lenght", Keywords = "http, server, response, helper, content, lenght"), Category = "Frozen Forest|HTTP Server")
-	static FF_HTTP_ADVANCE_API bool HTTP_Server_Response_Lenght(FString& Out_Lenght, FString In_Response);
+	static FF_HTTP_MANAGER_API bool HTTP_Server_Response_Lenght(FString& Out_Lenght, FString In_Response);
 
 	/*
 	* @param Attachments LibCurl automatically converts bytes to base64.
 	* @param CustomServerSecurity You don't have to define it if you won't use CustomServer.
 	*/
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "LibCurl - Send Email", Keywords = "libcurl, curl, send, email, mail, smtp"), Category = "Frozen Forest|LibCurl|Mail")
-	static FF_HTTP_ADVANCE_API void LibCurl_Send_Email(FDelegateMailSent DelegateMailSent, TArray<FMailAttachments> Attachments, TArray<FString> To, TArray<FString> Cc, TArray<FString> Bcc, FString Subject, FString Message, FString Sender, FString Password, FString CustomServer, FString In_Cert_Path, EMailServers KnownServers = EMailServers::Gmail, EMailSecurity CustomServerSecurity = EMailSecurity::NoSecurity);
+	static FF_HTTP_MANAGER_API void LibCurl_Send_Email(FDelegateMailSent DelegateMailSent, TArray<FMailAttachments> Attachments, TArray<FString> To, TArray<FString> Cc, TArray<FString> Bcc, FString Subject, FString Message, FString Sender, FString Password, FString CustomServer, FString In_Cert_Path, EMailServers KnownServers = EMailServers::Gmail, EMailSecurity CustomServerSecurity = EMailSecurity::NoSecurity);
 
 };

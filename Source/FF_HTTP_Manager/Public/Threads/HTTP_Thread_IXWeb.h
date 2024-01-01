@@ -9,32 +9,24 @@
 
 THIRD_PARTY_INCLUDES_START
 #ifdef _WIN64
-#define UI UI_ST
-#include "workflow/Workflow.h"
-#include "workflow/HttpMessage.h"
-#include "workflow/HttpUtil.h"
-#include "workflow/WFServer.h"
-#include "workflow/WFHttpServer.h"
-#include "workflow/WFFacilities.h"
-#include "workflow/WFTaskFactory.h"
-#undef UI
+#include <ixwebsocket/IXHttpServer.h>
 #endif
 THIRD_PARTY_INCLUDES_END
 
 // Fordward Declerations.
 class FRunnableThread;
-class AFF_HTTP_Actor;
+class AHTTP_Server_Advance;
 
-class FHTTP_Thread_Workflow : public FRunnable
+class FHTTP_Thread_IXWeb : public FRunnable
 {
 	
 public:	
 	
 	// Sets default values for this actor's properties
-	FHTTP_Thread_Workflow(AFF_HTTP_Actor* In_Parent_Actor);
+	FHTTP_Thread_IXWeb(AHTTP_Server_Advance* In_Parent_Actor);
 
 	// Destructor.
-	virtual ~FHTTP_Thread_Workflow() override;
+	virtual ~FHTTP_Thread_IXWeb() override;
 
 	virtual bool Init() override;
 
@@ -56,6 +48,6 @@ private:
 private:
 
 	FRunnableThread* RunnableThread = nullptr;
-	AFF_HTTP_Actor* Parent_Actor = nullptr;
+	AHTTP_Server_Advance* Parent_Actor = nullptr;
 
 };

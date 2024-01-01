@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 
 // Custom Includes.
-#include "FF_HTTP_AdvanceBPLibrary.h"
+#include "FF_HTTP_ManagerBPLibrary.h"
 
 // Threads.
 #include "Threads/HTTP_Thread_Oatpp.h"
@@ -14,10 +14,10 @@
 #include "Threads/HTTP_Thread_LibHv.h"
 #include "Threads/HTTP_Thread_IXWeb.h"
 
-#include "FF_HTTP_Actor.generated.h"
+#include "FF_HTTP_Advance.generated.h"
 
 UCLASS()
-class FF_HTTP_ADVANCE_API UHttpAdvanceConnection : public UObject
+class FF_HTTP_MANAGER_API UHttpAdvanceConnection : public UObject
 {
 	GENERATED_BODY()
 
@@ -124,7 +124,7 @@ public:
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDelegateHttpMessageAdv, UHttpAdvanceConnection*, Connection, FHttpServerMessage, Out_Message);
 
 UCLASS()
-class FF_HTTP_ADVANCE_API AFF_HTTP_Actor : public AActor
+class FF_HTTP_MANAGER_API AHTTP_Server_Advance : public AActor
 {
 	GENERATED_BODY()
 	
@@ -138,7 +138,7 @@ protected:
 public:	
 
 	// Sets default values for this actor's properties
-	AFF_HTTP_Actor();
+	AHTTP_Server_Advance();
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
