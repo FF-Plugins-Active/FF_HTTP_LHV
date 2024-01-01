@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Threads/HTTP_Thread_UE.h"
+#include "FF_HTTP_Basic.h"
 
 #include "HttpPath.h"
 #include "HttpServerModule.h"
@@ -8,32 +8,32 @@
 #include "HttpServerResponse.h"
 
 // Sets default values
-AHTTP_Thread_UE::AHTTP_Thread_UE()
+AHTTP_Server_Basic::AHTTP_Server_Basic()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 }
 
 // Called when the game starts or when spawned
-void AHTTP_Thread_UE::BeginPlay()
+void AHTTP_Server_Basic::BeginPlay()
 {
-    this->HttpServerBasic_Start();
+    this->HttpServer_Basic_Start();
 	Super::BeginPlay();
 }
 
-void AHTTP_Thread_UE::EndPlay(const EEndPlayReason::Type EndPlayReason)
+void AHTTP_Server_Basic::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+    this->HttpServer_Basic_Stop();
 	Super::EndPlay(EndPlayReason);
-    this->HttpServerBasic_Stop();
 }
 
 // Called every frame
-void AHTTP_Thread_UE::Tick(float DeltaTime)
+void AHTTP_Server_Basic::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
 
-void AHTTP_Thread_UE::HttpServerBasic_Start()
+void AHTTP_Server_Basic::HttpServer_Basic_Start()
 {
     auto Callback_Parse_Request = [](const FHttpServerRequest& Request)->FHttpServerMessage
         {
@@ -135,7 +135,7 @@ void AHTTP_Thread_UE::HttpServerBasic_Start()
     UE_LOG(LogTemp, Display, TEXT("HTTP Server Basic -> Started."))
 }
 
-bool AHTTP_Thread_UE::HttpServerBasic_Stop()
+bool AHTTP_Server_Basic::HttpServer_Basic_Stop()
 {
     FHttpServerModule& httpServerModule = FHttpServerModule::Get();
     httpServerModule.StopAllListeners();

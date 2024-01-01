@@ -29,39 +29,97 @@ UFF_HTTP_AdvanceBPLibrary::UFF_HTTP_AdvanceBPLibrary(const FObjectInitializer& O
 
 }
 
-void UFF_HTTP_AdvanceBPLibrary::FF_HTTP_Post(FDelegateHttpClient DelegateClientPost, TArray<uint8> In_Array, FString In_URL, FString ContentType)
+void UFF_HTTP_AdvanceBPLibrary::FF_HTTP_Client_Basic_Bytes(FDelegateHttpClient DelegateClient, FString In_Url, TMap<FString, FString> In_Header, TArray<uint8> In_Body, EHttpRequestTypes In_Request_Type, EHttpContentTypes ContentType, bool bAddDefaultHeaders)
 {
-    if (In_URL.IsEmpty() == true)
+    if (In_Url.IsEmpty())
     {
-        DelegateClientPost.Execute(false, TArray<uint8>());
-
         return;
     }
 
-    AsyncTask(ENamedThreads::AnyNormalThreadNormalTask, [DelegateClientPost, In_Array, In_URL, ContentType]()
+    AsyncTask(ENamedThreads::AnyNormalThreadNormalTask, [DelegateClient, In_Request_Type, In_Url, In_Header, In_Body, ContentType, bAddDefaultHeaders]()
         {
             FHttpRequestRef HttpRequest = FHttpModule::Get().CreateRequest();
-            HttpRequest->SetVerb("POST");
-            HttpRequest->SetHeader("Content-Type", ContentType);
-            HttpRequest->SetURL(In_URL);
-            HttpRequest->SetContent(In_Array);
 
-            HttpRequest->OnProcessRequestComplete().BindLambda([DelegateClientPost](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+            switch (In_Request_Type)
+            {
+            case EHttpRequestTypes::None:
+                break;
+            case EHttpRequestTypes::GET:
+                HttpRequest->SetVerb("GET");
+                break;
+            case EHttpRequestTypes::POST:
+                HttpRequest->SetVerb("POST");
+                break;
+            case EHttpRequestTypes::PUT:
+                HttpRequest->SetVerb("PUT");
+                break;
+            case EHttpRequestTypes::DEL:
+                HttpRequest->SetVerb("Delete");
+                break;
+            default:
+                HttpRequest->SetVerb("GET");
+                break;
+            }
+
+            switch (ContentType)
+            {
+            case EHttpContentTypes::None:
+                break;
+
+            case EHttpContentTypes::PDF:
+                HttpRequest->AppendToHeader("Contenty-Type", "application/pdf");
+                break;
+
+            case EHttpContentTypes::JSON:
+                HttpRequest->AppendToHeader("Contenty-Type", "application/json");
+                break;
+
+            case EHttpContentTypes::TEXT:
+                HttpRequest->AppendToHeader("Contenty-Type", "text/plain");
+                break;
+
+            default:
+                break;
+            }
+
+            HttpRequest->SetURL(In_Url);
+            HttpRequest->SetContent(In_Body);
+
+            TArray<FString> Header_Keys;
+            In_Header.GenerateKeyArray(Header_Keys);
+            for (int32 Index_Header = 0; Index_Header < Header_Keys.Num(); Index_Header++)
+            {
+                FString EachHeader_Name = Header_Keys[Index_Header];
+                FString EachHeader_Value = *In_Header.Find(EachHeader_Name);
+
+                HttpRequest->AppendToHeader(EachHeader_Name, EachHeader_Value);
+            }
+
+            if (bAddDefaultHeaders)
+            {
+                HttpRequest->AppendToHeader("Cache-Control", "no-cache");
+                HttpRequest->AppendToHeader("Accept", "*/*");
+                HttpRequest->AppendToHeader("Accept-Encoding", "gzip, deflate, br");
+                HttpRequest->AppendToHeader("Connection", "keep-alive");
+            }
+            
+            HttpRequest->OnProcessRequestComplete().BindLambda([DelegateClient](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
                 {
-                    if (bWasSuccessful == false)
-                    {
-                        AsyncTask(ENamedThreads::GameThread, [DelegateClientPost]()
-                            {
-                                DelegateClientPost.ExecuteIfBound(false, TArray<uint8>());
-                            }
-                        );
-                    }
-
-                    TArray<uint8> Bytes = Response->GetContent();
-
-                    AsyncTask(ENamedThreads::GameThread, [DelegateClientPost, Bytes]()
+                    AsyncTask(ENamedThreads::GameThread, [DelegateClient, Response, bWasSuccessful]()
                         {
-                            DelegateClientPost.ExecuteIfBound(true, Bytes);
+                            FHttpClientResponse ResponseStruct;
+                            if (bWasSuccessful)
+                            {
+                                ResponseStruct.Headers = Response->GetAllHeaders();
+                                ResponseStruct.Content = Response->GetContent();
+                                ResponseStruct.ContentString = Response->GetContentAsString();
+                                ResponseStruct.ContentLenght = Response->GetContentLength();
+                                ResponseStruct.ContentType = Response->GetContentType();
+                                //ResponseStruct.Url = Response->GetURL().IsEmpty() ? "" : Response->GetURL(); This gives error.
+                                ResponseStruct.ResponseCode = Response->GetResponseCode();
+                            }
+
+                            DelegateClient.ExecuteIfBound(bWasSuccessful, ResponseStruct);
                         }
                     );
                 }
@@ -72,38 +130,97 @@ void UFF_HTTP_AdvanceBPLibrary::FF_HTTP_Post(FDelegateHttpClient DelegateClientP
     );
 }
 
-void UFF_HTTP_AdvanceBPLibrary::FF_HTTP_Get(FDelegateHttpClient DelegateClientGet, FString In_URL, FString ContentType)
+void UFF_HTTP_AdvanceBPLibrary::FF_HTTP_Client_Basic_String(FDelegateHttpClient DelegateClient, FString In_Url, TMap<FString, FString> In_Header, FString In_Body, EHttpRequestTypes In_Request_Type, EHttpContentTypes ContentType, bool bAddDefaultHeaders)
 {
-    if (In_URL.IsEmpty() == true)
+    if (In_Url.IsEmpty())
     {
-        DelegateClientGet.Execute(false, TArray<uint8>());
-
         return;
     }
 
-    AsyncTask(ENamedThreads::AnyNormalThreadNormalTask, [DelegateClientGet, In_URL, ContentType]()
+    AsyncTask(ENamedThreads::AnyNormalThreadNormalTask, [DelegateClient, In_Request_Type, In_Url, In_Header, In_Body, ContentType, bAddDefaultHeaders]()
         {
             FHttpRequestRef HttpRequest = FHttpModule::Get().CreateRequest();
-            HttpRequest->SetVerb("GET");
-            HttpRequest->SetHeader("Content-Type", ContentType);
-            HttpRequest->SetURL(In_URL);
 
-            HttpRequest->OnProcessRequestComplete().BindLambda([DelegateClientGet](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+            switch (In_Request_Type)
+            {
+            case EHttpRequestTypes::None:
+                break;
+            case EHttpRequestTypes::GET:
+                HttpRequest->SetVerb("GET");
+                break;
+            case EHttpRequestTypes::POST:
+                HttpRequest->SetVerb("POST");
+                break;
+            case EHttpRequestTypes::PUT:
+                HttpRequest->SetVerb("PUT");
+                break;
+            case EHttpRequestTypes::DEL:
+                HttpRequest->SetVerb("Delete");
+                break;
+            default:
+                HttpRequest->SetVerb("GET");
+                break;
+            }
+
+            switch (ContentType)
+            {
+            case EHttpContentTypes::None:
+                break;
+
+            case EHttpContentTypes::PDF:
+                HttpRequest->AppendToHeader("Contenty-Type", "application/pdf");
+                break;
+
+            case EHttpContentTypes::JSON:
+                HttpRequest->AppendToHeader("Contenty-Type", "application/json");
+                break;
+
+            case EHttpContentTypes::TEXT:
+                HttpRequest->AppendToHeader("Contenty-Type", "text/plain");
+                break;
+
+            default:
+                break;
+            }
+
+            HttpRequest->SetURL(In_Url);
+            HttpRequest->SetContentAsString(In_Body);
+
+            TArray<FString> Header_Keys;
+            In_Header.GenerateKeyArray(Header_Keys);
+            for (int32 Index_Header = 0; Index_Header < Header_Keys.Num(); Index_Header++)
+            {
+                FString EachHeader_Name = Header_Keys[Index_Header];
+                FString EachHeader_Value = *In_Header.Find(EachHeader_Name);
+
+                HttpRequest->AppendToHeader(EachHeader_Name, EachHeader_Value);
+            }
+
+            if (bAddDefaultHeaders)
+            {
+                HttpRequest->AppendToHeader("Cache-Control", "no-cache");
+                HttpRequest->AppendToHeader("Accept", "*/*");
+                HttpRequest->AppendToHeader("Accept-Encoding", "gzip, deflate, br");
+                HttpRequest->AppendToHeader("Connection", "keep-alive");
+            }
+
+            HttpRequest->OnProcessRequestComplete().BindLambda([DelegateClient](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
                 {
-                    if (bWasSuccessful == false)
-                    {
-                        AsyncTask(ENamedThreads::GameThread, [DelegateClientGet]()
-                            {
-                                DelegateClientGet.ExecuteIfBound(false, TArray<uint8>());
-                            }
-                        );
-                    }
-
-                    TArray<uint8> Bytes = Response->GetContent();
-
-                    AsyncTask(ENamedThreads::GameThread, [DelegateClientGet, Bytes]()
+                    AsyncTask(ENamedThreads::GameThread, [DelegateClient, Response, bWasSuccessful]()
                         {
-                            DelegateClientGet.ExecuteIfBound(true, Bytes);
+                            FHttpClientResponse ResponseStruct;
+                            if (bWasSuccessful)
+                            {
+                                ResponseStruct.Headers = Response->GetAllHeaders();
+                                ResponseStruct.Content = Response->GetContent();
+                                ResponseStruct.ContentString = Response->GetContentAsString();
+                                ResponseStruct.ContentLenght = Response->GetContentLength();
+                                ResponseStruct.ContentType = Response->GetContentType();
+                                //ResponseStruct.Url = Response->GetURL().IsEmpty() ? "" : Response->GetURL(); this gives error.
+                                ResponseStruct.ResponseCode = Response->GetResponseCode();
+                            }
+
+                            DelegateClient.ExecuteIfBound(bWasSuccessful, ResponseStruct);
                         }
                     );
                 }

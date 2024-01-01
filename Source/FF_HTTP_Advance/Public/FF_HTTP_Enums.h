@@ -25,6 +25,16 @@ enum class EHttpRequestTypes : uint8
 ENUM_CLASS_FLAGS(EHttpRequestTypes)
 
 UENUM(BlueprintType)
+enum class EHttpContentTypes : uint8
+{
+	None	UMETA(DisplayName = "None"),
+	PDF		UMETA(DisplayName = "application/pdf"),
+	JSON	UMETA(DisplayName = "application/json"),
+	TEXT	UMETA(DisplayName = "text/plain"),
+};
+ENUM_CLASS_FLAGS(EHttpContentTypes)
+
+UENUM(BlueprintType)
 enum class EMailServers : uint8
 {
 	Gmail		UMETA(DisplayName = "Gmail"),

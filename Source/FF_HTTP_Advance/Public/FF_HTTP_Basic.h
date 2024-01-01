@@ -8,11 +8,11 @@
 // Custom Includes.
 #include "FF_HTTP_AdvanceBPLibrary.h"
 
-// UE Includes.
+// UE Server Includes.
 #include "IHttpRouter.h"
 #include "HttpResultCallback.h"
 
-#include "HTTP_Thread_UE.generated.h"
+#include "FF_HTTP_Basic.generated.h"
 
 /*
 * 
@@ -66,7 +66,7 @@ public:
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FDelegateHttpMessageBasic, UHttpServerBasicResponse*, Connection, FHttpServerMessage, Request);
 
 UCLASS()
-class FF_HTTP_ADVANCE_API AHTTP_Thread_UE : public AActor
+class FF_HTTP_ADVANCE_API AHTTP_Server_Basic : public AActor
 {
 	GENERATED_BODY()
 	
@@ -83,7 +83,7 @@ protected:
 public:	
 
 	// Sets default values for this actor's properties
-	AHTTP_Thread_UE();
+	AHTTP_Server_Basic();
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -95,9 +95,9 @@ public:
 	FDelegateHttpMessageBasic DelegateHttpMessageBasic;
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "HTTP Server Basic - Start", Category = "Frozen Forest|HTTP Server|Basic"))
-	virtual void HttpServerBasic_Start();
+	virtual void HttpServer_Basic_Start();
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "HTTP Server Basic - Stop", Category = "Frozen Forest|HTTP Server|Basic"))
-	virtual bool HttpServerBasic_Stop();
+	virtual bool HttpServer_Basic_Stop();
 
 };

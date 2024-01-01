@@ -5,7 +5,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 
 // Custom Includes
-#include "HTTP_Server_Enums.h"
+#include "FF_HTTP_Enums.h"
 
 #include "FF_HTTP_AdvanceBPLibrary.generated.h"
 
@@ -63,6 +63,36 @@ public:
 };
 
 USTRUCT(BlueprintType)
+struct FF_HTTP_ADVANCE_API FHttpClientResponse
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(BlueprintReadOnly)
+	TArray<uint8> Content;
+
+	UPROPERTY(BlueprintReadOnly)
+	FString ContentString;
+
+	UPROPERTY(BlueprintReadOnly)
+	TArray<FString> Headers;
+
+	UPROPERTY(BlueprintReadOnly)
+	int64 ContentLenght = 0;
+
+	UPROPERTY(BlueprintReadOnly)
+	FString ContentType;
+
+	UPROPERTY(BlueprintReadOnly)
+	FString Url;
+
+	UPROPERTY(BlueprintReadOnly)
+	int32 ResponseCode = 0;
+
+};
+
+USTRUCT(BlueprintType)
 struct FF_HTTP_ADVANCE_API FMailAttachments
 {
 	GENERATED_BODY()
@@ -78,7 +108,7 @@ public:
 };
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_DELEGATE_TwoParams(FDelegateHttpClient, bool, bIsSuccessfull, const TArray<uint8>&, Bytes);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FDelegateHttpClient, bool, bIsSuccessfull, FHttpClientResponse, ResponseStruct);
 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FDelegateMailSent, bool, bIsSuccessfull, FString, Out_Code);
@@ -88,11 +118,17 @@ class UFF_HTTP_AdvanceBPLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_UCLASS_BODY()
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "HTTP Client - Post", Keywords = "http, web, url, post"), Category = "Frozen Forest|HTTP Client|Basic")
-	static FF_HTTP_ADVANCE_API void FF_HTTP_Post(FDelegateHttpClient DelegateClientPost, TArray<uint8> In_Array, FString In_URL, FString ContentType = "application/pdf");
+	/*
+	* @param bAddDefaultHeaders It adds these headers "Cache-Control: no-cache & Accept:"*"/"*" & Accept-Encoding:gzip, deflate, br & Connection:keep-alive
+	*/
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "HTTP Client Basic (Content as Bytes)", Keywords = "http, web, url, post"), Category = "Frozen Forest|HTTP Client|Basic")
+	static FF_HTTP_ADVANCE_API void FF_HTTP_Client_Basic_Bytes(FDelegateHttpClient DelegateClient, FString In_Url, TMap<FString, FString> In_Header, TArray<uint8> In_Body, EHttpRequestTypes In_Request_Type = EHttpRequestTypes::GET, EHttpContentTypes ContentType = EHttpContentTypes::PDF, bool bAddDefaultHeaders = true);
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "HTTP Client - Get", Keywords = "http, web, url, get"), Category = "Frozen Forest|HTTP Client|Basic")
-	static FF_HTTP_ADVANCE_API void FF_HTTP_Get(FDelegateHttpClient DelegateClientGet, FString In_URL, FString ContentType = "application/pdf");
+	/*
+	* @param bAddDefaultHeaders It adds these headers "Cache-Control: no-cache & Accept:"*"/"*" & Accept-Encoding:gzip, deflate, br & Connection:keep-alive
+	*/
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "HTTP Client Basic (Content as String)", Keywords = "http, web, url, post"), Category = "Frozen Forest|HTTP Client|Basic")
+	static FF_HTTP_ADVANCE_API void FF_HTTP_Client_Basic_String(FDelegateHttpClient DelegateClient, FString In_Url, TMap<FString, FString> In_Header, FString In_Body, EHttpRequestTypes In_Request_Type = EHttpRequestTypes::GET, EHttpContentTypes ContentType = EHttpContentTypes::PDF, bool bAddDefaultHeaders = true);
 
 	UFUNCTION(BlueprintPure, meta = (DisplayName = "HTTP Server - Response Lenght", Keywords = "http, server, response, helper, content, lenght"), Category = "Frozen Forest|HTTP Server")
 	static FF_HTTP_ADVANCE_API bool HTTP_Server_Response_Lenght(FString& Out_Lenght, FString In_Response);
