@@ -15,10 +15,9 @@
 #include "FF_HTTP_Basic.generated.h"
 
 /*
-* 
-* Add these lines to Project/Config/DefaultEngine.ini
-	[HTTPServer.Listeners]
-	DefaultBindAddress = 0.0.0.0
+Add these lines to Project/Config/DefaultEngine.ini
+[HTTPServer.Listeners]
+DefaultBindAddress = 0.0.0.0
 */
 
 UCLASS(BlueprintType)
@@ -28,38 +27,34 @@ class FF_HTTP_MANAGER_API UHttpServerBasicResponse : public UObject
 
 public:
 
-	FHttpResultCallback Response;
+	FHttpResultCallback Response_Callback;
 
-	UFUNCTION(BlueprintCallable)
-	virtual bool SendResponse(TMap<FString, FStringArrayStruct> In_Headers, FString In_Value, bool bAddAllowOrigin = true, FString ValueType = "text/html")
+	UFUNCTION(BlueprintCallable, Category = "Frozen Forest|HTTP|Server|Basic")
+	virtual void SendResponse(TMap<FString, FStringArrayStruct> In_Headers, FString In_Body, EHttpContentTypes ContentType = EHttpContentTypes::TEXT, EHttpResponseCodesBp ResponseCode = EHttpResponseCodesBp::Ok)
 	{
-		TMap<FString, FStringArrayStruct> TempHeaders = In_Headers;
+		TUniquePtr<FHttpServerResponse> Response = FHttpServerResponse::Create(In_Body, UFF_HTTP_ManagerBPLibrary::HTTP_Content_Types_To_String(ContentType));
+		
+		// Default Headers.
+		Response->Headers.Add(TEXT("Access-Control-Allow-Origin"), { TEXT("*") });
+		Response->Headers.Add(TEXT("Access-Control-Allow-Methods"), { TEXT("GET,POST,PUT,PATCH,DELETE,OPTIONS") });
+		//Response->Headers.Add(TEXT("Content-Lenght"), { UFF_HTTP_ManagerBPLibrary::HTTP_Response_Lenght(In_Body) });
 
-		if (bAddAllowOrigin)
+		// Additional Headers.
+		TMap<FString, TArray<FString>> Response_Headers;
+
+		TArray<FString> Header_Keys;
+		In_Headers.GenerateKeyArray(Header_Keys);
+		for (int32 Index_Header_Key = 0; Index_Header_Key < Header_Keys.Num(); Index_Header_Key++)
 		{
-			TArray<FString> AllowOriginHeaderValue;
-			AllowOriginHeaderValue.Add("*");
-
-			FStringArrayStruct StrAllowOriginHeaderValue;
-			StrAllowOriginHeaderValue.Array_String = AllowOriginHeaderValue;
-			TempHeaders.Add("Access-Control-Allow-Origin", StrAllowOriginHeaderValue);
+			FString Each_Header_Key = Header_Keys[Index_Header_Key];
+			FStringArrayStruct Each_Header_Value = *In_Headers.Find(Each_Header_Key);
+			Response_Headers.Add(Each_Header_Key, Each_Header_Value.Array_String);
 		}
 
-		TMap<FString, TArray<FString>> Headers;
+		Response->Code = (EHttpServerResponseCodes)UFF_HTTP_ManagerBPLibrary::HTTP_Convert_Response_Codes(ResponseCode);
+		this->Response_Callback(MoveTemp(Response));
 
-		TArray<FString> Keys;
-		TempHeaders.GenerateKeyArray(Keys);
-		for (int32 Index_Elems = 0; Index_Elems < Keys.Num(); Index_Elems++)
-		{
-			Headers.Add(Keys[Index_Elems], TempHeaders.Find(Keys[Index_Elems])->Array_String);
-		}
-
-		TUniquePtr<FHttpServerResponse> TempResponse = FHttpServerResponse::Create(In_Value, ValueType);
-		TempResponse->Headers = Headers;
-
-		this->Response(MoveTemp(TempResponse));
-
-		return true;
+		return;
 	}
 };
 
@@ -78,7 +73,9 @@ protected:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	TSharedPtr<IHttpRouter, ESPMode::ThreadSafe> httpRouter = nullptr;
-	TArray<FHttpRouteHandle> Array_Routes;
+	TArray<FHttpRouteHandle> Array_Route_Handles;
+
+	virtual EHttpServerRequestVerbs BpRequestToUeRequest(EHttpRequestTypes BP_Request);
 
 public:	
 
@@ -88,16 +85,19 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ToolTip = "", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP Server|Basic")
-	int32 Port = 8081;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ToolTip = "", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP|Server|Basic")
+	int32 Port = 8082;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ToolTip = "", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP|Server|Basic")
+	TMap<FString, EHttpRequestTypes> Routes;
 
 	UPROPERTY(BlueprintAssignable, Category = "Frozen Forest|HTTP Server|Basic")
 	FDelegateHttpMessageBasic DelegateHttpMessageBasic;
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "HTTP Server Basic - Start", Category = "Frozen Forest|HTTP Server|Basic"))
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "HTTP Server Basic - Start", Category = "Frozen Forest|HTTP|Server|Basic"))
 	virtual void HttpServer_Basic_Start();
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "HTTP Server Basic - Stop", Category = "Frozen Forest|HTTP Server|Basic"))
-	virtual bool HttpServer_Basic_Stop();
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "HTTP Server Basic - Stop", Category = "Frozen Forest|HTTP|Server|Basic"))
+	virtual void HttpServer_Basic_Stop();
 
 };

@@ -29,6 +29,126 @@ UFF_HTTP_ManagerBPLibrary::UFF_HTTP_ManagerBPLibrary(const FObjectInitializer& O
 
 }
 
+FString UFF_HTTP_ManagerBPLibrary::HTTP_Response_Lenght(FString In_Response)
+{
+    if (In_Response.IsEmpty())
+    {
+        return "0";
+    }
+
+    return FString::FromInt(FTCHARToUTF8(In_Response.GetCharArray().GetData()).Length());
+}
+
+FString UFF_HTTP_ManagerBPLibrary::HTTP_Content_Types_To_String(EHttpContentTypes In_Types)
+{
+    switch (In_Types)
+    {
+    case EHttpContentTypes::None:
+        return "";
+    case EHttpContentTypes::PDF:
+        return "application/pdf";
+    case EHttpContentTypes::JSON:
+        return "application/json";
+    case EHttpContentTypes::TEXT:
+        return "text/plain";
+    case EHttpContentTypes::HTML:
+        return "text/html";
+    default:
+        return "";
+    }
+}
+
+int32 UFF_HTTP_ManagerBPLibrary::HTTP_Convert_Response_Codes(EHttpResponseCodesBp ResponseCodes)
+{
+    switch (ResponseCodes)
+    {
+    case EHttpResponseCodesBp::Unknown:
+        return 0;
+    case EHttpResponseCodesBp::Continue:
+        return 100;
+    case EHttpResponseCodesBp::SwitchProtocol:
+        return 101;
+    case EHttpResponseCodesBp::Ok:
+        return 200;
+    case EHttpResponseCodesBp::Created:
+        return 201;
+    case EHttpResponseCodesBp::Accepted:
+        return 202;
+    case EHttpResponseCodesBp::Partial:
+        return 203;
+    case EHttpResponseCodesBp::NoContent:
+        return 204;
+    case EHttpResponseCodesBp::ResetContent:
+        return 205;
+    case EHttpResponseCodesBp::PartialContent:
+        return 206;
+    case EHttpResponseCodesBp::Ambiguous:
+        return 300;
+    case EHttpResponseCodesBp::Moved:
+        return 301;
+    case EHttpResponseCodesBp::Redirect:
+        return 302;
+    case EHttpResponseCodesBp::RedirectMethod:
+        return 303;
+    case EHttpResponseCodesBp::NotModified:
+        return 304;
+    case EHttpResponseCodesBp::UseProxy:
+        return 305;
+    case EHttpResponseCodesBp::RedirectKeepVerb:
+        return 307;
+    case EHttpResponseCodesBp::BadRequest:
+        return 400;
+    case EHttpResponseCodesBp::Denied:
+        return 401;
+    case EHttpResponseCodesBp::PaymentReq:
+        return 402;
+    case EHttpResponseCodesBp::Forbidden:
+        return 403;
+    case EHttpResponseCodesBp::NotFound:
+        return 404;
+    case EHttpResponseCodesBp::BadMethod:
+        return 405;
+    case EHttpResponseCodesBp::NoneAcceptable:
+        return 406;
+    case EHttpResponseCodesBp::ProxyAuthReq:
+        return 407;
+    case EHttpResponseCodesBp::RequestTimeout:
+        return 408;
+    case EHttpResponseCodesBp::Conflict:
+        return 409;
+    case EHttpResponseCodesBp::Gone:
+        return 410;
+    case EHttpResponseCodesBp::LengthRequired:
+        return 411;
+    case EHttpResponseCodesBp::PrecondFailed:
+        return 412;
+    case EHttpResponseCodesBp::RequestTooLarge:
+        return 413;
+    case EHttpResponseCodesBp::UriTooLong:
+        return 414;
+    case EHttpResponseCodesBp::UnsupportedMedia:
+        return 415;
+    case EHttpResponseCodesBp::TooManyRequests:
+        return 429;
+    case EHttpResponseCodesBp::RetryWith:
+        return 449;
+    case EHttpResponseCodesBp::ServerError:
+        return 500;
+    case EHttpResponseCodesBp::NotSupported:
+        return 501;
+    case EHttpResponseCodesBp::BadGateway:
+        return 502;
+    case EHttpResponseCodesBp::ServiceUnavail:
+        return 503;
+    case EHttpResponseCodesBp::GatewayTimeout:
+        return 504;
+    case EHttpResponseCodesBp::VersionNotSup:
+        return 505;
+    default:
+        return 0;
+    }
+}
+
 void UFF_HTTP_ManagerBPLibrary::FF_HTTP_Client_Basic_Bytes(FDelegateHttpClient DelegateClient, FString In_Url, TMap<FString, FString> In_Header, TArray<uint8> In_Body, EHttpRequestTypes In_Request_Type, EHttpContentTypes ContentType, bool bAddDefaultHeaders)
 {
     if (In_Url.IsEmpty())
@@ -61,27 +181,12 @@ void UFF_HTTP_ManagerBPLibrary::FF_HTTP_Client_Basic_Bytes(FDelegateHttpClient D
                 break;
             }
 
-            switch (ContentType)
+            FString Content_Type_String = UFF_HTTP_ManagerBPLibrary::HTTP_Content_Types_To_String(ContentType);
+            if (!Content_Type_String.IsEmpty())
             {
-            case EHttpContentTypes::None:
-                break;
-
-            case EHttpContentTypes::PDF:
-                HttpRequest->AppendToHeader("Contenty-Type", "application/pdf");
-                break;
-
-            case EHttpContentTypes::JSON:
-                HttpRequest->AppendToHeader("Contenty-Type", "application/json");
-                break;
-
-            case EHttpContentTypes::TEXT:
-                HttpRequest->AppendToHeader("Contenty-Type", "text/plain");
-                break;
-
-            default:
-                break;
+                HttpRequest->AppendToHeader("Contenty-Type", Content_Type_String);
             }
-
+            
             HttpRequest->SetURL(In_Url);
             HttpRequest->SetContent(In_Body);
 
@@ -162,25 +267,10 @@ void UFF_HTTP_ManagerBPLibrary::FF_HTTP_Client_Basic_String(FDelegateHttpClient 
                 break;
             }
 
-            switch (ContentType)
+            FString Content_Type_String = UFF_HTTP_ManagerBPLibrary::HTTP_Content_Types_To_String(ContentType);
+            if (!Content_Type_String.IsEmpty())
             {
-            case EHttpContentTypes::None:
-                break;
-
-            case EHttpContentTypes::PDF:
-                HttpRequest->AppendToHeader("Contenty-Type", "application/pdf");
-                break;
-
-            case EHttpContentTypes::JSON:
-                HttpRequest->AppendToHeader("Contenty-Type", "application/json");
-                break;
-
-            case EHttpContentTypes::TEXT:
-                HttpRequest->AppendToHeader("Contenty-Type", "text/plain");
-                break;
-
-            default:
-                break;
+                HttpRequest->AppendToHeader("Contenty-Type", Content_Type_String);
             }
 
             HttpRequest->SetURL(In_Url);
@@ -229,18 +319,6 @@ void UFF_HTTP_ManagerBPLibrary::FF_HTTP_Client_Basic_String(FDelegateHttpClient 
             HttpRequest->ProcessRequest();
         }
     );
-}
-
-bool UFF_HTTP_ManagerBPLibrary::HTTP_Server_Response_Lenght(FString& Out_Lenght, FString In_Response)
-{
-    if (In_Response.IsEmpty())
-    {
-        return false;
-    }
-
-    Out_Lenght = FString::FromInt(FTCHARToUTF8(In_Response.GetCharArray().GetData()).Length());
-
-    return true;
 }
 
 void UFF_HTTP_ManagerBPLibrary::LibCurl_Send_Email(FDelegateMailSent DelegateMailSent, TArray<FMailAttachments> Attachments, TArray<FString> To, TArray<FString> Cc, TArray<FString> Bcc, FString Subject, FString Message, FString Sender, FString Password, FString CustomServer, FString In_Cert_Path, EMailServers KnownServers, EMailSecurity CustomServerSecurity)

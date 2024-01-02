@@ -2,10 +2,12 @@
 
 #include "FF_HTTP_Basic.h"
 
+#ifdef _WIN64
 #include "HttpPath.h"
 #include "HttpServerModule.h"
 #include "HttpServerRequest.h"
 #include "HttpServerResponse.h"
+#endif
 
 // Sets default values
 AHTTP_Server_Basic::AHTTP_Server_Basic()
@@ -17,13 +19,17 @@ AHTTP_Server_Basic::AHTTP_Server_Basic()
 // Called when the game starts or when spawned
 void AHTTP_Server_Basic::BeginPlay()
 {
+#ifdef _WIN64
     this->HttpServer_Basic_Start();
+#endif
 	Super::BeginPlay();
 }
 
 void AHTTP_Server_Basic::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+#ifdef _WIN64
     this->HttpServer_Basic_Stop();
+#endif
 	Super::EndPlay(EndPlayReason);
 }
 
@@ -33,8 +39,32 @@ void AHTTP_Server_Basic::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+EHttpServerRequestVerbs AHTTP_Server_Basic::BpRequestToUeRequest(EHttpRequestTypes BP_Request)
+{
+    switch (BP_Request)
+    {
+    case EHttpRequestTypes::None:
+        return EHttpServerRequestVerbs::VERB_NONE;
+    case EHttpRequestTypes::GET:
+        return EHttpServerRequestVerbs::VERB_GET;
+    case EHttpRequestTypes::POST:
+        return EHttpServerRequestVerbs::VERB_POST;
+    case EHttpRequestTypes::PUT:
+        return EHttpServerRequestVerbs::VERB_PUT;
+    case EHttpRequestTypes::DEL:
+        return EHttpServerRequestVerbs::VERB_DELETE;
+    case EHttpRequestTypes::OPTIONS:
+        return EHttpServerRequestVerbs::VERB_OPTIONS;
+    case EHttpRequestTypes::PATCH:
+        return EHttpServerRequestVerbs::VERB_PATCH;
+    default:
+        return EHttpServerRequestVerbs::VERB_NONE;
+    }
+}
+
 void AHTTP_Server_Basic::HttpServer_Basic_Start()
 {
+#ifdef _WIN64
     auto Callback_Parse_Request = [](const FHttpServerRequest& Request)->FHttpServerMessage
         {
             FHttpServerMessage ExposedRequest;
@@ -64,91 +94,46 @@ void AHTTP_Server_Basic::HttpServer_Basic_Start()
     FHttpServerModule& httpServerModule = FHttpServerModule::Get();
     this->httpRouter = httpServerModule.GetHttpRouter(this->Port);
 
-    FHttpRouteHandle Route_Get = this->httpRouter->BindRoute(FHttpPath("/get"), EHttpServerRequestVerbs::VERB_GET, [this, Callback_Parse_Request](const FHttpServerRequest& Request, const FHttpResultCallback& Response)
-        {
-            UHttpServerBasicResponse* ResponseObject = NewObject<UHttpServerBasicResponse>();
-            ResponseObject->Response = Response;
+    TArray<FString> Route_Paths;
+    this->Routes.GenerateKeyArray(Route_Paths);
 
-            this->DelegateHttpMessageBasic.Broadcast(ResponseObject, Callback_Parse_Request(Request));
-            return true;
-        }
-    );
-    this->Array_Routes.Add(Route_Get);
+    for (int32 Index_Paths = 0; Index_Paths < Route_Paths.Num(); Index_Paths++)
+    {
+        FHttpRouteHandle Each_Route_Handle = this->httpRouter->BindRoute(FHttpPath("/" + Route_Paths[Index_Paths]), this->BpRequestToUeRequest(*Routes.Find(Route_Paths[Index_Paths])), [this, Callback_Parse_Request](const FHttpServerRequest& Request, const FHttpResultCallback& Response)
+            {
+                UHttpServerBasicResponse* ResponseObject = NewObject<UHttpServerBasicResponse>();
+                ResponseObject->Response_Callback = Response;
 
-    FHttpRouteHandle Route_Post = this->httpRouter->BindRoute(FHttpPath("/post"), EHttpServerRequestVerbs::VERB_POST, [this, Callback_Parse_Request](const FHttpServerRequest& Request, const FHttpResultCallback& Response)
-        {
-            UHttpServerBasicResponse* ResponseObject = NewObject<UHttpServerBasicResponse>();
-            ResponseObject->Response = Response;
+                this->DelegateHttpMessageBasic.Broadcast(ResponseObject, Callback_Parse_Request(Request));
+                return true;
+            }
+        );
 
-            this->DelegateHttpMessageBasic.Broadcast(ResponseObject, Callback_Parse_Request(Request));
-            return true;
-        }
-    );
-    this->Array_Routes.Add(Route_Post);
-
-    FHttpRouteHandle Route_Put = this->httpRouter->BindRoute(FHttpPath("/put"), EHttpServerRequestVerbs::VERB_PUT, [this, Callback_Parse_Request](const FHttpServerRequest& Request, const FHttpResultCallback& Response)
-        {
-            UHttpServerBasicResponse* ResponseObject = NewObject<UHttpServerBasicResponse>();
-            ResponseObject->Response = Response;
-
-            this->DelegateHttpMessageBasic.Broadcast(ResponseObject, Callback_Parse_Request(Request));
-            return true;
-        }
-    );
-    this->Array_Routes.Add(Route_Put);
-
-    FHttpRouteHandle Route_Delete = this->httpRouter->BindRoute(FHttpPath("/delete"), EHttpServerRequestVerbs::VERB_DELETE, [this, Callback_Parse_Request](const FHttpServerRequest& Request, const FHttpResultCallback& Response)
-        {
-            UHttpServerBasicResponse* ResponseObject = NewObject<UHttpServerBasicResponse>();
-            ResponseObject->Response = Response;
-
-            this->DelegateHttpMessageBasic.Broadcast(ResponseObject, Callback_Parse_Request(Request));
-            return true;
-        }
-    );
-    this->Array_Routes.Add(Route_Delete);
-
-    FHttpRouteHandle Route_Patch = this->httpRouter->BindRoute(FHttpPath("/patch"), EHttpServerRequestVerbs::VERB_PATCH, [this, Callback_Parse_Request](const FHttpServerRequest& Request, const FHttpResultCallback& Response)
-        {
-            UHttpServerBasicResponse* ResponseObject = NewObject<UHttpServerBasicResponse>();
-            ResponseObject->Response = Response;
-
-            this->DelegateHttpMessageBasic.Broadcast(ResponseObject, Callback_Parse_Request(Request));
-            return true;
-        }
-    );
-    this->Array_Routes.Add(Route_Patch);
-
-    FHttpRouteHandle Route_Options = this->httpRouter->BindRoute(FHttpPath("/options"), EHttpServerRequestVerbs::VERB_OPTIONS, [this, Callback_Parse_Request](const FHttpServerRequest& Request, const FHttpResultCallback& Response)
-        {
-            UHttpServerBasicResponse* ResponseObject = NewObject<UHttpServerBasicResponse>();
-            ResponseObject->Response = Response;
-
-            this->DelegateHttpMessageBasic.Broadcast(ResponseObject, Callback_Parse_Request(Request));
-            return true;
-        }
-    );
-    this->Array_Routes.Add(Route_Options);
+        this->Array_Route_Handles.Add(Each_Route_Handle);
+    }
 
     httpServerModule.StartAllListeners();
 
     UE_LOG(LogTemp, Display, TEXT("HTTP Server Basic -> Started."))
+#endif
 }
 
-bool AHTTP_Server_Basic::HttpServer_Basic_Stop()
+void AHTTP_Server_Basic::HttpServer_Basic_Stop()
 {
+#ifdef _WIN64
     FHttpServerModule& httpServerModule = FHttpServerModule::Get();
     httpServerModule.StopAllListeners();
 
-    for (int32 Index_Routes = 0; Index_Routes < this->Array_Routes.Num(); Index_Routes++)
+    for (int32 Index_Routes = 0; Index_Routes < this->Array_Route_Handles.Num(); Index_Routes++)
     {
-        this->httpRouter->UnbindRoute(this->Array_Routes[Index_Routes]);
+        this->httpRouter->UnbindRoute(this->Array_Route_Handles[Index_Routes]);
     }
 
-    this->Array_Routes.Empty();
+    this->Array_Route_Handles.Empty();
     this->httpRouter = nullptr;
 
     UE_LOG(LogTemp, Display, TEXT("HTTP Server Basic -> Closed."));
 
-    return true;
+    return;
+#endif
 }

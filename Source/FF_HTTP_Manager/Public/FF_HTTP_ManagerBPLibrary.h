@@ -118,20 +118,25 @@ class UFF_HTTP_ManagerBPLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_UCLASS_BODY()
 
+	UFUNCTION(BlueprintPure, meta = (DisplayName = "HTTP Response Lenght", Keywords = "http, server, response, helper, content, lenght"), Category = "Frozen Forest|HTTP|Helper")
+	static FF_HTTP_MANAGER_API FString HTTP_Response_Lenght(FString In_Response);
+
+	UFUNCTION(BlueprintPure, meta = (DisplayName = "HTTP Content Types to String", Keywords = "http, server, response, helper, client, content, type"), Category = "Frozen Forest|HTTP|Helper")
+	static FF_HTTP_MANAGER_API FString HTTP_Content_Types_To_String(EHttpContentTypes In_Types);
+
+	static FF_HTTP_MANAGER_API int32 HTTP_Convert_Response_Codes(EHttpResponseCodesBp ResponseCodes);
+
 	/*
 	* @param bAddDefaultHeaders It adds these headers "Cache-Control: no-cache & Accept:"*"/"*" & Accept-Encoding:gzip, deflate, br & Connection:keep-alive
 	*/
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "HTTP Client Basic (Content as Bytes)", Keywords = "http, web, url, post"), Category = "Frozen Forest|HTTP Client|Basic")
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "HTTP Client Basic (Content as Bytes)", Keywords = "http, web, url, post"), Category = "Frozen Forest|HTTP|Client|Basic")
 	static FF_HTTP_MANAGER_API void FF_HTTP_Client_Basic_Bytes(FDelegateHttpClient DelegateClient, FString In_Url, TMap<FString, FString> In_Header, TArray<uint8> In_Body, EHttpRequestTypes In_Request_Type = EHttpRequestTypes::GET, EHttpContentTypes ContentType = EHttpContentTypes::PDF, bool bAddDefaultHeaders = true);
 
 	/*
 	* @param bAddDefaultHeaders It adds these headers "Cache-Control: no-cache & Accept:"*"/"*" & Accept-Encoding:gzip, deflate, br & Connection:keep-alive
 	*/
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "HTTP Client Basic (Content as String)", Keywords = "http, web, url, post"), Category = "Frozen Forest|HTTP Client|Basic")
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "HTTP Client Basic (Content as String)", Keywords = "http, web, url, post"), Category = "Frozen Forest|HTTP|Client|Basic")
 	static FF_HTTP_MANAGER_API void FF_HTTP_Client_Basic_String(FDelegateHttpClient DelegateClient, FString In_Url, TMap<FString, FString> In_Header, FString In_Body, EHttpRequestTypes In_Request_Type = EHttpRequestTypes::GET, EHttpContentTypes ContentType = EHttpContentTypes::PDF, bool bAddDefaultHeaders = true);
-
-	UFUNCTION(BlueprintPure, meta = (DisplayName = "HTTP Server - Response Lenght", Keywords = "http, server, response, helper, content, lenght"), Category = "Frozen Forest|HTTP Server")
-	static FF_HTTP_MANAGER_API bool HTTP_Server_Response_Lenght(FString& Out_Lenght, FString In_Response);
 
 	/*
 	* @param Attachments LibCurl automatically converts bytes to base64.

@@ -96,23 +96,25 @@ private:
 
 public:
 
-	UFUNCTION(BlueprintCallable)
-	virtual bool SendResponse(const FString In_Response, TMap<FString, FStringArrayStruct> In_Header, const bool bAddAllowOrigin = true, int32 Status_Code = 200, FString ValueType = "text/html")
+	UFUNCTION(BlueprintCallable, Category = "Frozen Forest|HTTP|Server|Advance")
+	virtual bool SendResponse(const FString In_Response, TMap<FString, FStringArrayStruct> In_Header, EHttpContentTypes ContentType, const bool bAddAllowOrigin = true, int32 Status_Code = 200)
 	{
+		FString Content_Type_String = UFF_HTTP_ManagerBPLibrary::HTTP_Content_Types_To_String(ContentType);
+
 		switch (ServerLibrary)
 		{
 		
 		case EHttpServers::Server_Oatpp:
-			return this->SendResponse_Oatpp(In_Response, In_Header, bAddAllowOrigin, Status_Code, ValueType);
+			return this->SendResponse_Oatpp(In_Response, In_Header, bAddAllowOrigin, Status_Code, Content_Type_String);
 
 		case EHttpServers::Server_Workflow:
-			return this->SendResponse_Workflow(In_Response, In_Header, bAddAllowOrigin, Status_Code, ValueType);
+			return this->SendResponse_Workflow(In_Response, In_Header, bAddAllowOrigin, Status_Code, Content_Type_String);
 
 		case EHttpServers::Server_LibHv:
-			return this->SendResponse_LibHv(In_Response, In_Header, bAddAllowOrigin, Status_Code, ValueType);
+			return this->SendResponse_LibHv(In_Response, In_Header, bAddAllowOrigin, Status_Code, Content_Type_String);
 
 		case EHttpServers::Server_IxWebSocket:
-			return this->SendResponse_IxWebSocket(In_Response, In_Header, bAddAllowOrigin, Status_Code, ValueType);
+			return this->SendResponse_IxWebSocket(In_Response, In_Header, bAddAllowOrigin, Status_Code, Content_Type_String);
 
 		default:
 			return false;
@@ -154,50 +156,50 @@ public:
 
 public:
 
-	UFUNCTION(BlueprintImplementableEvent, meta = (Description = ""), Category = "Frozen Forest|HTTP Server|Advance")
+	UFUNCTION(BlueprintImplementableEvent, meta = (Description = ""), Category = "Frozen Forest|HTTP|Server|Advance")
 	void OnHttpAdvStart();
 
-	UFUNCTION(BlueprintImplementableEvent, meta = (Description = ""), Category = "Frozen Forest|HTTP Server|Advance")
+	UFUNCTION(BlueprintImplementableEvent, meta = (Description = ""), Category = "Frozen Forest|HTTP|Server|Advance")
 	void OnHttpAdvStop();
 
-	UFUNCTION(BlueprintImplementableEvent, meta = (Description = ""), Category = "Frozen Forest|HTTP Server|Advance")
+	UFUNCTION(BlueprintImplementableEvent, meta = (Description = ""), Category = "Frozen Forest|HTTP|Server|Advance")
 	void OnHttpAdvMessage(const FHttpServerMessage Out_Message);
 
-	UPROPERTY(BlueprintAssignable, Category = "Frozen Forest|HTTP Server|Advance")
+	UPROPERTY(BlueprintAssignable, Category = "Frozen Forest|HTTP|Server|Advance")
 	FDelegateHttpMessageAdv DelegateHttpMessageAdv;
 
 public:
 
-	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP Server|Advance")
+	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP|Server|Advance")
 	FString Server_Path_Root = "";
 
-	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP Server|Advance")
+	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP|Server|Advance")
 	FString Server_Path_404 = "";
 
-	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP Server|Advance")
+	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP|Server|Advance")
 	int32 Port_HTTP = 8081;
 
-	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP Server|Advance")
+	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP|Server|Advance")
 	int32 Port_HTTPS = 8453;
 
-	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "If you want to change API parameter, just put /* to the end. If you don't do that, server won't detect dynamic API requests.", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP Server|Advance")
+	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "If you want to change API parameter, just put /* to the end. If you don't do that, server won't detect dynamic API requests.", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP|Server|Advance")
 	FString API_URI = "api/*";
 
-	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "It shouldn't bigger than 15 chars and it has to be unique.", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP Server|Advance")
+	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "It shouldn't bigger than 15 chars and it has to be unique.", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP|Server|Advance")
 	FString Server_Name = "";
 
-	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "", ExposeOnSpawn = "true"))
+	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP|Server|Advance")
 	EHttpServers ServerLibrary = EHttpServers::Server_Oatpp;
 
 public:
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "HTTP Server Advance - Start"), Category = "Frozen Forest|HTTP Server|Advance")
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "HTTP Server Advance - Start"), Category = "Frozen Forest|HTTP|Server|Advance")
 	virtual bool HTTP_Server_Start();
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "HTTP Server Advance - Stop"), Category = "Frozen Forest|HTTP Server|Advance")
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "HTTP Server Advance - Stop"), Category = "Frozen Forest|HTTP|Server|Advance")
 	virtual void HTTP_Server_Stop();
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "HTTP Server Advance - Toggle"), Category = "Frozen Forest|HTTP Server|Advance")
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "HTTP Server Advance - Toggle"), Category = "Frozen Forest|HTTP|Server|Advance")
 	virtual void HTTP_Server_Toggle(bool bPause);
 
 };
