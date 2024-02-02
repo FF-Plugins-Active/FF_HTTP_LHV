@@ -41,14 +41,10 @@ public:
 
 		// Additional Headers.
 		TMap<FString, TArray<FString>> Response_Headers;
-
-		TArray<FString> Header_Keys;
-		In_Headers.GenerateKeyArray(Header_Keys);
-		for (int32 Index_Header_Key = 0; Index_Header_Key < Header_Keys.Num(); Index_Header_Key++)
+		
+		for (TPair<FString, FStringArrayStruct>& Pair_Headers : In_Headers)
 		{
-			FString Each_Header_Key = Header_Keys[Index_Header_Key];
-			FStringArrayStruct Each_Header_Value = *In_Headers.Find(Each_Header_Key);
-			Response_Headers.Add(Each_Header_Key, Each_Header_Value.Array_String);
+			Response_Headers.Add(Pair_Headers.Key, Pair_Headers.Value.Array_String);
 		}
 
 		Response->Code = (EHttpServerResponseCodes)UFF_HTTP_ManagerBPLibrary::HTTP_Convert_Response_Codes(ResponseCode);

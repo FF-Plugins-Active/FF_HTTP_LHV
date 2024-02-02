@@ -190,14 +190,9 @@ void UFF_HTTP_ManagerBPLibrary::FF_HTTP_Client_Basic_Bytes(FDelegateHttpClient D
             HttpRequest->SetURL(In_Url);
             HttpRequest->SetContent(In_Body);
 
-            TArray<FString> Header_Keys;
-            In_Header.GenerateKeyArray(Header_Keys);
-            for (int32 Index_Header = 0; Index_Header < Header_Keys.Num(); Index_Header++)
+            for (TPair<FString, FString> Pair_Headers : In_Header)
             {
-                FString EachHeader_Name = Header_Keys[Index_Header];
-                FString EachHeader_Value = *In_Header.Find(EachHeader_Name);
-
-                HttpRequest->AppendToHeader(EachHeader_Name, EachHeader_Value);
+                HttpRequest->AppendToHeader(Pair_Headers.Key, Pair_Headers.Value);
             }
 
             if (bAddDefaultHeaders)
@@ -276,14 +271,9 @@ void UFF_HTTP_ManagerBPLibrary::FF_HTTP_Client_Basic_String(FDelegateHttpClient 
             HttpRequest->SetURL(In_Url);
             HttpRequest->SetContentAsString(In_Body);
 
-            TArray<FString> Header_Keys;
-            In_Header.GenerateKeyArray(Header_Keys);
-            for (int32 Index_Header = 0; Index_Header < Header_Keys.Num(); Index_Header++)
+            for (TPair<FString, FString> Pair_Headers : In_Header)
             {
-                FString EachHeader_Name = Header_Keys[Index_Header];
-                FString EachHeader_Value = *In_Header.Find(EachHeader_Name);
-
-                HttpRequest->AppendToHeader(EachHeader_Name, EachHeader_Value);
+                HttpRequest->AppendToHeader(Pair_Headers.Key, Pair_Headers.Value);
             }
 
             if (bAddDefaultHeaders)

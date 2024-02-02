@@ -94,12 +94,9 @@ void AHTTP_Server_Basic::HttpServer_Basic_Start()
     FHttpServerModule& httpServerModule = FHttpServerModule::Get();
     this->httpRouter = httpServerModule.GetHttpRouter(this->Port);
 
-    TArray<FString> Route_Paths;
-    this->Routes.GenerateKeyArray(Route_Paths);
-
-    for (int32 Index_Paths = 0; Index_Paths < Route_Paths.Num(); Index_Paths++)
+    for (TPair<FString, EHttpRequestTypes>& Pair_Routes : this->Routes)
     {
-        FHttpRouteHandle Each_Route_Handle = this->httpRouter->BindRoute(FHttpPath("/" + Route_Paths[Index_Paths]), this->BpRequestToUeRequest(*Routes.Find(Route_Paths[Index_Paths])), [this, Callback_Parse_Request](const FHttpServerRequest& Request, const FHttpResultCallback& Response)
+        FHttpRouteHandle Each_Route_Handle = this->httpRouter->BindRoute(FHttpPath("/" + Pair_Routes.Key), this->BpRequestToUeRequest(Pair_Routes.Value), [this, Callback_Parse_Request](const FHttpServerRequest& Request, const FHttpResultCallback& Response)
             {
                 UHttpServerBasicResponse* ResponseObject = NewObject<UHttpServerBasicResponse>();
                 ResponseObject->Response_Callback = Response;
