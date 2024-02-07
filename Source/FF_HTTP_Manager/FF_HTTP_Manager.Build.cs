@@ -30,9 +30,7 @@ public class FF_HTTP_Manager : ModuleRules
                 new string[]
                 {
                     "FF_MBedTLS",
-					"Oatpp",
-                    "LibHv",
-                    "IXWebSocket",
+					"Oatpp", 
                 }
                 );
 
@@ -51,6 +49,9 @@ public class FF_HTTP_Manager : ModuleRules
                 "Projects",		// We need it for LibHv DLL delayed load.
                 "HTTP",
                 "HTTPServer",
+                "LibWebSocket",
+                "IXWebSocket",
+                "LibHv",
             }
 			);
 		

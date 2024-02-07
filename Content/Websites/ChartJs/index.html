@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js" integrity="sha512-UXumZrZNiOwnTcZSHLOfcTs0aos2MzBWHXOHOuB0J/R44QB0dwY5JgfbvljXcklVf65Gc4El6RjZ+lnwd2az2g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+	
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/semantic.min.js" integrity="sha512-Xo0Jh8MsOn72LGV8kU5LsclG7SUzJsWGhXbWcYs2MAmChkQzwiW/yTQwdJ8w6UA9C6EVG18GHb/TrYpYCjyAQw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/semantic.min.css" integrity="sha512-KXol4x3sVoO+8ZsWPFI/r5KBVB/ssCGB5tsv2nVOKwLg33wTFP3fmnXa47FdSVIshVTgsYk/1734xSk9aFIa4A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+	<body>
+		
+		<div class="four ui buttons">
+			<button class="ui blue button active"; style="color:white"; onclick="zoomHandlerReset()">Zoom Reset</button>
+			<button class="ui green button active"; style="color:white"; onclick="zoomHandlerOut()">Zoom Out</button>
+			<button class="ui yellow button active"; style="color:white"; onclick="renderAndSendHandler()">Render and Send</button>
+			<button class="ui purple button active"; style="color:white"; onclick="renderAndDownloadHandler()">Render and Download</button>
+		</div>
+
+		<div class="chart-container" style="position: relative; height:95vh; width:100vw">
+			<canvas id="unrealChart"></canvas>
+		</div>
+		
+		<script>		
+			// Hide loader from screen.
+			function hideloader() 
+			{
+				document.getElementById('loading').style.display = 'none';
+			}
+
+			// We need to construction zoom options before chart options. Because we use this in it.
+			const zoomOptions = 
+			{
+  				pan: 
+				{
+    				enabled: true,
+    				modifierKey: 'ctrl'
+  				},
+  				
+				zoom: 
+				{
+    				drag: 
+					{
+      					enabled: true
+    				},
+    			
+					mode: 'xy'
+				}
+			};
+
+			const panStatus = () => zoomOptions.pan.enabled ? 'enabled' : 'disabled';
+			const zoomStatus = () => zoomOptions.zoom.drag.enabled ? 'enabled' : 'disabled';
+		
+			const ChartConfig = 
+			{
+				// "bar", "line", "pie", "doughnut", "polarArea", "radar"
+				type: 'bar',
+				data: 
+				{
+					labels: [],
+					datasets: [
+					{
+						yAxisID: "y1",
+						label: 'Vibration',
+						data: [],
+						borderWidth: 3,
+						//backgroundColor: "#9ad0f5",
+						hoverBackgroundColor: "red"
+					}
+				]
+				},
+
+				options: 
+				{
+					// https://www.chartjs.org/docs/latest/configuration/device-pixel-ratio.html
+					devicePixelRatio: window.devicePixelRatio,
+					responsive: true,
+					animation: false,
+					maintainAspectRatio: false,
+					//aspectRatio: 1,
+
+					plugins: 
+					{
+						zoom: zoomOptions,
+      						title:
+							{
+        						display: true,
+        						position: 'top',
+        						text: (ctx) => 'Zoom: ' + zoomStatus() + ', Pan: ' + panStatus()
+							}
+					},
+
+					scales: 
+					{
+
+						y1: 
+						{
+							display: true,
+							beginAtZero: true,
+							position: "left",
+							
+							title: 
+							{
+								display: true,
+								text: "Y1 Axis",
+								color: "#9ad0f5",
+								
+								font:
+								{
+									size: 24,
+									weight: "bold"
+								}	
+							}
+						}
+					}
+				}
+			}
+
+			// https://www.freecodecamp.org/news/make-api-calls-in-javascript/#asynchronous-javascript
+
+			// Global API address variable for accessing Unreal Engine instance.
+			let UnrealApiAddress = "";
+
+			// We will use it for changing global API address variable from Unreal Engine.
+			function setUnrealApi(newAddress)
+			{
+				UnrealApiAddress = newAddress;
+				console.log(UnrealApiAddress);
+			}
+			setUnrealApi("http://127.0.0.1:8081/api/6");
+			//setUnrealApi("http://127.0.0.1:8081/post/eray");
+
+			// Construct chart based on configurations.
+			const ctx = document.getElementById('unrealChart');
+			const BasicChart = new Chart(ctx, ChartConfig);
+			
+			// Zoom reset handler for button.
+			function zoomHandlerReset()
+			{
+				var zoomButtonReset = document.createComment('button');
+				zoomButtonReset.innerText = "Zoom Reset";
+
+				var body = document.getElementsByTagName("body")[0];
+				body.appendChild(zoomButtonReset);
+
+				zoomEventReset();
+			}
+
+			// We exposed it as function because we can trigger it from Unreal, too.
+			function zoomEventReset()
+			{
+				BasicChart.resetZoom();
+			}
+
+			// Zoom out handler for button.
+			function zoomHandlerOut()
+			{
+				var zoomButtonOut = document.createComment('button');
+				zoomButtonOut.innerText = "Zoom Out";
+
+				var body = document.getElementsByTagName("body")[0];
+				body.appendChild(zoomButtonOut);
+
+				zoomEventOut(0.1);
+			}
+
+			// We exposed it as function because we can trigger it from Unreal, too.
+			function zoomEventOut(outValue)
+			{
+				BasicChart.zoom(outValue);
+			}
+
+			function renderAndSendHandler()
+			{
+				var renderAndSendButton = document.createComment('button');
+				renderAndSendButton.innerText = "Render";
+
+				var body = document.getElementsByTagName("body")[0];
+				body.appendChild(renderAndSendButton);
+
+				eventRenderAndSend();
+			}
+
+			// We exposed it as function because we can trigger it from Unreal, too.
+			function eventRenderAndSend()
+			{
+				const base64String = BasicChart.toBase64Image('image/png', 1);
+				console.log(base64String);
+
+  				const requestOptions = 
+				{
+    				method: 'POST',
+    				body: base64String,
+  				};
+
+  				fetch(UnrealApiAddress, requestOptions)
+    				.then(response =>
+					{
+      					if (!response.ok) 
+						{
+        					throw new Error('Network response was not ok');
+      					}
+      					
+						return response.text();
+    				})
+    
+					.then(data =>
+					{
+						data = base64String;
+    				})
+    
+					.catch(error => 
+					{
+      					console.error('Error:', error);
+    				});
+
+				console.log("Image sent.");
+			}
+
+			function renderAndDownloadHandler()
+			{
+				var renderAndDownloadButton = document.createComment('button');
+				renderAndDownloadButton.innerText = "Render";
+
+				var body = document.getElementsByTagName("body")[0];
+				body.appendChild(renderAndDownloadButton);
+
+				renderAndDownload();
+			}
+
+			function renderAndDownload()
+			{
+				const base64String = BasicChart.toBase64Image('image/png', 1);
+				console.log(base64String);
+
+  				const requestOptions = 
+				{
+    				method: 'POST',
+    				body: base64String,
+  				};
+
+				var DownloadElem = document.createElement('a');
+				DownloadElem.href = base64String;
+				DownloadElem.download = 'image.png';
+				DownloadElem.click();
+			}
+
+			// Click events.
+			function clickHandler(click)
+			{
+				const points = BasicChart.getElementsAtEventForMode(click, 'nearest', { intersect: true }, true);
+				
+				if(Object.keys(points).length)
+				{
+					const firstPoint = points[0];
+
+					const indexDataset = firstPoint.datasetIndex;
+					const indexData = firstPoint.index;
+					
+					const dataLabel = BasicChart.data.labels[indexData];
+					const dataValue = BasicChart.data.datasets[indexDataset].data[indexData];
+					const datasetLabel = BasicChart.data.datasets[indexDataset].label;
+					
+					const clickString = "click&&" + dataLabel + "_" + dataValue + "&&" + indexDataset + "_" + indexData + "&&" + datasetLabel;
+					
+					console.log(clickString);
+
+					// We will add additional API fetch functions to here.
+				}
+			}
+			ctx.onclick = clickHandler;
+
+			let lastHovered;
+			function mouseMoveHandler(chart, mousemove)
+			{
+				const points = BasicChart.getElementsAtEventForMode(mousemove, 'nearest', { intersect: true }, true);
+				
+				if(Object.keys(points).length)
+				{
+					const firstPoint = points[0];
+
+					const indexDataset = firstPoint.datasetIndex;
+					const indexData = firstPoint.index;
+					
+					const dataLabel = BasicChart.data.labels[indexData];
+					const dataValue = BasicChart.data.datasets[indexDataset].data[indexData];
+					const datasetLabel = BasicChart.data.datasets[indexDataset].label;
+					
+					const clickString = "hover&&" + dataLabel + "_" + dataValue + "&&" + indexDataset + "_" + indexData + "&&" + datasetLabel;
+
+					if(lastHovered !== clickString)
+					{
+						lastHovered = clickString;
+						console.log(clickString);
+
+						// We will add additional API fetch functions to here.
+					}
+				}
+			}
+
+			BasicChart.canvas.addEventListener("mousemove", (e) =>
+			{
+				mouseMoveHandler(BasicChart, e);
+			});
+
+			// Change chart size based on browser size.
+			window.onresize = function()
+			{
+				BasicChart.resize();
+				BasicChart.update();
+				BasicChart.render();
+			}
+
+			//Add new dataset to the chart. For example, multiple bar or lines. Supported types are "bar", "line", "pie", "doughnut", "polarArea", "radar".
+			function dataset_add(newColor, newAxisId, newLabel, newBorderWidth, newType)
+			{
+				BasicChart.data.datasets.push(
+					{
+						backgroundColor: newColor,
+						yAxisID: newAxisId,
+						label : newLabel,
+						borderWidth : newBorderWidth,
+						type: newType
+					}
+				);
+
+				BasicChart.update();
+				BasicChart.render();
+			}
+			dataset_add("red", "y2", "Heat", 3, "bar");
+
+			function dataset_remove(indexDataset, axisId)
+			{
+				BasicChart.data.datasets.splice(indexDataset, 1);
+				delete BasicChart.options.scales[axisId];
+
+				BasicChart.update();
+				BasicChart.render();
+			}
+			//dataset_remove(1, "y2");
+
+			// Change properties of target dataset. Supported types are "bar", "line", "pie", "doughnut", "polarArea", "radar".
+			function dataset_change(indexDataset, newColor, newHoveredColor, newAxisId, newLabel, newBorderWidth, newType)
+			{
+				const targetDataSet = BasicChart.data.datasets[indexDataset];
+				if(targetDataSet == null)
+				{
+					console.log("Target dataset is null.")
+					return;
+				}
+
+				targetDataSet.backgroundColor = newColor;
+				targetDataSet.hoverBackgroundColor  = newHoveredColor;
+				targetDataSet.yAxisID = newAxisId;
+				targetDataSet.label = newLabel;
+				targetDataSet.borderWidth = newBorderWidth;
+				targetDataSet.type = newType;
+				
+				BasicChart.update();
+				BasicChart.render();
+			}
+			//dataset_change(0, "blue", "red", "y1", "Unreal Dataset New Name", 3, "bar");
+
+			function countDatasetElems(indexDataset)
+			{
+				const targetDataSet = BasicChart.data.datasets[indexDataset];
+				if(targetDataSet == null)
+				{
+					console.log("Target dataset is null.")
+					return;
+				}
+				
+				const currentLabel = targetDataSet.label;
+				BasicChart.data.datasets[indexDataset].label = "#" + Object.keys(BasicChart.data.labels).length + " " + currentLabel;
+
+				BasicChart.update();
+				BasicChart.render();
+			}
+			//countDatasetElems(0);
+			
+			function label_add(newName, deleteBefore)
+			{
+				if(newName == null)
+				{
+					console.log("Name should not be null.")
+					return;
+				}
+
+				if(deleteBefore && Object.keys(BasicChart.data.labels).length > 0)
+				{
+					BasicChart.data.labels.splice(0, Object.keys(newName).length);
+				}
+
+				newName.forEach(element => 
+				{
+					BasicChart.data.labels.push(element);
+				});
+			}
+			label_add(['January', 'February', 'March'], false);
+			label_add(['April'], false);
+
+			function data_add(indexDataset, newValue, deleteBefore)
+			{
+				const targetDataSet = BasicChart.data.datasets[indexDataset];
+				if(targetDataSet == null)
+				{
+					console.log("Target dataset is null.")
+					return;
+				}
+
+				if(newValue == null)
+				{
+					console.log("Values shouldn't be null.")
+				}
+
+				if(Object.keys(BasicChart.data.labels).length == 0)
+				{
+					console.log("Labels shouldn't be empty.")
+				}
+
+				if(deleteBefore)
+				{
+					targetDataSet.data.splice(0, Object.keys(newValue).length);
+				}
+
+				newValue.forEach(element =>
+				{
+					targetDataSet.data.push(element);
+				});
+				
+				BasicChart.update();
+				BasicChart.render();
+			}
+			data_add(0, [10, 5, 8, 3], false);
+			data_add(1, [1, 0.5, 0.8, 0.3], false);
+
+			// Add new data to the target dataset.
+			function data_remove(indexDataset, indexValue, count, bDeleteLabel, bSetZero)
+			{
+				const targetDataSet = BasicChart.data.datasets[indexDataset];
+				if(targetDataSet == null)
+				{
+					console.log("Target dataset is null.")
+					return;
+				}
+
+				if(bSetZero)
+				{
+					targetDataSet.data[indexValue] = 0;
+				}
+
+				else
+				{
+					targetDataSet.data.splice(indexValue, count);
+				}
+
+				if(bDeleteLabel && !bSetZero)
+				{
+					BasicChart.data.labels.splice(indexValue, count);
+				}
+
+				BasicChart.update();
+				BasicChart.render();
+			}
+			//data_remove(0, 1, 1, true, false); // This will delete second entry completely. "bSetZero" have to be false. 
+			//data_remove(0, 1, 1, false, true); // This will make second entry to 0. "bDeleteLabel" can be true or false. It won't matter.
+
+			function data_update_label(indexDataset, indexLabel, newLabel)
+			{
+				if(BasicChart.data.labels[indexLabel] == null)
+				{
+					console.log("Target label is null.")
+					return;
+				}
+
+				BasicChart.data.labels[indexLabel] = newLabel;
+
+				BasicChart.update();
+				BasicChart.render();
+			}
+			//data_update_label(0, 0, "Unreal");
+
+			function data_update_value(indexDataset, indexValue, newValue)
+			{
+				if(BasicChart.data.datasets[indexDataset] == null)
+				{
+					console.log("Target dataset is null.")
+					return;
+				}
+
+				if(BasicChart.data.datasets[indexDataset].data[indexValue] == null)
+				{
+					console.log("Target data is null.")
+					return;
+				}
+
+				BasicChart.data.datasets[indexDataset].data[indexValue] = newValue;
+
+				BasicChart.update();
+				BasicChart.render();
+			}
+			//data_update_value(0, 0, 100);
+
+			function axis_set_style(axisId, newDisplay, newBeginAtZero, newAxisTitle, newColor, newPosition, newFontSize, newFontWeight)
+			{
+				const targetAxis = BasicChart.options.scales[axisId];
+				if (targetAxis == null)
+				{
+					console.log("Target axis is null.");
+					return;
+				}
+
+				targetAxis.display = newDisplay;
+				targetAxis.beginAtZero = newBeginAtZero;
+				targetAxis.position = newPosition;
+				
+				targetAxis.title.display = true;
+				targetAxis.title.text = newAxisTitle;
+				targetAxis.title.color = newColor;
+
+				targetAxis.title.font = 
+				{
+					size: newFontSize,
+					weight: newFontWeight
+				}
+
+				BasicChart.update();
+				BasicChart.render();
+			}
+			axis_set_style("y2", true, true, "New Axis", "red", "left", 24, "bold");
+
+			function axis_add_grid(axisId, threshold, smallerColor, biggerColor, equalColor)
+			{
+				const targetAxis = BasicChart.options.scales[axisId];
+				if(targetAxis == null)
+				{
+					console.log("Target axis is null.");
+					return;
+				}
+				
+				targetAxis.grid =
+				{
+					color: function(context) 
+								{
+            						if (context.tick.value < threshold)
+									{
+              							return smallerColor;
+            						}
+									
+									else if (context.tick.value > threshold) 
+									{
+              							return biggerColor;
+            						}
+						
+									return equalColor;
+								}
+				}
+
+				BasicChart.update();
+				BasicChart.render();
+			}
+			//axis_add_grid('y1', 10, "red", "green", "black");
+
+		</script>
+		
+	</body>
+</html>

@@ -13,6 +13,7 @@
 #include "Threads/HTTP_Thread_Workflow.h"
 #include "Threads/HTTP_Thread_LibHv.h"
 #include "Threads/HTTP_Thread_IXWeb.h"
+#include "Threads/HTTP_Thread_LibWebSocket.h"
 
 #include "FF_HTTP_Advance.generated.h"
 
@@ -61,25 +62,22 @@ private:
 #endif
 	}
 
-	virtual bool SendResponse_LibHv(const FString In_Response, const TMap<FString, FStringArrayStruct> In_Header, const bool bAddAllowOrigin, int32 Status_Code, FString ValueType)
+	virtual bool SendResponse_IxWebSocket(const FString In_Response, const TMap<FString, FStringArrayStruct> In_Header, const bool bAddAllowOrigin, int32 Status_Code, FString ValueType)
 	{
+#ifdef _WIN64
 		if (!this->ConnectionPointer)
 		{
 			return false;
 		}
 
-#ifdef _WIN64
-		HttpResponse* Response = (HttpResponse*)this->ConnectionPointer;
-		Response->String("Test");
-
 		return true;
-#else
 
+#else
 		return false;
 #endif
 	}
 
-	virtual bool SendResponse_IxWebSocket(const FString In_Response, const TMap<FString, FStringArrayStruct> In_Header, const bool bAddAllowOrigin, int32 Status_Code, FString ValueType)
+	virtual bool SendResponse_LibWebSocket(const FString In_Response, const TMap<FString, FStringArrayStruct> In_Header, const bool bAddAllowOrigin, int32 Status_Code, FString ValueType)
 	{
 #ifdef _WIN64
 		if (!this->ConnectionPointer)
@@ -110,11 +108,11 @@ public:
 		case EHttpServers::Server_Workflow:
 			return this->SendResponse_Workflow(In_Response, In_Header, bAddAllowOrigin, Status_Code, Content_Type_String);
 
-		case EHttpServers::Server_LibHv:
-			return this->SendResponse_LibHv(In_Response, In_Header, bAddAllowOrigin, Status_Code, Content_Type_String);
-
 		case EHttpServers::Server_IxWebSocket:
 			return this->SendResponse_IxWebSocket(In_Response, In_Header, bAddAllowOrigin, Status_Code, Content_Type_String);
+
+		case EHttpServers::Server_LibWebSocket:
+			return this->SendResponse_LibWebSocket(In_Response, In_Header, bAddAllowOrigin, Status_Code, Content_Type_String);
 
 		default:
 			return false;
