@@ -51,15 +51,7 @@ public class FF_HTTP_Manager : ModuleRules
                 "HTTPServer",
                 "LibWebSocket",
                 "IXWebSocket",
-                "LibHv",
             }
 			);
-		
-		DynamicallyLoadedModuleNames.AddRange(
-			new string[]
-			{
-				
-			}
-            );
 	}
 }

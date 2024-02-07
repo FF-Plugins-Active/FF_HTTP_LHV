@@ -11,7 +11,6 @@
 // Threads.
 #include "Threads/HTTP_Thread_Oatpp.h"
 #include "Threads/HTTP_Thread_Workflow.h"
-#include "Threads/HTTP_Thread_LibHv.h"
 #include "Threads/HTTP_Thread_IXWeb.h"
 #include "Threads/HTTP_Thread_LibWebSocket.h"
 
