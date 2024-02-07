@@ -59,20 +59,6 @@ bool AHTTP_Server_Advance::HTTP_Server_Start()
 			return false;
 		}
 
-	case EHttpServers::Server_LibHv:
-		
-		this->Thread_LibHv = new FHTTP_Thread_LibHv(this);
-		
-		if (this->Thread_LibHv)
-		{
-			return true;
-		}
-
-		else
-		{
-			return false;
-		}
-
 	case EHttpServers::Server_Oatpp:
 		
 		this->Thread_Oatpp = new FHTTP_Thread_Oatpp(this);
@@ -136,19 +122,6 @@ void AHTTP_Server_Advance::HTTP_Server_Stop()
 		if (this->Thread_IXWeb)
 		{
 			delete this->Thread_IXWeb;
-			return;
-		}
-
-		else
-		{
-			return;
-		}
-
-	case EHttpServers::Server_LibHv:
-
-		if (this->Thread_LibHv)
-		{
-			delete this->Thread_LibHv;
 			return;
 		}
 
