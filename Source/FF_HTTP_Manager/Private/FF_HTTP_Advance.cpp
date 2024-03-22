@@ -45,20 +45,6 @@ bool AHTTP_Server_Advance::HTTP_Server_Start()
 	switch (this->ServerLibrary)
 	{
 
-	case EHttpServers::Server_IxWebSocket:
-		
-		this->Thread_IXWeb = new FHTTP_Thread_IXWeb(this);
-
-		if (this->Thread_IXWeb)
-		{
-			return true;
-		}
-
-		else
-		{
-			return false;
-		}
-
 	case EHttpServers::Server_Oatpp:
 		
 		this->Thread_Oatpp = new FHTTP_Thread_Oatpp(this);
@@ -87,11 +73,25 @@ bool AHTTP_Server_Advance::HTTP_Server_Start()
 			return false;
 		}
 
+	case EHttpServers::Server_LibWebSocket:
+
+		this->Thread_LibWebSocket = new FHTTP_Thread_LibWebSocket(this);
+
+		if (this->Thread_LibWebSocket)
+		{
+			return true;
+		}
+
+		else
+		{
+			return false;
+		}
+
 	default:
 		
-		this->Thread_Oatpp = new FHTTP_Thread_Oatpp(this);
+		this->Thread_LibWebSocket = new FHTTP_Thread_LibWebSocket(this);
 
-		if (this->Thread_Oatpp)
+		if (this->Thread_LibWebSocket)
 		{
 			return true;
 		}
@@ -116,19 +116,6 @@ void AHTTP_Server_Advance::HTTP_Server_Stop()
 #ifdef _WIN64
 	switch (this->ServerLibrary)
 	{
-
-	case EHttpServers::Server_IxWebSocket:
-
-		if (this->Thread_IXWeb)
-		{
-			delete this->Thread_IXWeb;
-			return;
-		}
-
-		else
-		{
-			return;
-		}
 
 	case EHttpServers::Server_Oatpp:
 
@@ -156,11 +143,25 @@ void AHTTP_Server_Advance::HTTP_Server_Stop()
 			return;
 		}
 
+	case EHttpServers::Server_LibWebSocket:
+
+		if (this->Thread_LibWebSocket)
+		{
+			delete this->Thread_LibWebSocket;
+			return;
+		}
+
+		else
+		{
+			return;
+		}
+
+
 	default:
 
-		if (this->Thread_Oatpp)
+		if (this->Thread_LibWebSocket)
 		{
-			delete this->Thread_Oatpp;
+			delete this->Thread_LibWebSocket;
 			return;
 		}
 

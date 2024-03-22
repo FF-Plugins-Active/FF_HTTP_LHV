@@ -6,11 +6,11 @@
 	#endif
 #endif
 
-#define LWS_INSTALL_DATADIR "C:/Program Files (x86)/libwebsockets/share"
-#define LWS_INSTALL_LIBDIR "C:/Program Files (x86)/libwebsockets/lib"
+#define LWS_INSTALL_DATADIR "C:/Program Files/libwebsockets/share"
+#define LWS_INSTALL_LIBDIR "C:/Program Files/libwebsockets/lib"
 #define LWS_LIBRARY_VERSION_MAJOR 4
 #define LWS_LIBRARY_VERSION_MINOR 3
-#define LWS_LIBRARY_VERSION_PATCH_ELABORATED 99-v4.3.0-343-g1239a2b1
+#define LWS_LIBRARY_VERSION_PATCH_ELABORATED 99-v4.3.0-357-ge4be3317
 #define LWS_LIBRARY_VERSION_PATCH 99
 
 /* LWS_LIBRARY_VERSION_NUMBER looks like 1005001 for e.g. version 1.5.1 */
@@ -25,7 +25,7 @@
 #define LWS_EXT_PTHREAD_LIBRARIES
 
 /* #undef LWS_AVOID_SIGPIPE_IGN */
-#define LWS_BUILD_HASH "v4.3.0-343-g1239a2b1"
+#define LWS_BUILD_HASH "v4.3.0-357-ge4be3317"
 #define LWS_BUILTIN_GETIFADDRS
 /* #undef LWS_BUILTIN_PLUGIN_NAMES */
 #define LWS_CLIENT_HTTP_PROXYING
@@ -114,7 +114,7 @@
 /* #undef LWS_HAVE_VFORK */
 #define LWS_HAVE_X509_get_key_usage
 #define LWS_HAVE_X509_VERIFY_PARAM_set1_host
-#define LWS_LIBRARY_VERSION "4.3.99-v4.3.0-343-g1239a2b1"
+#define LWS_LIBRARY_VERSION "4.3.99-v4.3.0-357-ge4be3317"
 #define LWS_LOGGING_BITFIELD_CLEAR 0
 #define LWS_LOGGING_BITFIELD_SET 0
 #define LWS_LOG_TAG_LIFECYCLE

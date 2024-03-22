@@ -50,7 +50,7 @@ public class FF_HTTP_Manager : ModuleRules
                 "HTTP",
                 "HTTPServer",
                 "LibWebSocket",
-                "IXWebSocket",
+                "Pthreads",
             }
 			);
 	}

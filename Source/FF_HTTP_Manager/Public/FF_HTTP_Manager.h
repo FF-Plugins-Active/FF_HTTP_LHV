@@ -12,4 +12,9 @@ public:
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;
 
+#ifdef _WIN64
+	void* Handle_Pthreads_VC2 = nullptr;
+	void* Handle_Pthreads_GC2 = nullptr;
+#endif
+
 };

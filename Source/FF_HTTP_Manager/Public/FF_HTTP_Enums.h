@@ -7,8 +7,6 @@ enum class EHttpServers : uint8
 {
 	Server_Oatpp			UMETA(DisplayName = "Oatpp"),
 	Server_Workflow			UMETA(DisplayName = "Workflow"),
-	Server_IxWebSocket		UMETA(DisplayName = "IxWebSokcet"),
-	Server_MG				UMETA(DisplayName = "MG"),
 	Server_LibWebSocket		UMETA(DisplayName = "LibWebSocket"),
 };
 ENUM_CLASS_FLAGS(EHttpServers)

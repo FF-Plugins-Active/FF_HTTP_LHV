@@ -40,14 +40,24 @@ private:
 
 	virtual void Callback_HTTP_Start();
 
+	int32 Port_HTTP = 8081;
+	int32 Port_HTTPS = 8443;
+
 	FString Server_Address_HTTPS = "";
 	FString Server_Address_HTTP = "";
 	FString Server_Path_Root = "";
 	FString API_URI = "";
 
+	lws_context_creation_info Server_Info;
+	TArray<lws_protocols> Server_Protocols;
+	lws_context* Server_Context;
+
+	FCriticalSection DataGuard;
+
 private:
 
 	FRunnableThread* RunnableThread = nullptr;
 	AHTTP_Server_Advance* Parent_Actor = nullptr;
+	bool bStartThread = false;
 
 };

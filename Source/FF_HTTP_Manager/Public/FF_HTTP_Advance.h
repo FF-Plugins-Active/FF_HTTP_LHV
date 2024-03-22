@@ -11,7 +11,6 @@
 // Threads.
 #include "Threads/HTTP_Thread_Oatpp.h"
 #include "Threads/HTTP_Thread_Workflow.h"
-#include "Threads/HTTP_Thread_IXWeb.h"
 #include "Threads/HTTP_Thread_LibWebSocket.h"
 
 #include "FF_HTTP_Advance.generated.h"
@@ -61,21 +60,6 @@ private:
 #endif
 	}
 
-	virtual bool SendResponse_IxWebSocket(const FString In_Response, const TMap<FString, FStringArrayStruct> In_Header, const bool bAddAllowOrigin, int32 Status_Code, FString ValueType)
-	{
-#ifdef _WIN64
-		if (!this->ConnectionPointer)
-		{
-			return false;
-		}
-
-		return true;
-
-#else
-		return false;
-#endif
-	}
-
 	virtual bool SendResponse_LibWebSocket(const FString In_Response, const TMap<FString, FStringArrayStruct> In_Header, const bool bAddAllowOrigin, int32 Status_Code, FString ValueType)
 	{
 #ifdef _WIN64
@@ -106,9 +90,6 @@ public:
 
 		case EHttpServers::Server_Workflow:
 			return this->SendResponse_Workflow(In_Response, In_Header, bAddAllowOrigin, Status_Code, Content_Type_String);
-
-		case EHttpServers::Server_IxWebSocket:
-			return this->SendResponse_IxWebSocket(In_Response, In_Header, bAddAllowOrigin, Status_Code, Content_Type_String);
 
 		case EHttpServers::Server_LibWebSocket:
 			return this->SendResponse_LibWebSocket(In_Response, In_Header, bAddAllowOrigin, Status_Code, Content_Type_String);
@@ -145,10 +126,11 @@ public:
 	FString ThreadName = "";
 
 #ifdef _WIN64
-	class FHTTP_Thread_IXWeb* Thread_IXWeb = nullptr;
-	class FHTTP_Thread_LibHv* Thread_LibHv = nullptr;
+	
 	class FHTTP_Thread_Oatpp* Thread_Oatpp = nullptr;
 	class FHTTP_Thread_Workflow* Thread_Workflow = nullptr;
+	class FHTTP_Thread_LibWebSocket* Thread_LibWebSocket = nullptr;
+
 #endif
 
 public:

@@ -15,12 +15,6 @@ namespace UnrealBuildTool.Rules
             {
                 PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "Win64", "include"));
                 PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "Win64", "lib", "websockets_static.lib"));
-
-                /*
-                PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "Win64", "lib", "websockets.lib"));
-                RuntimeDependencies.Add(Path.Combine(ModuleDirectory, "Win64", "lib", "websockets.dll"));
-                PublicDelayLoadDLLs.Add("websockets.dll");
-                */
             }
         }
     }
