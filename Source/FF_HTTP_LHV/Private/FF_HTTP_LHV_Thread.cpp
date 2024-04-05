@@ -8,6 +8,7 @@
 
 FHTTP_Thread_LibHv::FHTTP_Thread_LibHv(AHTTP_Server_LHV* In_Parent_Actor)
 {
+#ifdef _WIN64
 	this->Parent_Actor = In_Parent_Actor;
 
 	this->Server_Path_Root = this->Parent_Actor->Server_Path_Root;
@@ -18,20 +19,28 @@ FHTTP_Thread_LibHv::FHTTP_Thread_LibHv(AHTTP_Server_LHV* In_Parent_Actor)
 	this->Port_HTTPS = this->Parent_Actor->Port_HTTPS;
 
 	this->RunnableThread = FRunnableThread::Create(this, *this->Parent_Actor->Server_Name);
+#endif
 }
 
 FHTTP_Thread_LibHv::~FHTTP_Thread_LibHv()
 {
+#ifdef _WIN64
 	if (this->RunnableThread)
 	{
 		this->RunnableThread->Kill(true);
 		delete this->RunnableThread;
 	}
+#endif
 }
 
 bool FHTTP_Thread_LibHv::Init()
 {
+#ifdef _WIN64
 	return this->Callback_HTTP_Start();
+
+#else
+	return false;
+#endif
 }
 
 uint32 FHTTP_Thread_LibHv::Run()
@@ -46,14 +55,17 @@ uint32 FHTTP_Thread_LibHv::Run()
 
 void FHTTP_Thread_LibHv::Stop()
 {
+#ifdef _WIN64
 	this->HTTP_LVH_Server.stop();
 	hv::async::cleanup();
 
 	this->bStartThread = false;
+#endif
 }
 
 bool FHTTP_Thread_LibHv::Toggle(bool bIsPause)
 {
+#ifdef _WIN64
 	if (!this->RunnableThread)
 	{
 		return false;
@@ -62,10 +74,14 @@ bool FHTTP_Thread_LibHv::Toggle(bool bIsPause)
 	this->RunnableThread->Suspend(bIsPause);
 
 	return true;
+#else
+	return false;
+#endif
 }
 
 bool FHTTP_Thread_LibHv::Callback_HTTP_Start()
 {
+#ifdef _WIN64
 	auto Callback_Router_Handler = [this](HttpRequest* Request, HttpResponse* Response)->int
 		{
 			UHttpConnectionLhv* LibHvConnection = NewObject<UHttpConnectionLhv>();
@@ -93,4 +109,7 @@ bool FHTTP_Thread_LibHv::Callback_HTTP_Start()
 	//this->HTTP_LVH_Server.run();
 
 	return true;
+#else
+	return false;
+#endif
 }

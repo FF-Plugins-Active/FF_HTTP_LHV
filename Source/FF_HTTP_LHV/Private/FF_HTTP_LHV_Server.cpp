@@ -68,22 +68,27 @@ void AHTTP_Server_LHV::HTTP_Server_Stop()
 	return;
 
 #else
-
+	return;
 #endif
 }
 
 bool AHTTP_Server_LHV::HTTP_Server_Toggle(bool bIsPause)
 {
+#ifdef _WIN64
 	if (!this->Thread_LibHv)
 	{
 		return false;
 	}
 
 	return this->Thread_LibHv->Toggle(bIsPause);
+#else
+	return false;
+#endif
 }
 
 bool UHttpConnectionLhv::CancelRequest()
 {
+#ifdef _WIN64
 	if (this->Request == nullptr)
 	{
 		return false;
@@ -92,10 +97,14 @@ bool UHttpConnectionLhv::CancelRequest()
 	this->Request->Cancel();
 
 	return true;
+#else
+	return false;
+#endif
 }
 
 bool UHttpConnectionLhv::GetBody(FString& Out_Body, int32& Out_BodySize)
 {
+#ifdef _WIN64
 	if (this->Request == nullptr)
 	{
 		return false;
@@ -110,10 +119,14 @@ bool UHttpConnectionLhv::GetBody(FString& Out_Body, int32& Out_BodySize)
 	Out_BodySize = this->Request->body.size();
 
 	return true;
+#else
+	return false;
+#endif
 }
 
 bool UHttpConnectionLhv::GetPath(FString& Out_Path)
 {
+#ifdef _WIN64
 	if (this->Request == nullptr)
 	{
 		return false;
@@ -127,10 +140,14 @@ bool UHttpConnectionLhv::GetPath(FString& Out_Path)
 	Out_Path = this->Request->FullPath().c_str();
 
 	return true;
+#else
+	return false;
+#endif
 }
 
 bool UHttpConnectionLhv::GetHeaders(FString& Out_Headers)
 {
+#ifdef _WIN64
 	if (this->Request == nullptr)
 	{
 		return false;
@@ -147,10 +164,14 @@ bool UHttpConnectionLhv::GetHeaders(FString& Out_Headers)
 	Out_Headers = Headers.c_str();
 
 	return true;
+#else
+	return false;
+#endif
 }
 
 bool UHttpConnectionLhv::FindHeader(FString Key, FString& Out_Value)
 {
+#ifdef _WIN64
 	if (this->Request == nullptr)
 	{
 		return false;
@@ -164,10 +185,14 @@ bool UHttpConnectionLhv::FindHeader(FString Key, FString& Out_Value)
 	Out_Value = this->Request->GetHeader(TCHAR_TO_UTF8(*Key), (std::string)("")).c_str();
 
 	return true;
+#else
+	return false;
+#endif
 }
 
 bool UHttpConnectionLhv::GetContentType(EHttpContentTypeLhv& Out_Content_Type)
 {
+#ifdef _WIN64
 	if (this->Request == nullptr)
 	{
 		return false;
@@ -540,10 +565,14 @@ bool UHttpConnectionLhv::GetContentType(EHttpContentTypeLhv& Out_Content_Type)
 	}
 
 	return false;
+#else
+	return false;
+#endif
 }
 
 bool UHttpConnectionLhv::SendResponse(const FString In_Response, TMap<FString, FString> In_Header, const bool bAddAllowOrigin, const int32 Status_Code)
 {
+#ifdef _WIN64
 	if (this->Request == nullptr)
 	{
 		return false;
@@ -556,4 +585,7 @@ bool UHttpConnectionLhv::SendResponse(const FString In_Response, TMap<FString, F
 	this->Future = Promise.GetFuture();
 
 	return (RetVal == 0) ? false : true;
+#else
+	return false;
+#endif
 }

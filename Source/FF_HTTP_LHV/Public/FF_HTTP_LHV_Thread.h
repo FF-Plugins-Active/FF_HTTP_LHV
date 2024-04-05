@@ -40,8 +40,10 @@ public:
 
 	AHTTP_Server_LHV* Parent_Actor = nullptr;
 
+#ifdef _WIN64
 	hv::HttpService HTTP_LVH_Router;
 	hv::HttpServer HTTP_LVH_Server;
+#endif
 
 private:
 
