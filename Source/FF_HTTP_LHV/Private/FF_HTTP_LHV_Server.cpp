@@ -46,15 +46,7 @@ bool AHTTP_Server_LHV::HTTP_Server_Start()
 
 	this->Thread_LibHv = new FHTTP_Thread_LibHv(this);
 
-	if (this->Thread_LibHv)
-	{
-		return true;
-	}
-	
-	else
-	{
-		return false;
-	}
+	return (this->Thread_LibHv) ? true : false;
 
 #else
 
