@@ -145,7 +145,7 @@ bool UHttpConnectionLhv::GetPath(FString& Out_Path)
 #endif
 }
 
-bool UHttpConnectionLhv::GetHeaders(TMap<FString, FString>& Out_Headers)
+bool UHttpConnectionLhv::GetHeaders(TMap<FString, FString>& Out_Headers, FString& Out_String)
 {
 #ifdef _WIN64
 	if (this->Request == nullptr)
@@ -153,12 +153,14 @@ bool UHttpConnectionLhv::GetHeaders(TMap<FString, FString>& Out_Headers)
 		return false;
 	}
 
-	http_headers headers = this->Request->headers;
+	http_headers Headers = this->Request->headers;
 	
-	for (auto& each_header : headers)
+	for (auto& Each_Header : Headers)
 	{
-		FString Key = each_header.first.c_str();
-		FString Value = each_header.second.c_str();
+		FString Key = Each_Header.first.c_str();
+		FString Value = Each_Header.second.c_str();
+		
+		Out_String += Key + ":" + Value + LINE_TERMINATOR_ANSI;
 		Out_Headers.Add(Key, Value);
 	}
 

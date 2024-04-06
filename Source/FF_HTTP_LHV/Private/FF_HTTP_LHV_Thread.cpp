@@ -17,6 +17,7 @@ FHTTP_Thread_LibHv::FHTTP_Thread_LibHv(AHTTP_Server_LHV* In_Parent_Actor)
 
 	this->Port_HTTP = this->Parent_Actor->Port_HTTP;
 	this->Port_HTTPS = this->Parent_Actor->Port_HTTPS;
+	this->ThreadsNum = this->Parent_Actor->ThreadsNum;
 
 	this->RunnableThread = FRunnableThread::Create(this, *this->Parent_Actor->Server_Name);
 #endif
@@ -36,6 +37,7 @@ FHTTP_Thread_LibHv::~FHTTP_Thread_LibHv()
 bool FHTTP_Thread_LibHv::Init()
 {
 #ifdef _WIN64
+	
 	return this->Callback_HTTP_Start();
 
 #else
@@ -56,16 +58,22 @@ uint32 FHTTP_Thread_LibHv::Run()
 void FHTTP_Thread_LibHv::Stop()
 {
 #ifdef _WIN64
+	
 	this->HTTP_LVH_Server.stop();
 	hv::async::cleanup();
 
 	this->bStartThread = false;
+
+	this->Parent_Actor->Delegate_HTTP_LibHv_Stop.Broadcast();
+	this->Parent_Actor->OnHttpAdvStop();
+
 #endif
 }
 
 bool FHTTP_Thread_LibHv::Toggle(bool bIsPause)
 {
 #ifdef _WIN64
+	
 	if (!this->RunnableThread)
 	{
 		return false;
@@ -82,13 +90,14 @@ bool FHTTP_Thread_LibHv::Toggle(bool bIsPause)
 bool FHTTP_Thread_LibHv::Callback_HTTP_Start()
 {
 #ifdef _WIN64
+	
 	auto Callback_Router_Handler = [this](HttpRequest* Request, HttpResponse* Response)->int
 		{
 			UHttpConnectionLhv* LibHvConnection = NewObject<UHttpConnectionLhv>();
 			LibHvConnection->Request = Request;
 			LibHvConnection->Response = Response;
 			
-			this->Parent_Actor->DelegateHttpLibHv.Broadcast(LibHvConnection);
+			this->Parent_Actor->Delegate_HTTP_LivHv_Request.Broadcast(LibHvConnection);
 			this->Parent_Actor->OnHttpAdvMessage(LibHvConnection);
 			
 			LibHvConnection->Future.Wait();
@@ -104,11 +113,31 @@ bool FHTTP_Thread_LibHv::Callback_HTTP_Start()
 
 	this->HTTP_LVH_Server.service = &this->HTTP_LVH_Router;
 	this->HTTP_LVH_Server.port = this->Port_HTTP;
-	this->HTTP_LVH_Server.start();
-	//this->HTTP_LVH_Server.setThreadNum(4);
-	//this->HTTP_LVH_Server.run();
+	this->HTTP_LVH_Server.setThreadNum((int)this->ThreadsNum);
 
-	return true;
+	//int Result_Start = this->HTTP_LVH_Server.start();
+
+	// We don't want to freeze UE5. So, we need to set "wait" false.
+	int Result_Run = this->HTTP_LVH_Server.run(false);
+
+	if (Result_Run == 0)
+	{
+		// We have notify start and stop at game thread. FRunnableThread's "Stop" function will already use game thread. So, we just need use AsyncTask in here.
+		AsyncTask(ENamedThreads::GameThread, [this]()
+			{
+				this->Parent_Actor->OnHttpAdvStart();
+				this->Parent_Actor->Delegate_HTTP_LibHv_Start.Broadcast();
+			}
+		);
+
+		return true;
+	}
+
+	else
+	{
+		return false;
+	}
+
 #else
 	return false;
 #endif

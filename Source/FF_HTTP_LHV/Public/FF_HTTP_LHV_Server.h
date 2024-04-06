@@ -32,7 +32,7 @@ public:
 	virtual bool GetPath(FString& Out_Path);
 
 	UFUNCTION(BlueprintCallable, Category = "Frozen Forest|HTTP|Server|LibHv")
-	virtual bool GetHeaders(TMap<FString, FString>& Out_Headers);
+	virtual bool GetHeaders(TMap<FString, FString>& Out_Headers, FString& Out_String);
 
 	UFUNCTION(BlueprintCallable, Category = "Frozen Forest|HTTP|Server|LibHv")
 	virtual bool FindHeader(FString Key, FString& Out_Value);
@@ -44,7 +44,8 @@ public:
 	virtual bool SendResponse(const FString In_Response, TMap<FString, FString> In_Header, const bool bAddAllowOrigin = true, const int32 Status_Code = 200);
 };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegateLibHv, UHttpConnectionLhv*, Connection);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDelegate_LibHv);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegate_LibHv_Request, UHttpConnectionLhv*, Connection);
 
 UCLASS()
 class FF_HTTP_LHV_API AHTTP_Server_LHV : public AActor
@@ -85,7 +86,13 @@ public:
 	void OnHttpAdvMessage(UHttpConnectionLhv* Connection);
 
 	UPROPERTY(BlueprintAssignable, Category = "Frozen Forest|HTTP|Server|LibHv")
-	FDelegateLibHv DelegateHttpLibHv;
+	FDelegate_LibHv Delegate_HTTP_LibHv_Start;
+
+	UPROPERTY(BlueprintAssignable, Category = "Frozen Forest|HTTP|Server|LibHv")
+	FDelegate_LibHv Delegate_HTTP_LibHv_Stop;
+
+	UPROPERTY(BlueprintAssignable, Category = "Frozen Forest|HTTP|Server|LibHv")
+	FDelegate_LibHv_Request Delegate_HTTP_LivHv_Request;
 
 public:
 
@@ -100,6 +107,9 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP|Server|LibHv")
 	int32 Port_HTTPS = 8453;
+
+	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP|Server|LibHv")
+	uint8 ThreadsNum = 4;
 
 	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP|Server|LibHv")
 	FString API_URI = "/api/libhv/v1/";
