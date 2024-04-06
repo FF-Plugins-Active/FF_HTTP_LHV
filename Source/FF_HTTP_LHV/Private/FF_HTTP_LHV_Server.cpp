@@ -132,12 +132,12 @@ bool UHttpConnectionLhv::GetPath(FString& Out_Path)
 		return false;
 	}
 
-	if (this->Request->FullPath().empty())
+	if (this->Request->path.empty())
 	{
 		return false;
 	}
 
-	Out_Path = this->Request->FullPath().c_str();
+	Out_Path = this->Request->path.c_str();
 
 	return true;
 #else
@@ -145,7 +145,7 @@ bool UHttpConnectionLhv::GetPath(FString& Out_Path)
 #endif
 }
 
-bool UHttpConnectionLhv::GetHeaders(FString& Out_Headers)
+bool UHttpConnectionLhv::GetHeaders(TMap<FString, FString>& Out_Headers)
 {
 #ifdef _WIN64
 	if (this->Request == nullptr)
@@ -153,15 +153,14 @@ bool UHttpConnectionLhv::GetHeaders(FString& Out_Headers)
 		return false;
 	}
 
-	std::string Headers;
-	this->Request->DumpHeaders(Headers);
-
-	if (Headers.empty())
+	http_headers headers = this->Request->headers;
+	
+	for (auto& each_header : headers)
 	{
-		return false;
+		FString Key = each_header.first.c_str();
+		FString Value = each_header.second.c_str();
+		Out_Headers.Add(Key, Value);
 	}
-
-	Out_Headers = Headers.c_str();
 
 	return true;
 #else

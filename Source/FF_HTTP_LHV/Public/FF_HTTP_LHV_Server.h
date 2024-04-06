@@ -32,7 +32,7 @@ public:
 	virtual bool GetPath(FString& Out_Path);
 
 	UFUNCTION(BlueprintCallable, Category = "Frozen Forest|HTTP|Server|LibHv")
-	virtual bool GetHeaders(FString& Out_Headers);
+	virtual bool GetHeaders(TMap<FString, FString>& Out_Headers);
 
 	UFUNCTION(BlueprintCallable, Category = "Frozen Forest|HTTP|Server|LibHv")
 	virtual bool FindHeader(FString Key, FString& Out_Value);
