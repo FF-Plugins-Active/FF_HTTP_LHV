@@ -203,7 +203,7 @@ bool UHttpConnectionLhv::FindHeader(FString Key, FString& Out_Value)
 #endif
 }
 
-bool UHttpConnectionLhv::GetContentType(ELibHvContentTypes& Out_Content_Type)
+bool UHttpConnectionLhv::GetContentType(ELibHvContentTypes& Out_Content_Type, FString& Out_Type_String)
 {
 #ifdef _WIN64
 	
