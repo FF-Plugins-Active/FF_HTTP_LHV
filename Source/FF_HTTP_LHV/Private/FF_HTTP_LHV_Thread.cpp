@@ -103,7 +103,7 @@ bool FHTTP_Thread_LibHv::Callback_HTTP_Start()
 			LibHvConnection->Response = Response;
 			LibHvConnection->RequestTime = FDateTime::Now();
 			
-			this->Parent_Actor->Delegate_HTTP_LivHv_Request.Broadcast(LibHvConnection);
+			this->Parent_Actor->Delegate_HTTP_LibHv_Request.Broadcast(LibHvConnection);
 			this->Parent_Actor->OnHttpAdvMessage(LibHvConnection);
 			
 			LibHvConnection->Future.Wait();
@@ -121,7 +121,7 @@ bool FHTTP_Thread_LibHv::Callback_HTTP_Start()
 			LibHvConnection->ResponsePtr = &Response;
 			LibHvConnection->RequestTime = FDateTime::Now();
 
-			this->Parent_Actor->Delegate_HTTP_LivHv_Request.Broadcast(LibHvConnection);
+			this->Parent_Actor->Delegate_HTTP_LibHv_Request.Broadcast(LibHvConnection);
 			this->Parent_Actor->OnHttpAdvMessage(LibHvConnection);
 		};
 #endif

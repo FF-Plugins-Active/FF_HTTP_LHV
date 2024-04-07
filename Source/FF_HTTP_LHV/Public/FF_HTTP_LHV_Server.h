@@ -71,7 +71,7 @@ public:
 	FDelegate_LibHv Delegate_HTTP_LibHv_Stop;
 
 	UPROPERTY(BlueprintAssignable, Category = "Frozen Forest|HTTP|Server|LibHv")
-	FDelegate_LibHv_Request Delegate_HTTP_LivHv_Request;
+	FDelegate_LibHv_Request Delegate_HTTP_LibHv_Request;
 
 	// PROPERTIES
 	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP|Server|LibHv")
