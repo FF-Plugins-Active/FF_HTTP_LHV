@@ -8,8 +8,11 @@
 // Custom Includes.
 #include "FF_HTTP_LHV_Enums.h"
 #include "FF_HTTP_LHV_Thread.h"
+#include "FF_HTTP_LHVBPLibrary.h"
 
 #include "FF_HTTP_LHV_Server.generated.h"
+
+#define LHV_USE_POINTER 1
 
 UCLASS(BlueprintType)
 class FF_HTTP_LHV_API UHttpConnectionLhv : public UObject
@@ -18,9 +21,18 @@ class FF_HTTP_LHV_API UHttpConnectionLhv : public UObject
 
 public:
 
+#if (LHV_USE_POINTER == 0)
+	
 	TSharedFuture<int> Future;
 	HttpRequest* Request = nullptr; 
 	HttpResponse* Response = nullptr;
+
+#else
+
+	const HttpRequestPtr* RequestPtr = nullptr;
+	const HttpResponseWriterPtr* ResponsePtr = nullptr;
+
+#endif
 
 	UFUNCTION(BlueprintCallable, Category = "Frozen Forest|HTTP|Server|LibHv")
 	virtual bool CancelRequest();
@@ -38,10 +50,17 @@ public:
 	virtual bool FindHeader(FString Key, FString& Out_Value);
 
 	UFUNCTION(BlueprintCallable, Category = "Frozen Forest|HTTP|Server|LibHv")
-	virtual bool GetContentType(EHttpContentTypeLhv& Out_Content_Type);
+	virtual bool GetContentType(ELibHvContentTypes& Out_Content_Type, FString& Out_Type_String);
 
 	UFUNCTION(BlueprintCallable, Category = "Frozen Forest|HTTP|Server|LibHv")
-	virtual bool SendResponse(const FString In_Response, TMap<FString, FString> In_Header, const bool bAddAllowOrigin = true, const int32 Status_Code = 200);
+	virtual bool SendString(const FString In_Response, TMap<FString, FString> In_Header, ELibHvStatusCodes StatusCode);
+
+	UFUNCTION(BlueprintCallable, Category = "Frozen Forest|HTTP|Server|LibHv")
+	virtual bool SendData(TArray<uint8> In_Bytes, TMap<FString, FString> In_Header, ELibHvStatusCodes StatusCode, bool bNoCopy);
+
+	UFUNCTION(BlueprintCallable, Category = "Frozen Forest|HTTP|Server|LibHv")
+	virtual bool SendResponse(const FString In_Response, TMap<FString, FString> In_Header, ELibHvStatusCodes StatusCode = ELibHvStatusCodes::OK_200, ELibHvContentTypes ContentTypes = ELibHvContentTypes::Text_Plain);
+
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDelegate_LibHv);
@@ -74,8 +93,6 @@ public:
 
 #endif
 
-public:
-
 	UFUNCTION(BlueprintImplementableEvent, meta = (Description = ""), Category = "Frozen Forest|HTTP|Server|LibHv")
 	void OnHttpAdvStart();
 
@@ -93,8 +110,6 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "Frozen Forest|HTTP|Server|LibHv")
 	FDelegate_LibHv_Request Delegate_HTTP_LivHv_Request;
-
-public:
 
 	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP|Server|LibHv")
 	FString Server_Path_Root = "";
@@ -116,8 +131,6 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "It shouldn't bigger than 15 chars and it has to be unique.", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP|Server|LibHv")
 	FString Server_Name = "";
-
-public:
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "HTTP Server LibHv - Start"), Category = "Frozen Forest|HTTP|Server|LibHv")
 	virtual bool HTTP_Server_Start();

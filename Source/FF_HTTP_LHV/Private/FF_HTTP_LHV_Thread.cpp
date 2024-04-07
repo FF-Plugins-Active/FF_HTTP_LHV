@@ -60,7 +60,10 @@ void FHTTP_Thread_LibHv::Stop()
 #ifdef _WIN64
 	
 	this->HTTP_LVH_Server.stop();
-	hv::async::cleanup();
+
+#if (LHV_USE_POINTER == 0)
+	//hv::async::cleanup();
+#endif
 
 	this->bStartThread = false;
 
@@ -90,7 +93,9 @@ bool FHTTP_Thread_LibHv::Toggle(bool bIsPause)
 bool FHTTP_Thread_LibHv::Callback_HTTP_Start()
 {
 #ifdef _WIN64
-	
+
+#if (LHV_USE_POINTER == 0)
+
 	auto Callback_Router_Handler = [this](HttpRequest* Request, HttpResponse* Response)->int
 		{
 			UHttpConnectionLhv* LibHvConnection = NewObject<UHttpConnectionLhv>();
@@ -101,13 +106,25 @@ bool FHTTP_Thread_LibHv::Callback_HTTP_Start()
 			this->Parent_Actor->OnHttpAdvMessage(LibHvConnection);
 			
 			LibHvConnection->Future.Wait();
-			int ResponseCode = LibHvConnection->Future.Get();
+			int StatusCode = LibHvConnection->Future.Get();
 
-			return ResponseCode;
+			return StatusCode;
 		};
 
-	this->HTTP_LVH_Router.Any(TCHAR_TO_UTF8(*this->API_URI), Callback_Router_Handler);
+#else
 
+	auto Callback_Router_Handler = [this](const HttpRequestPtr& Request, const HttpResponseWriterPtr& Response)
+		{
+			UHttpConnectionLhv* LibHvConnection = NewObject<UHttpConnectionLhv>();
+			LibHvConnection->RequestPtr = &Request;
+			LibHvConnection->ResponsePtr = &Response;
+
+			this->Parent_Actor->Delegate_HTTP_LivHv_Request.Broadcast(LibHvConnection);
+			this->Parent_Actor->OnHttpAdvMessage(LibHvConnection);
+		};
+#endif
+
+	this->HTTP_LVH_Router.Any(TCHAR_TO_UTF8(*this->API_URI), Callback_Router_Handler);
 	this->HTTP_LVH_Router.Static("/", TCHAR_TO_UTF8(*this->Server_Path_Root));
 	this->HTTP_LVH_Router.AllowCORS();
 
@@ -115,12 +132,11 @@ bool FHTTP_Thread_LibHv::Callback_HTTP_Start()
 	this->HTTP_LVH_Server.port = this->Port_HTTP;
 	this->HTTP_LVH_Server.setThreadNum((int)this->ThreadsNum);
 
-	//int Result_Start = this->HTTP_LVH_Server.start();
+	int ServerInitResult = 0;
+	//ServerInitResult = this->HTTP_LVH_Server.start();
+	ServerInitResult = this->HTTP_LVH_Server.run(false);		// We don't want to freeze UE5. So, we need to set "wait" false.
 
-	// We don't want to freeze UE5. So, we need to set "wait" false.
-	int Result_Run = this->HTTP_LVH_Server.run(false);
-
-	if (Result_Run == 0)
+	if (ServerInitResult == 0)
 	{
 		// We have notify start and stop at game thread. FRunnableThread's "Stop" function will already use game thread. So, we just need use AsyncTask in here.
 		AsyncTask(ENamedThreads::GameThread, [this]()
