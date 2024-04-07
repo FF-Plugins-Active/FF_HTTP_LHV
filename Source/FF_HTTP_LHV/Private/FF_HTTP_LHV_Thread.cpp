@@ -61,7 +61,7 @@ void FHTTP_Thread_LibHv::Stop()
 	
 	this->HTTP_LVH_Server.stop();
 
-#if (LHV_USE_POINTER == 0)
+#if (LHV_USE_ASYNC_HANDLER == 0)
 	//hv::async::cleanup();
 #endif
 
@@ -94,7 +94,7 @@ bool FHTTP_Thread_LibHv::Callback_HTTP_Start()
 {
 #ifdef _WIN64
 
-#if (LHV_USE_POINTER == 0)
+#if (LHV_USE_ASYNC_HANDLER == 0)
 
 	auto Callback_Router_Handler = [this](HttpRequest* Request, HttpResponse* Response)->int
 		{

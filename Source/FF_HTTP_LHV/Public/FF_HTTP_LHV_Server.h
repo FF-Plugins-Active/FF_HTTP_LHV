@@ -12,16 +12,20 @@
 
 #include "FF_HTTP_LHV_Server.generated.h"
 
-#define LHV_USE_POINTER 1
+#define LHV_USE_ASYNC_HANDLER 0
 
 UCLASS(BlueprintType)
 class FF_HTTP_LHV_API UHttpConnectionLhv : public UObject
 {
 	GENERATED_BODY()
 
+private:
+
+	virtual bool Callback_ContentType(http_content_type Type, ELibHvContentTypes& Out_Content_Type, FString& Out_Type_String);
+
 public:
 
-#if (LHV_USE_POINTER == 0)
+#if (LHV_USE_ASYNC_HANDLER == 0)
 	
 	TSharedFuture<int> Future;
 	HttpRequest* Request = nullptr; 
