@@ -62,7 +62,7 @@ void FHTTP_Thread_LibHv::Stop()
 	this->HTTP_LVH_Server.stop();
 
 #if (LHV_USE_ASYNC_HANDLER == 0)
-	//hv::async::cleanup();
+	hv::async::cleanup();
 #endif
 
 	this->bStartThread = false;
