@@ -101,6 +101,7 @@ bool FHTTP_Thread_LibHv::Callback_HTTP_Start()
 			UHttpConnectionLhv* LibHvConnection = NewObject<UHttpConnectionLhv>();
 			LibHvConnection->Request = Request;
 			LibHvConnection->Response = Response;
+			LibHvConnection->RequestTime = FDateTime::Now();
 			
 			this->Parent_Actor->Delegate_HTTP_LivHv_Request.Broadcast(LibHvConnection);
 			this->Parent_Actor->OnHttpAdvMessage(LibHvConnection);
@@ -118,23 +119,63 @@ bool FHTTP_Thread_LibHv::Callback_HTTP_Start()
 			UHttpConnectionLhv* LibHvConnection = NewObject<UHttpConnectionLhv>();
 			LibHvConnection->RequestPtr = &Request;
 			LibHvConnection->ResponsePtr = &Response;
+			LibHvConnection->RequestTime = FDateTime::Now();
 
 			this->Parent_Actor->Delegate_HTTP_LivHv_Request.Broadcast(LibHvConnection);
 			this->Parent_Actor->OnHttpAdvMessage(LibHvConnection);
 		};
 #endif
 
-	this->HTTP_LVH_Router.Any(TCHAR_TO_UTF8(*this->API_URI), Callback_Router_Handler);
-	this->HTTP_LVH_Router.Static("/", TCHAR_TO_UTF8(*this->Server_Path_Root));
+	auto Callback_Router_Static = [this](const HttpRequestPtr& Request, const HttpResponseWriterPtr& Response)
+		{
+			auto req2 = std::make_shared<HttpRequest>();
+			req2->url = Request->path.substr(1);
+
+			requests::async(req2, [this, Response](const HttpResponsePtr& resp2)
+				{
+					Response->Begin();
+
+					if (resp2 == NULL)
+					{
+						Response->WriteStatus(HTTP_STATUS_NOT_FOUND);
+						Response->WriteHeader("Content-Type", "text/html");
+						Response->WriteBody("<center><h1>404 Not Found Eray</h1></center>");
+						
+						UE_LOG(LogTemp, Warning, TEXT("LibHv - 404 catched."));
+					}
+
+					else
+					{
+						Response->WriteResponse(resp2.get());
+					}
+
+					Response->End();
+				});
+		};
+
 	this->HTTP_LVH_Router.AllowCORS();
+
+	this->HTTP_LVH_Router.Static("/", TCHAR_TO_UTF8(*this->Server_Path_Root));
+	
+	// Non-Querry APIs.
+	this->HTTP_LVH_Router.Any(TCHAR_TO_UTF8(*this->API_URI), Callback_Router_Handler);
+
+	// API with Querries.
+	this->HTTP_LVH_Router.Any(TCHAR_TO_UTF8(*(this->API_URI + "*")), Callback_Router_Handler);
 
 	this->HTTP_LVH_Server.service = &this->HTTP_LVH_Router;
 	this->HTTP_LVH_Server.port = this->Port_HTTP;
-	this->HTTP_LVH_Server.setThreadNum((int)this->ThreadsNum);
 
 	int ServerInitResult = 0;
-	//ServerInitResult = this->HTTP_LVH_Server.start();
-	ServerInitResult = this->HTTP_LVH_Server.run(false);		// We don't want to freeze UE5. So, we need to set "wait" false.
+
+#if (LHV_USE_ASYNC_HANDLER == 0)
+	ServerInitResult = this->HTTP_LVH_Server.start();
+#else
+	this->HTTP_LVH_Server.setThreadNum((int)this->ThreadsNum);
+	
+	// We don't want to freeze UE5. So, we need to set "wait" false.
+	ServerInitResult = this->HTTP_LVH_Server.run(false);
+#endif
 
 	if (ServerInitResult == 0)
 	{

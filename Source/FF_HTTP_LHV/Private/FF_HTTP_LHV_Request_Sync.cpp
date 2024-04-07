@@ -20,6 +20,65 @@ bool UHttpConnectionLhv::CancelRequest()
 #endif
 }
 
+bool UHttpConnectionLhv::GetClientAddress(FString& Out_Ip, int32& Out_Port)
+{
+#ifdef _WIN64
+
+	if (this->Request == nullptr)
+	{
+		return false;
+	}
+
+	Out_Ip = this->Request->client_addr.ip.c_str();
+	Out_Port = this->Request->client_addr.port;
+
+	return true;
+
+#else
+	return false;
+#endif
+}
+
+bool UHttpConnectionLhv::GetQuerries(TMap<FString, FString>& Out_Querry, FString& Out_String)
+{
+#ifdef _WIN64
+
+	if (this->Request == nullptr)
+	{
+		return false;
+	}
+
+	const hv::QueryParams Querries = this->Request->query_params;
+
+	const size_t Count_Querries = Querries.size();
+	int Index_Header = 0;
+
+	for (auto& Each_Header : Querries)
+	{
+		FString Key = Each_Header.first.c_str();
+		FString Value = Each_Header.second.c_str();
+
+		Out_Querry.Add(Key, Value);
+
+		if (Index_Header == (Count_Querries - 1))
+		{
+			Out_String += Key + ":" + Value;
+	}
+
+		else
+		{
+			Out_String += Key + ":" + Value + "&";
+			Index_Header++;
+		}
+	}
+
+	return true;
+
+#else
+	return false;
+#endif
+}
+
 bool UHttpConnectionLhv::GetBody(FString& Out_Body, int32& Out_BodySize)
 {
 #ifdef _WIN64
@@ -44,7 +103,7 @@ bool UHttpConnectionLhv::GetBody(FString& Out_Body, int32& Out_BodySize)
 #endif
 }
 
-bool UHttpConnectionLhv::GetPath(FString& Out_Path)
+bool UHttpConnectionLhv::GetPaths(FString& Out_Method, FString& Out_Scheme, FString& Out_Host, int32& Out_Port, FString& Out_Path, FString& Out_Url)
 {
 #ifdef _WIN64
 
@@ -53,12 +112,28 @@ bool UHttpConnectionLhv::GetPath(FString& Out_Path)
 		return false;
 	}
 
-	if (this->Request->path.empty())
+	if (!this->Request->scheme.empty())
 	{
-		return false;
+		Out_Scheme = this->Request->scheme.c_str();
 	}
 
-	Out_Path = this->Request->path.c_str();
+	if (!this->Request->host.empty())
+	{
+		Out_Host = this->Request->host.c_str();
+	}
+
+	if (!this->Request->path.empty())
+	{
+		Out_Path = this->Request->path.c_str();
+	}
+
+	if (!this->Request->url.empty())
+	{
+		Out_Url = this->Request->url.c_str();
+	}
+
+	this->Callback_Type_Method(this->Request->method, Out_Method);
+	Out_Port = this->Request->port;
 
 	return true;
 
@@ -76,15 +151,28 @@ bool UHttpConnectionLhv::GetHeaders(TMap<FString, FString>& Out_Headers, FString
 		return false;
 	}
 
-	http_headers Headers = this->Request->headers;
+	const http_headers Headers = this->Request->headers;
+
+	const size_t Count_Headers = Headers.size();
+	int Index_Header = 0;
 
 	for (auto& Each_Header : Headers)
 	{
 		FString Key = Each_Header.first.c_str();
 		FString Value = Each_Header.second.c_str();
 
-		Out_String += Key + ":" + Value + LINE_TERMINATOR_ANSI;
 		Out_Headers.Add(Key, Value);
+
+		if (Index_Header == (Count_Headers - 1))
+		{
+			Out_String += Key + ":" + Value;
+		}
+
+		else
+		{
+			Out_String += Key + ":" + Value + LINE_TERMINATOR_ANSI;
+			Index_Header++;
+		}
 	}
 
 	return true;
@@ -108,10 +196,28 @@ bool UHttpConnectionLhv::FindHeader(FString Key, FString& Out_Value)
 		return false;
 	}
 
-	Out_Value = this->Request->GetHeader(TCHAR_TO_UTF8(*Key), (std::string)("")).c_str();
+	const http_headers Headers = this->Request->headers;
+
+	if (Headers.size() == 0)
+	{
+		return false;
+	}
+
+	if (!Headers.contains(TCHAR_TO_UTF8(*Key)))
+	{
+		return false;
+	}
+
+	const std::string Value = Headers.at(TCHAR_TO_UTF8(*Key));
+
+	if (Value.empty())
+	{
+		return false;
+	}
+
+	Out_Value = Value.c_str();
 
 	return true;
-
 #else
 	return false;
 #endif
@@ -126,7 +232,7 @@ bool UHttpConnectionLhv::GetContentType(ELibHvContentTypes& Out_Content_Type, FS
 		return false;
 	}
 
-	return this->Callback_ContentType(this->Request->content_type, Out_Content_Type, Out_Type_String);
+	return this->Callback_Type_Content(this->Request->content_type, Out_Content_Type, Out_Type_String);
 
 #else
 	return false;
@@ -142,12 +248,12 @@ bool UHttpConnectionLhv::SendString(const FString In_Response, TMap<FString, FSt
 		return false;
 	}
 
+	Response->String(TCHAR_TO_UTF8(*In_Response));
+
 	for (TPair<FString, FString>& EachHeader : In_Header)
 	{
 		Response->SetHeader(TCHAR_TO_UTF8(*EachHeader.Key), TCHAR_TO_UTF8(*EachHeader.Value));
 	}
-
-	Response->String(TCHAR_TO_UTF8(*In_Response));
 
 	TPromise<int> Promise;
 	Promise.SetValue(UFF_HTTP_LHVBPLibrary::LibHv_Status_To_Int(StatusCode));

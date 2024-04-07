@@ -19,7 +19,8 @@ class FF_HTTP_LHV_API UHttpConnectionLhv : public UObject
 
 private:
 
-	virtual bool Callback_ContentType(http_content_type Type, ELibHvContentTypes& Out_Content_Type, FString& Out_Type_String);
+	virtual bool Callback_Type_Method(http_method Type, FString& Out_Type_String);
+	virtual bool Callback_Type_Content(http_content_type Type, ELibHvContentTypes& Out_Content_Type, FString& Out_Type_String);
 
 public:
 
@@ -36,14 +37,23 @@ public:
 
 #endif
 
+	UPROPERTY(BlueprintReadOnly)
+	FDateTime RequestTime;
+
 	UFUNCTION(BlueprintCallable, Category = "Frozen Forest|HTTP|Server|LibHv")
 	virtual bool CancelRequest();
+
+	UFUNCTION(BlueprintCallable, Category = "Frozen Forest|HTTP|Server|LibHv")
+	virtual bool GetClientAddress(FString& Out_Ip, int32& Out_Port);
+
+	UFUNCTION(BlueprintCallable, Category = "Frozen Forest|HTTP|Server|LibHv")
+	virtual bool GetQuerries(TMap<FString, FString>& Out_Querry, FString& Out_String);
 
 	UFUNCTION(BlueprintCallable, Category = "Frozen Forest|HTTP|Server|LibHv")
 	virtual bool GetBody(FString& Out_Body, int32& Out_BodySize);
 
 	UFUNCTION(BlueprintCallable, Category = "Frozen Forest|HTTP|Server|LibHv")
-	virtual bool GetPath(FString& Out_Path);
+	virtual bool GetPaths(FString& Out_Method, FString& Out_Scheme, FString& Out_Host, int32& Out_Port, FString& Out_Path, FString& Out_Url);
 
 	UFUNCTION(BlueprintCallable, Category = "Frozen Forest|HTTP|Server|LibHv")
 	virtual bool GetHeaders(TMap<FString, FString>& Out_Headers, FString& Out_String);
@@ -55,10 +65,10 @@ public:
 	virtual bool GetContentType(ELibHvContentTypes& Out_Content_Type, FString& Out_Type_String);
 
 	UFUNCTION(BlueprintCallable, Category = "Frozen Forest|HTTP|Server|LibHv")
-	virtual bool SendString(const FString In_Response, TMap<FString, FString> In_Header, ELibHvStatusCodes StatusCode);
+	virtual bool SendString(const FString In_Response, TMap<FString, FString> In_Header, ELibHvStatusCodes StatusCode = ELibHvStatusCodes::OK_200);
 
 	UFUNCTION(BlueprintCallable, Category = "Frozen Forest|HTTP|Server|LibHv")
-	virtual bool SendData(TArray<uint8> In_Bytes, TMap<FString, FString> In_Header, ELibHvStatusCodes StatusCode, bool bNoCopy);
+	virtual bool SendData(TArray<uint8> In_Bytes, TMap<FString, FString> In_Header, ELibHvStatusCodes StatusCode = ELibHvStatusCodes::OK_200, bool bNoCopy = false);
 
 	UFUNCTION(BlueprintCallable, Category = "Frozen Forest|HTTP|Server|LibHv")
 	virtual bool SendResponse(const FString In_Response, TMap<FString, FString> In_Header, ELibHvStatusCodes StatusCode = ELibHvStatusCodes::OK_200, ELibHvContentTypes ContentTypes = ELibHvContentTypes::Text_Plain);

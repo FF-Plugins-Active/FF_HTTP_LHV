@@ -1,6 +1,6 @@
 #include "FF_HTTP_LHV_Request.h"
 
-bool UHttpConnectionLhv::Callback_ContentType(http_content_type Type, ELibHvContentTypes& Out_Content_Type, FString& Out_Type_String)
+bool UHttpConnectionLhv::Callback_Type_Content(http_content_type Type, ELibHvContentTypes& Out_Content_Type, FString& Out_Type_String)
 {
 	switch (Type)
 	{
@@ -434,7 +434,194 @@ bool UHttpConnectionLhv::Callback_ContentType(http_content_type Type, ELibHvCont
 	default:
 
 		Out_Content_Type = ELibHvContentTypes::Content_Type_NONE;
-		Out_Type_String = "";
+		return true;
+	}
+
+	return false;
+}
+
+bool UHttpConnectionLhv::Callback_Type_Method(http_method Type, FString& Out_Type_String)
+{
+	switch (Type)
+	{
+	case HTTP_DELETE:
+
+		Out_Type_String = "DELETE";
+		return true;
+
+	case HTTP_GET:
+
+		Out_Type_String = "GET";
+		return true;
+
+	case HTTP_HEAD:
+
+		Out_Type_String = "HEAD";
+		return true;
+
+	case HTTP_POST:
+
+		Out_Type_String = "POST";
+		return true;
+
+	case HTTP_PUT:
+
+		Out_Type_String = "PUT";
+		return true;
+
+	case HTTP_CONNECT:
+
+		Out_Type_String = "CONNECT";
+		return true;
+
+	case HTTP_OPTIONS:
+
+		Out_Type_String = "OPTIONS";
+		return true;
+
+	case HTTP_TRACE:
+
+		Out_Type_String = "TRACE";
+		return true;
+
+	case HTTP_COPY:
+
+		Out_Type_String = "COPY";
+		return true;
+
+	case HTTP_LOCK:
+
+		Out_Type_String = "LOCK";
+		return true;
+
+	case HTTP_MKCOL:
+
+		Out_Type_String = "MKCOL";
+		return true;
+
+	case HTTP_MOVE:
+
+		Out_Type_String = "MOVE";
+		return true;
+
+	case HTTP_PROPFIND:
+
+		Out_Type_String = "PROFIND";
+		return true;
+
+	case HTTP_PROPPATCH:
+
+		Out_Type_String = "PROPPATCH";
+		return true;
+
+	case HTTP_SEARCH:
+
+		Out_Type_String = "SEARCH";
+		return true;
+
+	case HTTP_UNLOCK:
+
+		Out_Type_String = "UNLOCK";
+		return true;
+
+	case HTTP_BIND:
+
+		Out_Type_String = "BIND";
+		return true;
+
+	case HTTP_REBIND:
+
+		Out_Type_String = "REBIND";
+		return true;
+
+	case HTTP_UNBIND:
+
+		Out_Type_String = "UNBIND";
+		return true;
+
+	case HTTP_ACL:
+
+		Out_Type_String = "ACL";
+		return true;
+
+	case HTTP_REPORT:
+
+		Out_Type_String = "REPORT";
+		return true;
+
+	case HTTP_MKACTIVITY:
+
+		Out_Type_String = "MKACTIVITY";
+		return true;
+
+	case HTTP_CHECKOUT:
+
+		Out_Type_String = "CHECKOUT";
+		return true;
+
+	case HTTP_MERGE:
+
+		Out_Type_String = "MERGE";
+		return true;
+
+	case HTTP_MSEARCH:
+
+		Out_Type_String = "MSEARCH";
+		return true;
+
+	case HTTP_NOTIFY:
+
+		Out_Type_String = "NOTIFY";
+		return true;
+
+	case HTTP_SUBSCRIBE:
+
+		Out_Type_String = "SUBSCRIBE";
+		return true;
+
+	case HTTP_UNSUBSCRIBE:
+
+		Out_Type_String = "UNSUBSCRIBE";
+		return true;
+
+	case HTTP_PATCH:
+
+		Out_Type_String = "PATCH";
+		return true;
+
+	case HTTP_PURGE:
+
+		Out_Type_String = "PURGE";
+		return true;
+
+	case HTTP_MKCALENDAR:
+
+		Out_Type_String = "MKCALENDAR";
+		return true;
+
+	case HTTP_LINK:
+
+		Out_Type_String = "LINK";
+		return true;
+
+	case HTTP_UNLINK:
+
+		Out_Type_String = "UNLINK";
+		return true;
+
+	case HTTP_SOURCE:
+
+		Out_Type_String = "SOURCE";
+		return true;
+
+	case HTTP_CUSTOM_METHOD:
+
+		Out_Type_String = "CUSTOM_METHOD";
+		return true;
+
+	default:
+
+		Out_Type_String = "GET";
 		return true;
 	}
 
