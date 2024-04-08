@@ -1,6 +1,6 @@
 #include "FF_HTTP_LHV_Request.h"
 
-#if (LHV_USE_ASYNC_HANDLER == 0)
+#if (LHV_HANDLER_TYPE == 0)
 
 bool UHttpConnectionLhv::CancelRequest()
 {
@@ -248,11 +248,11 @@ bool UHttpConnectionLhv::SendString(const FString In_Response, TMap<FString, FSt
 		return false;
 	}
 
-	Response->String(TCHAR_TO_UTF8(*In_Response));
+	this->Response->String(TCHAR_TO_UTF8(*In_Response));
 
 	for (TPair<FString, FString>& EachHeader : In_Header)
 	{
-		Response->SetHeader(TCHAR_TO_UTF8(*EachHeader.Key), TCHAR_TO_UTF8(*EachHeader.Value));
+		this->Response->SetHeader(TCHAR_TO_UTF8(*EachHeader.Key), TCHAR_TO_UTF8(*EachHeader.Value));
 	}
 
 	TPromise<int> Promise;
@@ -275,12 +275,12 @@ bool UHttpConnectionLhv::SendData(TArray<uint8> In_Bytes, TMap<FString, FString>
 		return false;
 	}
 
+	this->Response->Data(In_Bytes.GetData(), In_Bytes.Num(), bNoCopy);
+
 	for (TPair<FString, FString>& EachHeader : In_Header)
 	{
-		Response->SetHeader(TCHAR_TO_UTF8(*EachHeader.Key), TCHAR_TO_UTF8(*EachHeader.Value));
+		this->Response->SetHeader(TCHAR_TO_UTF8(*EachHeader.Key), TCHAR_TO_UTF8(*EachHeader.Value));
 	}
-
-	Response->Data(In_Bytes.GetData(), In_Bytes.Num(), bNoCopy);
 
 	TPromise<int> Promise;
 	Promise.SetValue(this->Callback_Status_To_Code(StatusCode));
@@ -302,13 +302,13 @@ bool UHttpConnectionLhv::SendResponse(const FString In_Response, TMap<FString, F
 		return false;
 	}
 
+	this->Response->SetContentType(this->Callback_Content_Type_Convert(ContentTypes));
+	this->Response->SetBody(TCHAR_TO_UTF8(*In_Response));
+
 	for (TPair<FString, FString>& EachHeader : In_Header)
 	{
-		Response->SetHeader(TCHAR_TO_UTF8(*EachHeader.Key), TCHAR_TO_UTF8(*EachHeader.Value));
+		this->Response->SetHeader(TCHAR_TO_UTF8(*EachHeader.Key), TCHAR_TO_UTF8(*EachHeader.Value));
 	}
-
-	Response->SetContentType(this->Callback_Content_Type_Convert(ContentTypes));
-	Response->SetBody(TCHAR_TO_UTF8(*In_Response));
 
 	TPromise<int> Promise;
 	Promise.SetValue(this->Callback_Status_To_Code(StatusCode));

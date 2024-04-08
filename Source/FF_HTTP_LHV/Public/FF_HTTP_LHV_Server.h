@@ -89,10 +89,10 @@ public:
 	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP|Server|LibHv")
 	uint8 ThreadsNum = 4;
 
-	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP|Server|LibHv")
-	FString API_URI = "/api/libhv/v1/";
+	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "It should start with \"/\" and but don't put it at the end. ", ExposeOnSpawn = "true"), Category = "Frozen Forest | HTTP | Server | LibHv")
+	FString API_URI = "/api/libhv/v1";
 
-	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "It shouldn't bigger than 15 chars and it has to be unique.", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP|Server|LibHv")
-	FString Server_Name = "";
+	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "It has to be unique.", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP|Server|LibHv")
+	FString Server_Name = "HTTP_Server_LibHv";
 
 };

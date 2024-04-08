@@ -1,18 +1,20 @@
 #include "FF_HTTP_LHV_Request.h"
 
-#if (LHV_HANDLER_TYPE == 1)
+#if (LHV_HANDLER_TYPE == 2)
 
 bool UHttpConnectionLhv::CancelRequest()
 {
 #ifdef _WIN64
-	if (this->RequestPtr == nullptr)
+
+	if (this->Context == nullptr)
 	{
 		return false;
 	}
 
-	this->RequestPtr->get()->Cancel();
+	this->Context->get()->close();
 
 	return true;
+
 #else
 	return false;
 #endif
@@ -22,13 +24,15 @@ bool UHttpConnectionLhv::GetClientAddress(FString& Out_Ip, int32& Out_Port)
 {
 #ifdef _WIN64
 
-	if (this->RequestPtr == nullptr)
+	if (this->Context == nullptr)
 	{
 		return false;
 	}
 
-	Out_Ip = this->RequestPtr->get()->client_addr.ip.c_str();
-	Out_Port = this->RequestPtr->get()->client_addr.port;
+	HttpRequestPtr TempReq = this->Context->get()->request;
+
+	Out_Ip = TempReq->client_addr.ip.c_str();
+	Out_Port = TempReq->client_addr.port;
 
 	return true;
 
@@ -41,27 +45,27 @@ bool UHttpConnectionLhv::GetQuerries(TMap<FString, FString>& Out_Querry, FString
 {
 #ifdef _WIN64
 
-	if (this->RequestPtr == nullptr)
+	if (this->Context == nullptr)
 	{
 		return false;
 	}
 
-	const hv::QueryParams Querries = this->RequestPtr->get()->query_params;
-	
+	const hv::QueryParams Querries = this->Context->get()->request->query_params;
+
 	const size_t Count_Querries = Querries.size();
 	int Index_Header = 0;
 
-	for (auto& Each_Querry : Querries)
+	for (auto& Each_Header : Querries)
 	{
-		FString Key = Each_Querry.first.c_str();
-		FString Value = Each_Querry.second.c_str();
+		FString Key = Each_Header.first.c_str();
+		FString Value = Each_Header.second.c_str();
 
 		Out_Querry.Add(Key, Value);
 
 		if (Index_Header == (Count_Querries - 1))
 		{
 			Out_String += Key + ":" + Value;
-		}
+	}
 
 		else
 		{
@@ -80,22 +84,22 @@ bool UHttpConnectionLhv::GetQuerries(TMap<FString, FString>& Out_Querry, FString
 bool UHttpConnectionLhv::GetBody(FString& Out_Body, int32& Out_BodySize)
 {
 #ifdef _WIN64
-	if (this->RequestPtr == nullptr)
+
+	if (this->Context == nullptr)
 	{
 		return false;
 	}
 
-	const std::string Body = this->RequestPtr->get()->body;
-
-	if (Body.empty())
+	if (this->Context->get()->body().empty())
 	{
 		return false;
 	}
 
-	Out_Body = Body.c_str();
-	Out_BodySize = Body.size();
+	Out_Body = this->Context->get()->request->body.c_str();
+	Out_BodySize = this->Context->get()->request->body.size();
 
 	return true;
+
 #else
 	return false;
 #endif
@@ -104,35 +108,37 @@ bool UHttpConnectionLhv::GetBody(FString& Out_Body, int32& Out_BodySize)
 bool UHttpConnectionLhv::GetPaths(FString& Out_Method, FString& Out_Scheme, FString& Out_Host, int32& Out_Port, FString& Out_Path, FString& Out_Url)
 {
 #ifdef _WIN64
-	if (this->RequestPtr == nullptr)
+
+	if (this->Context == nullptr)
 	{
 		return false;
 	}
 
-	if (!this->RequestPtr->get()->scheme.empty())
+	if (!this->Context->get()->request->scheme.empty())
 	{
-		Out_Scheme = this->RequestPtr->get()->scheme.c_str();
+		Out_Scheme = this->Context->get()->request->scheme.c_str();
 	}
 
-	if (!this->RequestPtr->get()->host.empty())
+	if (!this->Context->get()->request->host.empty())
 	{
-		Out_Host = this->RequestPtr->get()->host.c_str();
+		Out_Host = this->Context->get()->request->host.c_str();
 	}
 
-	if (!this->RequestPtr->get()->path.empty())
+	if (!this->Context->get()->request->path.empty())
 	{
-		Out_Path = this->RequestPtr->get()->path.c_str();
+		Out_Path = this->Context->get()->request->path.c_str();
 	}
 
-	if (!this->RequestPtr->get()->url.empty())
+	if (!this->Context->get()->request->url.empty())
 	{
-		Out_Url = this->RequestPtr->get()->url.c_str();
+		Out_Url = this->Context->get()->request->url.c_str();
 	}
 
-	this->Callback_Type_Method(this->RequestPtr->get()->method, Out_Method);
-	Out_Port = this->RequestPtr->get()->port;
+	this->Callback_Type_Method(this->Context->get()->request->method, Out_Method);
+	Out_Port = this->Context->get()->request->port;
 
 	return true;
+
 #else
 	return false;
 #endif
@@ -141,13 +147,14 @@ bool UHttpConnectionLhv::GetPaths(FString& Out_Method, FString& Out_Scheme, FStr
 bool UHttpConnectionLhv::GetHeaders(TMap<FString, FString>& Out_Headers, FString& Out_String)
 {
 #ifdef _WIN64
-	if (this->RequestPtr == nullptr)
+
+	if (this->Context == nullptr)
 	{
 		return false;
 	}
 
-	const http_headers Headers = this->RequestPtr->get()->headers;
-	
+	const http_headers Headers = this->Context->get()->request->headers;
+
 	const size_t Count_Headers = Headers.size();
 	int Index_Header = 0;
 
@@ -171,6 +178,7 @@ bool UHttpConnectionLhv::GetHeaders(TMap<FString, FString>& Out_Headers, FString
 	}
 
 	return true;
+
 #else
 	return false;
 #endif
@@ -179,7 +187,8 @@ bool UHttpConnectionLhv::GetHeaders(TMap<FString, FString>& Out_Headers, FString
 bool UHttpConnectionLhv::FindHeader(FString Key, FString& Out_Value)
 {
 #ifdef _WIN64
-	if (this->RequestPtr == nullptr)
+
+	if (this->Context == nullptr)
 	{
 		return false;
 	}
@@ -189,7 +198,7 @@ bool UHttpConnectionLhv::FindHeader(FString Key, FString& Out_Value)
 		return false;
 	}
 
-	const http_headers Headers = this->RequestPtr->get()->headers;
+	const http_headers Headers = this->Context->get()->request->headers;
 
 	if (Headers.size() == 0)
 	{
@@ -200,14 +209,14 @@ bool UHttpConnectionLhv::FindHeader(FString Key, FString& Out_Value)
 	{
 		return false;
 	}
-	
+
 	const std::string Value = Headers.at(TCHAR_TO_UTF8(*Key));
 
 	if (Value.empty())
 	{
 		return false;
 	}
-	
+
 	Out_Value = Value.c_str();
 
 	return true;
@@ -219,12 +228,13 @@ bool UHttpConnectionLhv::FindHeader(FString Key, FString& Out_Value)
 bool UHttpConnectionLhv::GetContentType(ELibHvContentTypes& Out_Content_Type, FString& Out_Type_String)
 {
 #ifdef _WIN64
-	if (this->RequestPtr == nullptr)
+
+	if (this->Context == nullptr)
 	{
 		return false;
 	}
 
-	return this->Callback_Content_Type(this->RequestPtr->get()->content_type, Out_Content_Type, Out_Type_String);
+	return this->Callback_Content_Type(this->Context->get()->request->content_type, Out_Content_Type, Out_Type_String);
 
 #else
 	return false;
@@ -235,25 +245,23 @@ bool UHttpConnectionLhv::SendString(const FString In_Response, TMap<FString, FSt
 {
 #ifdef _WIN64
 
-	if (this->RequestPtr == nullptr)
+	if (this->Context == nullptr)
 	{
 		return false;
 	}
 
-	HttpResponse TempResponse;
-	TempResponse.String(TCHAR_TO_UTF8(*In_Response));
+	this->Context->get()->response->String(TCHAR_TO_UTF8(*In_Response));
 
 	for (TPair<FString, FString>& EachHeader : In_Header)
 	{
-		TempResponse.SetHeader(TCHAR_TO_UTF8(*EachHeader.Key), TCHAR_TO_UTF8(*EachHeader.Value));
+		this->Context->get()->response->SetHeader(TCHAR_TO_UTF8(*EachHeader.Key), TCHAR_TO_UTF8(*EachHeader.Value));
 	}
 
-	int ReturnValue = 0;
-	ReturnValue = ResponsePtr->get()->Begin();
-	ReturnValue = ResponsePtr->get()->WriteResponse(&TempResponse);
-	ReturnValue = ResponsePtr->get()->End();
+	TPromise<int> Promise;
+	Promise.SetValue(this->Callback_Status_To_Code(StatusCode));
+	this->Future = Promise.GetFuture();
 
-	return (ReturnValue == 0) ? true : false;
+	return true;
 
 #else
 	return false;
@@ -264,25 +272,23 @@ bool UHttpConnectionLhv::SendData(TArray<uint8> In_Bytes, TMap<FString, FString>
 {
 #ifdef _WIN64
 
-	if (this->RequestPtr == nullptr)
+	if (this->Context == nullptr)
 	{
 		return false;
 	}
 
-	HttpResponse TempResponse;
-	TempResponse.Data(In_Bytes.GetData(), In_Bytes.Num(), bNoCopy);
+	this->Context->get()->response->Data(In_Bytes.GetData(), In_Bytes.Num(), bNoCopy);
 
 	for (TPair<FString, FString>& EachHeader : In_Header)
 	{
-		TempResponse.SetHeader(TCHAR_TO_UTF8(*EachHeader.Key), TCHAR_TO_UTF8(*EachHeader.Value));
+		this->Context->get()->response->SetHeader(TCHAR_TO_UTF8(*EachHeader.Key), TCHAR_TO_UTF8(*EachHeader.Value));
 	}
 
-	int ReturnValue = 0;
-	ReturnValue = ResponsePtr->get()->Begin();
-	ReturnValue = ResponsePtr->get()->WriteResponse(&TempResponse);
-	ReturnValue = ResponsePtr->get()->End();
+	TPromise<int> Promise;
+	Promise.SetValue(this->Callback_Status_To_Code(StatusCode));
+	this->Future = Promise.GetFuture();
 
-	return (ReturnValue == 0) ? true : false;
+	return true;
 
 #else
 	return false;
@@ -293,27 +299,24 @@ bool UHttpConnectionLhv::SendResponse(const FString In_Response, TMap<FString, F
 {
 #ifdef _WIN64
 
-	if (this->RequestPtr == nullptr)
+	if (this->Context == nullptr)
 	{
 		return false;
 	}
 
-	HttpResponse TempResponse;
-	TempResponse.SetContentType(this->Callback_Content_Type_Convert(ContentTypes));
-	TempResponse.SetBody(TCHAR_TO_UTF8(*In_Response));
-	
+	this->Context->get()->response->SetContentType(this->Callback_Content_Type_Convert(ContentTypes));
+	this->Context->get()->response->SetBody(TCHAR_TO_UTF8(*In_Response));
+
 	for (TPair<FString, FString>& EachHeader : In_Header)
 	{
-		TempResponse.SetHeader(TCHAR_TO_UTF8(*EachHeader.Key), TCHAR_TO_UTF8(*EachHeader.Value));
+		this->Context->get()->response->SetHeader(TCHAR_TO_UTF8(*EachHeader.Key), TCHAR_TO_UTF8(*EachHeader.Value));
 	}
 
-	int ReturnValue = 0;
-	ReturnValue = ResponsePtr->get()->Begin();
-	ReturnValue = ResponsePtr->get()->WriteResponse(&TempResponse);
-	ReturnValue = ResponsePtr->get()->End();
+	TPromise<int> Promise;
+	Promise.SetValue(this->Callback_Status_To_Code(StatusCode));
+	this->Future = Promise.GetFuture();
 
-	return (ReturnValue == 0) ? true : false;
-
+	return true;
 #else
 	return false;
 #endif

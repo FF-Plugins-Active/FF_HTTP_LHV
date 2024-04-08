@@ -47,7 +47,7 @@ private:
 
 	FString Server_Path_Root = "";
 	FString Server_Path_404;
-	FString API_URI = "/api/libhv/v1/";
+	FString API_URI = "/api/libhv/v1";
 
 	FRunnableThread* RunnableThread = nullptr;
 	bool bStartThread = false;

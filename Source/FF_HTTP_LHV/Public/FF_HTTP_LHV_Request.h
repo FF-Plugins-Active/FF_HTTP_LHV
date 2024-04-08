@@ -16,7 +16,10 @@ THIRD_PARTY_INCLUDES_END
 
 #include "FF_HTTP_LHV_Request.generated.h"
 
-#define LHV_USE_ASYNC_HANDLER 1
+// 0 = Handler Sync
+// 1 = Handler Async
+// 2 = Handler Context
+#define LHV_HANDLER_TYPE 2
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegate_LibHv_Request, UHttpConnectionLhv*, Connection);
 
@@ -43,16 +46,21 @@ private:
 
 public:
 
-#if (LHV_USE_ASYNC_HANDLER == 0)
+#if (LHV_HANDLER_TYPE == 0)
 
 	TSharedFuture<int> Future;
 	HttpRequest* Request = nullptr;
 	HttpResponse* Response = nullptr;
 
-#else
+#elif (LHV_HANDLER_TYPE == 1)
 
 	const HttpRequestPtr* RequestPtr = nullptr;
 	const HttpResponseWriterPtr* ResponsePtr = nullptr;
+
+#elif (LHV_HANDLER_TYPE == 2)
+	
+	TSharedFuture<int> Future;
+	const HttpContextPtr* Context = nullptr;
 
 #endif
 
