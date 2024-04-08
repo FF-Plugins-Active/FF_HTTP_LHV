@@ -232,7 +232,7 @@ bool UHttpConnectionLhv::GetContentType(ELibHvContentTypes& Out_Content_Type, FS
 		return false;
 	}
 
-	return this->Callback_Type_Content(this->Request->content_type, Out_Content_Type, Out_Type_String);
+	return this->Callback_Content_Type(this->Request->content_type, Out_Content_Type, Out_Type_String);
 
 #else
 	return false;
@@ -256,7 +256,7 @@ bool UHttpConnectionLhv::SendString(const FString In_Response, TMap<FString, FSt
 	}
 
 	TPromise<int> Promise;
-	Promise.SetValue(UFF_HTTP_LHVBPLibrary::LibHv_Status_To_Int(StatusCode));
+	Promise.SetValue(this->Callback_Status_To_Code(StatusCode));
 	this->Future = Promise.GetFuture();
 
 	return true;
@@ -283,7 +283,7 @@ bool UHttpConnectionLhv::SendData(TArray<uint8> In_Bytes, TMap<FString, FString>
 	Response->Data(In_Bytes.GetData(), In_Bytes.Num(), bNoCopy);
 
 	TPromise<int> Promise;
-	Promise.SetValue(UFF_HTTP_LHVBPLibrary::LibHv_Status_To_Int(StatusCode));
+	Promise.SetValue(this->Callback_Status_To_Code(StatusCode));
 	this->Future = Promise.GetFuture();
 
 	return true;
@@ -307,11 +307,11 @@ bool UHttpConnectionLhv::SendResponse(const FString In_Response, TMap<FString, F
 		Response->SetHeader(TCHAR_TO_UTF8(*EachHeader.Key), TCHAR_TO_UTF8(*EachHeader.Value));
 	}
 
-	Response->SetContentType(UFF_HTTP_LHVBPLibrary::LibHv_Type_Bp_To_Original(ContentTypes));
+	Response->SetContentType(this->Callback_Content_Type_Convert(ContentTypes));
 	Response->SetBody(TCHAR_TO_UTF8(*In_Response));
 
 	TPromise<int> Promise;
-	Promise.SetValue(UFF_HTTP_LHVBPLibrary::LibHv_Status_To_Int(StatusCode));
+	Promise.SetValue(this->Callback_Status_To_Code(StatusCode));
 	this->Future = Promise.GetFuture();
 
 	return true;

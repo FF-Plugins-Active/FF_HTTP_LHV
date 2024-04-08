@@ -4,11 +4,19 @@
 
 // Custom Includes.
 #include "FF_HTTP_LHV_Enums.h"
-#include "FF_HTTP_LHVBPLibrary.h"
+
+THIRD_PARTY_INCLUDES_START
+#ifdef _WIN64
+#include "hv/HttpServer.h"
+#include "hv/hthread.h"    // import hv_gettid
+#include "hv/hasync.h"     // import hv::async
+#include "hv/requests.h"   // import requests::async
+#endif
+THIRD_PARTY_INCLUDES_END
 
 #include "FF_HTTP_LHV_Request.generated.h"
 
-#define LHV_USE_ASYNC_HANDLER 0
+#define LHV_USE_ASYNC_HANDLER 1
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegate_LibHv_Request, UHttpConnectionLhv*, Connection);
 
@@ -19,8 +27,19 @@ class FF_HTTP_LHV_API UHttpConnectionLhv : public UObject
 
 private:
 
+	// Method.
+
 	virtual bool Callback_Type_Method(http_method Type, FString& Out_Type_String);
-	virtual bool Callback_Type_Content(http_content_type Type, ELibHvContentTypes& Out_Content_Type, FString& Out_Type_String);
+
+	// Content.
+
+	virtual bool Callback_Content_Type(http_content_type Type, ELibHvContentTypes& Out_Content_Type, FString& Out_Type_String);
+	virtual http_content_type Callback_Content_Type_Convert(ELibHvContentTypes Type);
+
+	// Status.
+		
+	virtual int32 Callback_Status_To_Code(ELibHvStatusCodes Status);
+	virtual http_status Callback_Code_To_Status(int Status);
 
 public:
 

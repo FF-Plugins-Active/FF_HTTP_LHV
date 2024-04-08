@@ -224,7 +224,7 @@ bool UHttpConnectionLhv::GetContentType(ELibHvContentTypes& Out_Content_Type, FS
 		return false;
 	}
 
-	return this->Callback_Type_Content(this->RequestPtr->get()->content_type, Out_Content_Type, Out_Type_String);
+	return this->Callback_Content_Type(this->RequestPtr->get()->content_type, Out_Content_Type, Out_Type_String);
 
 #else
 	return false;
@@ -299,7 +299,7 @@ bool UHttpConnectionLhv::SendResponse(const FString In_Response, TMap<FString, F
 	}
 
 	HttpResponse TempResponse;
-	TempResponse.SetContentType(UFF_HTTP_LHVBPLibrary::LibHv_Type_Bp_To_Original(ContentTypes));
+	TempResponse.SetContentType(this->Callback_Content_Type_Convert(ContentTypes));
 	TempResponse.SetBody(TCHAR_TO_UTF8(*In_Response));
 	
 	for (TPair<FString, FString>& EachHeader : In_Header)
