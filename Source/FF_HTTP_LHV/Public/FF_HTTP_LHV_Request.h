@@ -19,7 +19,7 @@ THIRD_PARTY_INCLUDES_END
 // 0 = Handler Sync
 // 1 = Handler Async
 // 2 = Handler Context
-#define LHV_HANDLER_TYPE 2
+#define LHV_HANDLER_TYPE 1
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegate_LibHv_Request, UHttpConnectionLhv*, Connection);
 

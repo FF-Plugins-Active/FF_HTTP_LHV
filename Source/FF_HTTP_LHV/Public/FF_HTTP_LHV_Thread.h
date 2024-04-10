@@ -40,6 +40,7 @@ public:
 private:
 
 	virtual bool Callback_HTTP_Start();
+	virtual void Callback_HTTP_Stop();
 
 	int32 Port_HTTP = 8081;
 	int32 Port_HTTPS = 8443;
@@ -51,5 +52,6 @@ private:
 
 	FRunnableThread* RunnableThread = nullptr;
 	bool bStartThread = false;
+	bool bIsServerStarted = false;
 
 };
