@@ -38,7 +38,8 @@ bool FHTTP_Thread_LibHv::Callback_HTTP_Start()
 	this->HTTP_LVH_Server.service = &this->HTTP_LVH_Router;
 	this->HTTP_LVH_Server.port = this->Port_HTTP;
 	
-	this->HTTP_LVH_Server.run(false);
+	this->HTTP_LVH_Server.setThreadNum(this->ThreadsNum);
+	this->HTTP_LVH_Server.start();
 
 	return true;
 #else

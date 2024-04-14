@@ -14,17 +14,13 @@ bool FHTTP_Thread_LibHv::Callback_HTTP_Start()
 
 	auto Callback_Router_Handler = [this](const HttpRequestPtr& Request, const HttpResponseWriterPtr& Response)
 		{
-			requests::async(Request, [this, Request, Response](const HttpResponsePtr& resp2)
-				{
-					UHttpConnectionLhv* LibHvConnection = NewObject<UHttpConnectionLhv>();
-					LibHvConnection->RequestPtr = &Request;
-					LibHvConnection->ResponsePtr = &Response;
-					LibHvConnection->RequestTime = FDateTime::Now();
+			UHttpConnectionLhv* LibHvConnection = NewObject<UHttpConnectionLhv>();
+			LibHvConnection->RequestPtr = Request;
+			LibHvConnection->ResponsePtr = Response;
+			LibHvConnection->RequestTime = FDateTime::Now();
 
-					this->Parent_Actor->Delegate_HTTP_LibHv_Request.Broadcast(LibHvConnection);
-					this->Parent_Actor->OnHttpAdvMessage(LibHvConnection);
-				}
-			);
+			this->Parent_Actor->Delegate_HTTP_LibHv_Request.Broadcast(LibHvConnection);
+			this->Parent_Actor->OnHttpAdvMessage(LibHvConnection);
 		};
 
 	this->HTTP_LVH_Router.AllowCORS();
@@ -37,7 +33,8 @@ bool FHTTP_Thread_LibHv::Callback_HTTP_Start()
 	this->HTTP_LVH_Server.service = &this->HTTP_LVH_Router;
 	this->HTTP_LVH_Server.port = this->Port_HTTP;
 	
-	this->HTTP_LVH_Server.run(false);
+	this->HTTP_LVH_Server.setThreadNum(this->ThreadsNum);
+	this->HTTP_LVH_Server.start();
 
 	return true;
 #else
@@ -50,7 +47,7 @@ void FHTTP_Thread_LibHv::Callback_HTTP_Stop()
 #ifdef _WIN64
 
 	this->HTTP_LVH_Server.stop();
-	hv::async::cleanup();
+	//hv::async::cleanup();
 
 #endif
 }

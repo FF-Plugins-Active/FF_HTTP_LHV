@@ -54,8 +54,8 @@ public:
 
 #elif (LHV_HANDLER_TYPE == 1)
 
-	const HttpRequestPtr* RequestPtr = nullptr;
-	const HttpResponseWriterPtr* ResponsePtr = nullptr;
+	HttpRequestPtr RequestPtr = nullptr;
+	HttpResponseWriterPtr ResponsePtr = nullptr;
 
 #elif (LHV_HANDLER_TYPE == 2)
 	

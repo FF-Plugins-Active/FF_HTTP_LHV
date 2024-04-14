@@ -87,7 +87,7 @@ public:
 	int32 Port_HTTPS = 8453;
 
 	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP|Server|LibHv")
-	uint8 ThreadsNum = 4;
+	uint8 ThreadsNum = 1;
 
 	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "It should start with \"/\" and but don't put it at the end. ", ExposeOnSpawn = "true"), Category = "Frozen Forest | HTTP | Server | LibHv")
 	FString API_URI = "/api/libhv/v1";

@@ -44,7 +44,7 @@ private:
 
 	int32 Port_HTTP = 8081;
 	int32 Port_HTTPS = 8443;
-	uint8 ThreadsNum = 4;
+	uint8 ThreadsNum = 1;
 
 	FString Server_Path_Root = "";
 	FString Server_Path_404;

@@ -10,7 +10,7 @@ bool UHttpConnectionLhv::CancelRequest()
 		return false;
 	}
 
-	this->RequestPtr->get()->Cancel();
+	this->RequestPtr.get()->Cancel();
 
 	return true;
 #else
@@ -27,8 +27,8 @@ bool UHttpConnectionLhv::GetClientAddress(FString& Out_Ip, int32& Out_Port)
 		return false;
 	}
 
-	Out_Ip = this->RequestPtr->get()->client_addr.ip.c_str();
-	Out_Port = this->RequestPtr->get()->client_addr.port;
+	Out_Ip = this->RequestPtr.get()->client_addr.ip.c_str();
+	Out_Port = this->RequestPtr.get()->client_addr.port;
 
 	return true;
 
@@ -46,7 +46,7 @@ bool UHttpConnectionLhv::GetQueries(TMap<FString, FString>& Out_Query, FString& 
 		return false;
 	}
 
-	const hv::QueryParams Queries = this->RequestPtr->get()->query_params;
+	const hv::QueryParams Queries = this->RequestPtr.get()->query_params;
 	
 	const size_t Count_Querries = Queries.size();
 	int Index_Header = 0;
@@ -91,7 +91,7 @@ bool UHttpConnectionLhv::GetBody(FString& Out_Body, int32& Out_BodySize)
 		return false;
 	}
 
-	const std::string Body = this->RequestPtr->get()->body;
+	const std::string Body = this->RequestPtr.get()->body;
 
 	if (Body.empty())
 	{
@@ -115,28 +115,28 @@ bool UHttpConnectionLhv::GetPaths(FString& Out_Method, FString& Out_Scheme, FStr
 		return false;
 	}
 
-	if (!this->RequestPtr->get()->scheme.empty())
+	if (!this->RequestPtr.get()->scheme.empty())
 	{
-		Out_Scheme = this->RequestPtr->get()->scheme.c_str();
+		Out_Scheme = this->RequestPtr.get()->scheme.c_str();
 	}
 
-	if (!this->RequestPtr->get()->host.empty())
+	if (!this->RequestPtr.get()->host.empty())
 	{
-		Out_Host = this->RequestPtr->get()->host.c_str();
+		Out_Host = this->RequestPtr.get()->host.c_str();
 	}
 
-	if (!this->RequestPtr->get()->path.empty())
+	if (!this->RequestPtr.get()->path.empty())
 	{
-		Out_Path = this->RequestPtr->get()->path.c_str();
+		Out_Path = this->RequestPtr.get()->path.c_str();
 	}
 
-	if (!this->RequestPtr->get()->url.empty())
+	if (!this->RequestPtr.get()->url.empty())
 	{
-		Out_Url = this->RequestPtr->get()->url.c_str();
+		Out_Url = this->RequestPtr.get()->url.c_str();
 	}
 
-	this->Callback_Type_Method(this->RequestPtr->get()->method, Out_Method);
-	Out_Port = this->RequestPtr->get()->port;
+	this->Callback_Type_Method(this->RequestPtr.get()->method, Out_Method);
+	Out_Port = this->RequestPtr.get()->port;
 
 	return true;
 #else
@@ -152,7 +152,7 @@ bool UHttpConnectionLhv::GetHeaders(TMap<FString, FString>& Out_Headers, FString
 		return false;
 	}
 
-	const http_headers Headers = this->RequestPtr->get()->headers;
+	const http_headers Headers = this->RequestPtr.get()->headers;
 	
 	const size_t Count_Headers = Headers.size();
 	int Index_Header = 0;
@@ -201,7 +201,7 @@ bool UHttpConnectionLhv::FindHeader(FString Key, FString& Out_Value)
 		return false;
 	}
 
-	const http_headers Headers = this->RequestPtr->get()->headers;
+	const http_headers Headers = this->RequestPtr.get()->headers;
 
 	if (Headers.size() == 0)
 	{
@@ -236,7 +236,7 @@ bool UHttpConnectionLhv::GetContentType(ELibHvContentTypes& Out_Content_Type, FS
 		return false;
 	}
 
-	return this->Callback_Content_Type(this->RequestPtr->get()->content_type, Out_Content_Type, Out_Type_String);
+	return this->Callback_Content_Type(this->RequestPtr.get()->content_type, Out_Content_Type, Out_Type_String);
 
 #else
 	return false;
@@ -261,9 +261,9 @@ bool UHttpConnectionLhv::SendString(const FString In_Response, TMap<FString, FSt
 	}
 
 	int ReturnValue = 0;
-	ReturnValue = ResponsePtr->get()->Begin();
-	ReturnValue = ResponsePtr->get()->WriteResponse(&TempResponse);
-	ReturnValue = ResponsePtr->get()->End();
+	ReturnValue = ResponsePtr.get()->Begin();
+	ReturnValue = ResponsePtr.get()->WriteResponse(&TempResponse);
+	ReturnValue = ResponsePtr.get()->End();
 
 	return (ReturnValue == 0) ? true : false;
 
@@ -290,9 +290,9 @@ bool UHttpConnectionLhv::SendData(TArray<uint8> In_Bytes, TMap<FString, FString>
 	}
 
 	int ReturnValue = 0;
-	ReturnValue = ResponsePtr->get()->Begin();
-	ReturnValue = ResponsePtr->get()->WriteResponse(&TempResponse);
-	ReturnValue = ResponsePtr->get()->End();
+	ReturnValue = ResponsePtr.get()->Begin();
+	ReturnValue = ResponsePtr.get()->WriteResponse(&TempResponse);
+	ReturnValue = ResponsePtr.get()->End();
 
 	return (ReturnValue == 0) ? true : false;
 
@@ -320,9 +320,9 @@ bool UHttpConnectionLhv::SendResponse(const FString In_Response, TMap<FString, F
 	}
 
 	int ReturnValue = 0;
-	ReturnValue = ResponsePtr->get()->Begin();
-	ReturnValue = ResponsePtr->get()->WriteResponse(&TempResponse);
-	ReturnValue = ResponsePtr->get()->End();
+	ReturnValue = ResponsePtr.get()->Begin();
+	ReturnValue = ResponsePtr.get()->WriteResponse(&TempResponse);
+	ReturnValue = ResponsePtr.get()->End();
 
 	return (ReturnValue == 0) ? true : false;
 
