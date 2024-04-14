@@ -70,25 +70,25 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Frozen Forest|HTTP|Server|LibHv")
 	virtual bool CancelRequest();
 
-	UFUNCTION(BlueprintCallable, Category = "Frozen Forest|HTTP|Server|LibHv")
+	UFUNCTION(BlueprintPure, Category = "Frozen Forest|HTTP|Server|LibHv")
 	virtual bool GetClientAddress(FString& Out_Ip, int32& Out_Port);
 
-	UFUNCTION(BlueprintCallable, Category = "Frozen Forest|HTTP|Server|LibHv")
-	virtual bool GetQuerries(TMap<FString, FString>& Out_Querry, FString& Out_String);
+	UFUNCTION(BlueprintPure, Category = "Frozen Forest|HTTP|Server|LibHv")
+	virtual bool GetQueries(TMap<FString, FString>& Out_Querry, FString& Out_String);
 
-	UFUNCTION(BlueprintCallable, Category = "Frozen Forest|HTTP|Server|LibHv")
+	UFUNCTION(BlueprintPure, Category = "Frozen Forest|HTTP|Server|LibHv")
 	virtual bool GetBody(FString& Out_Body, int32& Out_BodySize);
 
-	UFUNCTION(BlueprintCallable, Category = "Frozen Forest|HTTP|Server|LibHv")
+	UFUNCTION(BlueprintPure, Category = "Frozen Forest|HTTP|Server|LibHv")
 	virtual bool GetPaths(FString& Out_Method, FString& Out_Scheme, FString& Out_Host, int32& Out_Port, FString& Out_Path, FString& Out_Url);
 
-	UFUNCTION(BlueprintCallable, Category = "Frozen Forest|HTTP|Server|LibHv")
+	UFUNCTION(BlueprintPure, Category = "Frozen Forest|HTTP|Server|LibHv")
 	virtual bool GetHeaders(TMap<FString, FString>& Out_Headers, FString& Out_String);
 
-	UFUNCTION(BlueprintCallable, Category = "Frozen Forest|HTTP|Server|LibHv")
+	UFUNCTION(BlueprintPure, Category = "Frozen Forest|HTTP|Server|LibHv")
 	virtual bool FindHeader(FString Key, FString& Out_Value);
 
-	UFUNCTION(BlueprintCallable, Category = "Frozen Forest|HTTP|Server|LibHv")
+	UFUNCTION(BlueprintPure, Category = "Frozen Forest|HTTP|Server|LibHv")
 	virtual bool GetContentType(ELibHvContentTypes& Out_Content_Type, FString& Out_Type_String);
 
 	UFUNCTION(BlueprintCallable, Category = "Frozen Forest|HTTP|Server|LibHv")

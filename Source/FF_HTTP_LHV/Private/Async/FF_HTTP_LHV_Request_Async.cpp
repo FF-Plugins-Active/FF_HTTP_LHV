@@ -37,7 +37,7 @@ bool UHttpConnectionLhv::GetClientAddress(FString& Out_Ip, int32& Out_Port)
 #endif
 }
 
-bool UHttpConnectionLhv::GetQuerries(TMap<FString, FString>& Out_Querry, FString& Out_String)
+bool UHttpConnectionLhv::GetQueries(TMap<FString, FString>& Out_Query, FString& Out_String)
 {
 #ifdef _WIN64
 
@@ -46,29 +46,35 @@ bool UHttpConnectionLhv::GetQuerries(TMap<FString, FString>& Out_Querry, FString
 		return false;
 	}
 
-	const hv::QueryParams Querries = this->RequestPtr->get()->query_params;
+	const hv::QueryParams Queries = this->RequestPtr->get()->query_params;
 	
-	const size_t Count_Querries = Querries.size();
+	const size_t Count_Querries = Queries.size();
 	int Index_Header = 0;
 
-	for (auto& Each_Querry : Querries)
-	{
-		FString Key = Each_Querry.first.c_str();
-		FString Value = Each_Querry.second.c_str();
+	TMap<FString, FString> Temp_Query;
+	FString Query_String;
 
-		Out_Querry.Add(Key, Value);
+	for (auto& Each_Query : Queries)
+	{
+		FString Key = Each_Query.first.c_str();
+		FString Value = Each_Query.second.c_str();
+
+		Temp_Query.Add(Key, Value);
 
 		if (Index_Header == (Count_Querries - 1))
 		{
-			Out_String += Key + ":" + Value;
+			Query_String += Key + ":" + Value;
 		}
 
 		else
 		{
-			Out_String += Key + ":" + Value + "&";
+			Query_String += Key + ":" + Value + "&";
 			Index_Header++;
 		}
 	}
+
+	Out_Query = Temp_Query;
+	Out_String = Query_String;
 
 	return true;
 
@@ -151,24 +157,30 @@ bool UHttpConnectionLhv::GetHeaders(TMap<FString, FString>& Out_Headers, FString
 	const size_t Count_Headers = Headers.size();
 	int Index_Header = 0;
 
+	TMap<FString, FString> Temp_Headers;
+	FString Header_String;
+
 	for (auto& Each_Header : Headers)
 	{
 		FString Key = Each_Header.first.c_str();
 		FString Value = Each_Header.second.c_str();
 
-		Out_Headers.Add(Key, Value);
+		Temp_Headers.Add(Key, Value);
 
 		if (Index_Header == (Count_Headers - 1))
 		{
-			Out_String += Key + ":" + Value;
+			Header_String += Key + ":" + Value;
 		}
 
 		else
 		{
-			Out_String += Key + ":" + Value + LINE_TERMINATOR_ANSI;
+			Header_String += Key + ":" + Value + LINE_TERMINATOR_ANSI;
 			Index_Header++;
 		}
 	}
+
+	Out_Headers = Temp_Headers;
+	Out_String = Header_String;
 
 	return true;
 #else
