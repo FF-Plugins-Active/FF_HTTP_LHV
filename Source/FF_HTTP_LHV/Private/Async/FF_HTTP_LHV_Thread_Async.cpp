@@ -23,7 +23,13 @@ bool FHTTP_Thread_LibHv::Callback_HTTP_Start()
 			this->Parent_Actor->OnHttpAdvMessage(LibHvConnection);
 		};
 
+	auto Callback_Router_Error = [this](const HttpContextPtr& Context)->int
+		{
+			return Context->sendFile(TCHAR_TO_UTF8(*this->Server_Path_404));
+		};
+
 	this->HTTP_LVH_Router.AllowCORS();
+	this->HTTP_LVH_Router.errorHandler = Callback_Router_Error;
 	this->HTTP_LVH_Router.Static("/", TCHAR_TO_UTF8(*this->Server_Path_Root));							// Static Site
 	
 	this->HTTP_LVH_Router.Any(TCHAR_TO_UTF8(*this->API_URI), Callback_Router_Handler);					// Non-Querry APIs without "/" at end.
