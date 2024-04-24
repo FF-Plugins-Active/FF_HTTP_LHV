@@ -19,8 +19,6 @@ public class FF_HTTP_LHV : ModuleRules
                 "Core",
                 "zlib",
                 "OpenSSL",      // We don't need OpenSSL certificate functions
-                "nghttp2",      // We need it for LibCurl
-                "libcurl",
             }
             );
 			
