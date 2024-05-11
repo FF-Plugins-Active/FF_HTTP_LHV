@@ -183,11 +183,9 @@ bool UHttpConnectionLhv::Callback_Type_Method(http_method Type, FString& Out_Typ
 
 	default:
 
-		Out_Type_String = "GET";
-		return true;
+		Out_Type_String = "NONE";
+		return false;
 	}
-
-	return false;
 }
 
 // Content
@@ -626,10 +624,8 @@ bool UHttpConnectionLhv::Callback_Content_Type(http_content_type Type, ELibHvCon
 	default:
 
 		Out_Content_Type = ELibHvContentTypes::Content_Type_NONE;
-		return true;
+		return false;
 	}
-
-	return false;
 }
 
 http_content_type UHttpConnectionLhv::Callback_Content_Type_Convert(ELibHvContentTypes Type)
@@ -852,8 +848,6 @@ http_content_type UHttpConnectionLhv::Callback_Content_Type_Convert(ELibHvConten
 	default:
 		return http_content_type::TEXT_PLAIN;
 	}
-
-	return http_content_type::TEXT_PLAIN;
 }
 
 // Status
@@ -1042,8 +1036,6 @@ int32 UHttpConnectionLhv::Callback_Status_To_Code(ELibHvStatusCodes Status)
 	default:
 		return 404;
 	};
-
-	return 404;
 }
 
 http_status UHttpConnectionLhv::Callback_Code_To_Status(int Status)
@@ -1230,6 +1222,4 @@ http_status UHttpConnectionLhv::Callback_Code_To_Status(int Status)
 	default:
 		return http_status::HTTP_STATUS_NOT_FOUND;
 	};
-
-	return http_status::HTTP_STATUS_NOT_FOUND;
 }
