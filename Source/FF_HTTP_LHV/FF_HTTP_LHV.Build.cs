@@ -13,8 +13,6 @@ public class FF_HTTP_LHV : ModuleRules
         bEnableExceptions = true;
         bUseRTTI = true;
 
-        bUseUnity = false;
-
         PublicDependencyModuleNames.AddRange(
             new string[]
             {
