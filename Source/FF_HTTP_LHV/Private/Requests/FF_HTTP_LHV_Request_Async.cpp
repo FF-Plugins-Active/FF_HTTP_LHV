@@ -45,7 +45,7 @@ bool UHttpConnectionLhv::GetQueries(TMap<FString, FString>& Out_Query, FString& 
 	{
 		return false;
 	}
-
+	
 	const hv::QueryParams Queries = this->RequestPtr.get()->query_params;
 	
 	const size_t Count_Querries = Queries.size();
@@ -91,6 +91,7 @@ bool UHttpConnectionLhv::GetBody(FString& Out_Body, int32& Out_BodySize)
 		return false;
 	}
 
+	this->RequestPtr->Body();
 	const std::string Body = this->RequestPtr.get()->body;
 
 	if (Body.empty())
