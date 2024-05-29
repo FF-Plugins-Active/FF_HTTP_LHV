@@ -26,5 +26,11 @@
 				"Win64"
 			]
 		}
+	],
+	"Plugins": [
+		{
+			"Name": "FF_MBedTLS",
+			"Enabled": true
+		}
 	]
 }

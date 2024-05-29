@@ -89,9 +89,9 @@
 #define HAVE_SETPROCTITLE 0
 #endif
 
-#define WITH_OPENSSL   1
+/* #undef WITH_OPENSSL */
 /* #undef WITH_GNUTLS */
-/* #undef WITH_MBEDTLS */
+#define WITH_MBEDTLS   1
 
 /* #undef ENABLE_UDS */
 /* #undef USE_MULTIMAP */

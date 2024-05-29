@@ -8,6 +8,14 @@ Our long-term goal is integrating HTTP/2 server to UE5. For this reason, we will
 Ithewei LibHv
 https://github.com/ithewei/libhv
 
+## DEPENDENCIES
+- MBedTLS </br>
+- NGHTTP2 (Optional) </br>
+Instructions
+	- Copy contents of dependencies include to ``libhv/include``
+	- Create a folder with name ``lib`` in libhv's root directory.
+	- Copy all .lib files to created ``lib`` folder.
+
 ## ROADMAP
 - HTTPS Server implementation
 - More advance response (for example, response headers)
