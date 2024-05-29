@@ -77,6 +77,9 @@ public:
 	virtual bool GetQueries(TMap<FString, FString>& Out_Querry, FString& Out_String);
 
 	UFUNCTION(BlueprintPure, Category = "Frozen Forest|HTTP|Server|LibHv")
+	virtual bool FindQuery(FString& Value, FString Key);
+
+	UFUNCTION(BlueprintPure, Category = "Frozen Forest|HTTP|Server|LibHv")
 	virtual bool GetBody(FString& Out_Body, int32& Out_BodySize);
 
 	UFUNCTION(BlueprintPure, Category = "Frozen Forest|HTTP|Server|LibHv")

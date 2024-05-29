@@ -83,6 +83,33 @@ bool UHttpConnectionLhv::GetQueries(TMap<FString, FString>& Out_Query, FString& 
 #endif
 }
 
+bool UHttpConnectionLhv::FindQuery(FString& Value, FString Key)
+{
+#ifdef _WIN64
+
+	if (this->RequestPtr == nullptr)
+	{
+		return false;
+	}
+
+	const TSharedPtr<std::string, ESPMode::ThreadSafe> ParamPtr = MakeShared<std::string, ESPMode::ThreadSafe>(this->RequestPtr->GetParam(TCHAR_TO_UTF8(*Key), ""));
+
+	if (ParamPtr->empty())
+	{
+		return false;
+	}
+
+	else
+	{
+		Value = ParamPtr->c_str();
+		return true;
+	}
+
+#else
+	return false;
+#endif
+}
+
 bool UHttpConnectionLhv::GetBody(FString& Out_Body, int32& Out_BodySize)
 {
 #ifdef _WIN64
@@ -91,16 +118,34 @@ bool UHttpConnectionLhv::GetBody(FString& Out_Body, int32& Out_BodySize)
 		return false;
 	}
 
-	this->RequestPtr->Body();
-	const std::string Body = this->RequestPtr.get()->body;
+	bool bUseSharedPtr = true;
 
-	if (Body.empty())
+	if (bUseSharedPtr)
 	{
-		return false;
+		TSharedPtr<std::string, ESPMode::ThreadSafe> BodyPtr = MakeShared<std::string, ESPMode::ThreadSafe>(this->RequestPtr->Body());
+		
+		if (BodyPtr->empty())
+		{
+			return false;
+		}
+
+		Out_Body = BodyPtr->c_str();
+		Out_BodySize = BodyPtr->size();
 	}
 
-	Out_Body = Body.c_str();
-	Out_BodySize = Body.size();
+	else
+	{
+		this->RequestPtr->Body();
+		const std::string Body = this->RequestPtr.get()->body;
+
+		if (Body.empty())
+		{
+			return false;
+		}
+
+		Out_Body = Body.c_str();
+		Out_BodySize = Body.size();
+	}
 
 	return true;
 #else
@@ -152,15 +197,14 @@ bool UHttpConnectionLhv::GetHeaders(TMap<FString, FString>& Out_Headers, FString
 	{
 		return false;
 	}
-
+		
 	const http_headers Headers = this->RequestPtr.get()->headers;
-	
 	const size_t Count_Headers = Headers.size();
-	int Index_Header = 0;
-
+	
 	TMap<FString, FString> Temp_Headers;
 	FString Header_String;
-
+	int Index_Header = 0;
+	
 	for (auto& Each_Header : Headers)
 	{
 		FString Key = Each_Header.first.c_str();
