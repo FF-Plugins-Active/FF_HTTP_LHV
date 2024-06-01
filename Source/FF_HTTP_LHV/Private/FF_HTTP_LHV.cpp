@@ -10,8 +10,9 @@ void FFF_HTTP_LHVModule::StartupModule()
 #if defined(_WIN64) && LIBHV_SHARED == 1
 
 	const FString BasePluginDir = IPluginManager::Get().FindPlugin("FF_HTTP_LHV")->GetBaseDir();
-	const FString DLL_Path = FPaths::Combine(*BasePluginDir, TEXT("Source/LibHv/Win64/lib/hv.dll"));
-	Libhv_Handle = FPlatformProcess::GetDllHandle(*DLL_Path);
+	const FString DLL_Path = FPaths::Combine(*BasePluginDir, TEXT("Source/LibHv/Win64/lib/"));
+	
+	Libhv_Handle = FPlatformProcess::GetDllHandle(*FPaths::Combine(*DLL_Path, TEXT("hv.dll")));
 
 	if (Libhv_Handle != nullptr)
 	{
