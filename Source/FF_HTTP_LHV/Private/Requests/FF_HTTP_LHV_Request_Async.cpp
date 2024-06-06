@@ -143,7 +143,7 @@ bool UHttpConnectionLhv::GetBody(FString& Out_Body, int32& Out_BodySize)
 			return false;
 		}
 
-		Out_Body = Body.c_str();
+		Out_Body = UTF8_TO_TCHAR(Body.c_str());
 		Out_BodySize = Body.size();
 	}
 
@@ -207,8 +207,8 @@ bool UHttpConnectionLhv::GetHeaders(TMap<FString, FString>& Out_Headers, FString
 	
 	for (auto& Each_Header : Headers)
 	{
-		FString Key = Each_Header.first.c_str();
-		FString Value = Each_Header.second.c_str();
+		FString Key = UTF8_TO_TCHAR(Each_Header.first.c_str());
+		FString Value = UTF8_TO_TCHAR(Each_Header.second.c_str());
 
 		Temp_Headers.Add(Key, Value);
 
@@ -265,7 +265,7 @@ bool UHttpConnectionLhv::FindHeader(FString Key, FString& Out_Value)
 		return false;
 	}
 	
-	Out_Value = Value.c_str();
+	Out_Value = UTF8_TO_TCHAR(Value.c_str());
 
 	return true;
 #else
