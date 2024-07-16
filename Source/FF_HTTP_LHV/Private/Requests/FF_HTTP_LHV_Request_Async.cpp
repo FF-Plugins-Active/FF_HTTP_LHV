@@ -10,7 +10,17 @@ bool UHttpConnectionLhv::CancelRequest()
 		return false;
 	}
 
-	this->RequestPtr.get()->Cancel();
+	try
+	{
+		this->RequestPtr.get()->Cancel();
+	}
+
+	catch (const std::exception& Exception)
+	{
+		FString ExceptionString = Exception.what();
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *ExceptionString);
+		return false;
+	}
 
 	return true;
 #else
@@ -27,8 +37,18 @@ bool UHttpConnectionLhv::GetClientAddress(FString& Out_Ip, int32& Out_Port)
 		return false;
 	}
 
-	Out_Ip = this->RequestPtr.get()->client_addr.ip.c_str();
-	Out_Port = this->RequestPtr.get()->client_addr.port;
+	try
+	{
+		Out_Ip = this->RequestPtr->client_addr.ip.c_str();
+		Out_Port = this->RequestPtr->client_addr.port;
+	}
+
+	catch (const std::exception& Exception)
+	{
+		FString ExceptionString = Exception.what();
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *ExceptionString);
+		return false;
+	}
 
 	return true;
 
@@ -45,34 +65,43 @@ bool UHttpConnectionLhv::GetQueries(TMap<FString, FString>& Out_Query, FString& 
 	{
 		return false;
 	}
-	
-	const hv::QueryParams Queries = this->RequestPtr.get()->query_params;
-	
-	const size_t Count_Querries = Queries.size();
-	int Index_Header = 0;
 
 	TMap<FString, FString> Temp_Query;
 	FString Query_String;
-
-	for (auto& Each_Query : Queries)
+	
+	try
 	{
-		FString Key = Each_Query.first.c_str();
-		FString Value = Each_Query.second.c_str();
+		const hv::QueryParams Queries = this->RequestPtr.get()->query_params;
+		const size_t Count_Querries = Queries.size();
+		int Index_Header = 0;
 
-		Temp_Query.Add(Key, Value);
-
-		if (Index_Header == (Count_Querries - 1))
+		for (const std::pair<const std::string, std::string>& Each_Query : Queries)
 		{
-			Query_String += Key + ":" + Value;
-		}
+			FString Key = Each_Query.first.c_str();
+			FString Value = Each_Query.second.c_str();
 
-		else
-		{
-			Query_String += Key + ":" + Value + "&";
-			Index_Header++;
+			Temp_Query.Add(Key, Value);
+
+			if (Index_Header == (Count_Querries - 1))
+			{
+				Query_String += Key + ":" + Value;
+			}
+
+			else
+			{
+				Query_String += Key + ":" + Value + "&";
+				Index_Header++;
+			}
 		}
 	}
 
+	catch (const std::exception& Exception)
+	{
+		FString ExceptionString = Exception.what();
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *ExceptionString);
+		return false;
+	}
+	
 	Out_Query = Temp_Query;
 	Out_String = Query_String;
 
@@ -92,60 +121,69 @@ bool UHttpConnectionLhv::FindQuery(FString& Value, FString Key)
 		return false;
 	}
 
-	const TSharedPtr<std::string, ESPMode::ThreadSafe> ParamPtr = MakeShared<std::string, ESPMode::ThreadSafe>(this->RequestPtr->GetParam(TCHAR_TO_UTF8(*Key), ""));
+	FString TempValue;
 
-	if (ParamPtr->empty())
+	try
 	{
+		const std::string RawString = this->RequestPtr->GetParam(TCHAR_TO_UTF8(*Key), std::string());
+
+		if (RawString.empty())
+		{
+			return false;
+		}
+
+		TempValue = UTF8_TO_TCHAR(RawString.c_str());
+	}
+
+	catch (const std::exception& Exception)
+	{
+		FString ExceptionString = Exception.what();
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *ExceptionString);
 		return false;
 	}
 
-	else
-	{
-		Value = ParamPtr->c_str();
-		return true;
-	}
+	Value = TempValue;
+	return true;
 
 #else
 	return false;
 #endif
 }
 
-bool UHttpConnectionLhv::GetBody(FString& Out_Body, int32& Out_BodySize)
+bool UHttpConnectionLhv::GetBody(FString& Out_Body, int64& Out_BodySize)
 {
 #ifdef _WIN64
+	
 	if (this->RequestPtr == nullptr)
 	{
 		return false;
 	}
 
-	bool bUseSharedPtr = true;
+	FString TempBody;
+	size_t TempLenght = 0;
 
-	if (bUseSharedPtr)
+	try
 	{
-		TSharedPtr<std::string, ESPMode::ThreadSafe> BodyPtr = MakeShared<std::string, ESPMode::ThreadSafe>(this->RequestPtr->Body());
-		
-		if (BodyPtr->empty())
+		const std::string RawString = this->RequestPtr->Body();
+
+		if (RawString.empty())
 		{
 			return false;
 		}
 
-		Out_Body = BodyPtr->c_str();
-		Out_BodySize = BodyPtr->size();
+		TempBody = UTF8_TO_TCHAR(*RawString.c_str());
+		TempLenght = this->RequestPtr->Body().size();
 	}
 
-	else
+	catch (const std::exception& Exception)
 	{
-		this->RequestPtr->Body();
-		const std::string Body = this->RequestPtr.get()->body;
-
-		if (Body.empty())
-		{
-			return false;
-		}
-
-		Out_Body = UTF8_TO_TCHAR(Body.c_str());
-		Out_BodySize = Body.size();
+		FString ExceptionString = Exception.what();
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *ExceptionString);
+		return false;
 	}
+
+	Out_Body = TempBody;
+	Out_BodySize = (int64)TempLenght;
 
 	return true;
 #else

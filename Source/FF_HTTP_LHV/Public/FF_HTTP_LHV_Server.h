@@ -7,7 +7,6 @@
 
 // Custom Includes.
 #include "FF_HTTP_LHV_Request.h"
-#include "FF_HTTP_LHV_Thread.h"
 
 #include "FF_HTTP_LHV_Server.generated.h"
 
@@ -26,6 +25,9 @@ protected:
 	// Called when the game ends or when destroyed.
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
+	hv::HttpService HTTP_LVH_Router;
+	hv::HttpServer HTTP_LVH_Server;
+
 public:	
 
 	// Sets default values for this actor's properties.
@@ -34,30 +36,21 @@ public:
 	// Called every frame.
 	virtual void Tick(float DeltaTime) override;
 
-#ifdef _WIN64
-	
-	class FHTTP_Thread_LibHv* Thread_LibHv = nullptr;
-
-#endif
-
 	// FUNCTIONS
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "HTTP Server LibHv - Start"), Category = "Frozen Forest|HTTP|Server|LibHv")
-	virtual bool HTTP_Server_Start();
+	virtual bool HTTP_Server_Start(FString& Out_Code);
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "HTTP Server LibHv - Stop"), Category = "Frozen Forest|HTTP|Server|LibHv")
 	virtual void HTTP_Server_Stop();
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "HTTP Server LibHv - Toggle"), Category = "Frozen Forest|HTTP|Server|LibHv")
-	virtual bool HTTP_Server_Toggle(bool bIsPause);
-
 	// EVENTS
 
 	UFUNCTION(BlueprintImplementableEvent, meta = (Description = ""), Category = "Frozen Forest|HTTP|Server|LibHv")
-	void OnHttpAdvStart();
+	void OnLibHvStart();
 
 	UFUNCTION(BlueprintImplementableEvent, meta = (Description = ""), Category = "Frozen Forest|HTTP|Server|LibHv")
-	void OnHttpAdvStop();
+	void OnLibHvStop();
 
 	UFUNCTION(BlueprintImplementableEvent, meta = (Description = ""), Category = "Frozen Forest|HTTP|Server|LibHv")
 	void OnHttpAdvMessage(UHttpConnectionLhv* Connection);
@@ -87,12 +80,9 @@ public:
 	int32 Port_HTTPS = 8453;
 
 	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP|Server|LibHv")
-	uint8 ThreadsNum = 1;
+	uint8 ThreadsNum = 4;
 
-	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "It should start with \"/\" and but don't put it at the end. ", ExposeOnSpawn = "true"), Category = "Frozen Forest | HTTP | Server | LibHv")
+	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "It should start with \"/\".", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP|Server|LibHv")
 	FString API_URI = "/api/libhv/v1";
-
-	UPROPERTY(BlueprintReadOnly, meta = (ToolTip = "It has to be unique.", ExposeOnSpawn = "true"), Category = "Frozen Forest|HTTP|Server|LibHv")
-	FString Server_Name = "HTTP_Server_LibHv";
 
 };

@@ -4,8 +4,6 @@
 
 #include "Modules/ModuleManager.h"
 
-#define LIBHV_SHARED 1
-
 class FFF_HTTP_LHVModule : public IModuleInterface
 {
 public:
@@ -14,8 +12,6 @@ public:
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;
 
-#if defined(_WIN64) && LIBHV_SHARED == 1
-	void* Libhv_Handle = nullptr;
-#endif
+	//void* Libhv_Handle = nullptr;
 
 };

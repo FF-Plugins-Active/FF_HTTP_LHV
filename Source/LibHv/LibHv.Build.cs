@@ -13,10 +13,12 @@ namespace UnrealBuildTool.Rules
 
             if (Target.Platform == UnrealTargetPlatform.Win64)
             {
+                PublicDefinitions.Add("HV_STATICLIB");
+
                 PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "Win64", "include"));
-                PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "Win64", "lib", "hv.lib"));
-                RuntimeDependencies.Add(Path.Combine(ModuleDirectory, "Win64", "lib", "hv.dll"));
-                PublicDelayLoadDLLs.Add("hv.dll");
+                PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "Win64", "lib", "hv_static.lib"));
+                //RuntimeDependencies.Add(Path.Combine(ModuleDirectory, "Win64", "lib", "hv.dll"));
+                //PublicDelayLoadDLLs.Add("hv.dll");
             }
         }
     }

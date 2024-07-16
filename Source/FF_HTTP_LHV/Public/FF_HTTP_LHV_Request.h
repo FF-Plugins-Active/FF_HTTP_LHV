@@ -4,21 +4,15 @@
 
 // Custom Includes.
 #include "FF_HTTP_LHV_Enums.h"
-
-THIRD_PARTY_INCLUDES_START
-#ifdef _WIN64
-#include "hv/HttpServer.h"
-#include "hv/hthread.h"    // import hv_gettid
-#include "hv/hasync.h"     // import hv::async
-#include "hv/requests.h"   // import requests::async
-#endif
-THIRD_PARTY_INCLUDES_END
+#include "FF_HTTP_LHV_Includes.h"
 
 #include "FF_HTTP_LHV_Request.generated.h"
 
-// 0 = Handler Sync
-// 1 = Handler Async
-// 2 = Handler Context
+/*
+* 0 = Handler Sync
+* 1 = Handler Async
+* 2 = Handler Context
+*/
 #define LHV_HANDLER_TYPE 1
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDelegate_LibHv_Request, UHttpConnectionLhv*, Connection);
@@ -80,7 +74,7 @@ public:
 	virtual bool FindQuery(FString& Value, FString Key);
 
 	UFUNCTION(BlueprintPure, Category = "Frozen Forest|HTTP|Server|LibHv")
-	virtual bool GetBody(FString& Out_Body, int32& Out_BodySize);
+	virtual bool GetBody(FString& Out_Body, int64& Out_BodySize);
 
 	UFUNCTION(BlueprintPure, Category = "Frozen Forest|HTTP|Server|LibHv")
 	virtual bool GetPaths(FString& Out_Method, FString& Out_Scheme, FString& Out_Host, int32& Out_Port, FString& Out_Path, FString& Out_Url);
