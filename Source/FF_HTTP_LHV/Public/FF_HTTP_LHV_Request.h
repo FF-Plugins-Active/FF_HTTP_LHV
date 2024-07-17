@@ -24,17 +24,9 @@ class FF_HTTP_LHV_API UHttpConnectionLhv : public UObject
 
 private:
 
-	// Method.
-
-	virtual bool Callback_Type_Method(http_method Type, FString& Out_Type_String);
-
-	// Content.
-
-	virtual bool Callback_Content_Type(http_content_type Type, ELibHvContentTypes& Out_Content_Type, FString& Out_Type_String);
+	virtual FString Callback_Type_Method(http_method Type);
+	virtual void Callback_Content_Type(ELibHvContentTypes& Out_Content_Type, FString& Out_Type_String, http_content_type Type);
 	virtual http_content_type Callback_Content_Type_Convert(ELibHvContentTypes Type);
-
-	// Status.
-		
 	virtual int32 Callback_Status_To_Code(ELibHvStatusCodes Status);
 	virtual http_status Callback_Code_To_Status(int Status);
 
@@ -86,7 +78,10 @@ public:
 	virtual bool FindHeader(FString Key, FString& Out_Value);
 
 	UFUNCTION(BlueprintPure, Category = "Frozen Forest|HTTP|Server|LibHv")
-	virtual bool GetContentType(ELibHvContentTypes& Out_Content_Type, FString& Out_Type_String);
+	virtual bool GetContentType(FString& Out_Type_String, ELibHvContentTypes& Out_Content_Type);
+
+	UFUNCTION(BlueprintPure, Category = "Frozen Forest|HTTP|Server|LibHv")
+	virtual bool GetContentLenght(int64& Out_Lenght);
 
 	UFUNCTION(BlueprintCallable, Category = "Frozen Forest|HTTP|Server|LibHv")
 	virtual bool SendString(const FString In_Response, TMap<FString, FString> In_Header, ELibHvStatusCodes StatusCode = ELibHvStatusCodes::OK_200);

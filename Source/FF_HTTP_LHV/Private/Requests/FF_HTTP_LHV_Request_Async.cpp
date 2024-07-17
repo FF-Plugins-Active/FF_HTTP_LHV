@@ -4,7 +4,6 @@
 
 bool UHttpConnectionLhv::CancelRequest()
 {
-#ifdef _WIN64
 	if (this->RequestPtr == nullptr)
 	{
 		return false;
@@ -17,21 +16,16 @@ bool UHttpConnectionLhv::CancelRequest()
 
 	catch (const std::exception& Exception)
 	{
-		FString ExceptionString = Exception.what();
+		const FString ExceptionString = Exception.what();
 		UE_LOG(LogTemp, Warning, TEXT("%s"), *ExceptionString);
 		return false;
 	}
 
 	return true;
-#else
-	return false;
-#endif
 }
 
 bool UHttpConnectionLhv::GetClientAddress(FString& Out_Ip, int32& Out_Port)
 {
-#ifdef _WIN64
-
 	if (this->RequestPtr == nullptr)
 	{
 		return false;
@@ -45,22 +39,16 @@ bool UHttpConnectionLhv::GetClientAddress(FString& Out_Ip, int32& Out_Port)
 
 	catch (const std::exception& Exception)
 	{
-		FString ExceptionString = Exception.what();
+		const FString ExceptionString = Exception.what();
 		UE_LOG(LogTemp, Warning, TEXT("%s"), *ExceptionString);
 		return false;
 	}
 
 	return true;
-
-#else
-	return false;
-#endif
 }
 
 bool UHttpConnectionLhv::GetQueries(TMap<FString, FString>& Out_Query, FString& Out_String)
 {
-#ifdef _WIN64
-
 	if (this->RequestPtr == nullptr)
 	{
 		return false;
@@ -97,7 +85,7 @@ bool UHttpConnectionLhv::GetQueries(TMap<FString, FString>& Out_Query, FString& 
 
 	catch (const std::exception& Exception)
 	{
-		FString ExceptionString = Exception.what();
+		const FString ExceptionString = Exception.what();
 		UE_LOG(LogTemp, Warning, TEXT("%s"), *ExceptionString);
 		return false;
 	}
@@ -106,16 +94,10 @@ bool UHttpConnectionLhv::GetQueries(TMap<FString, FString>& Out_Query, FString& 
 	Out_String = Query_String;
 
 	return true;
-
-#else
-	return false;
-#endif
 }
 
 bool UHttpConnectionLhv::FindQuery(FString& Value, FString Key)
 {
-#ifdef _WIN64
-
 	if (this->RequestPtr == nullptr)
 	{
 		return false;
@@ -137,23 +119,17 @@ bool UHttpConnectionLhv::FindQuery(FString& Value, FString Key)
 
 	catch (const std::exception& Exception)
 	{
-		FString ExceptionString = Exception.what();
+		const FString ExceptionString = Exception.what();
 		UE_LOG(LogTemp, Warning, TEXT("%s"), *ExceptionString);
 		return false;
 	}
 
 	Value = TempValue;
 	return true;
-
-#else
-	return false;
-#endif
 }
 
 bool UHttpConnectionLhv::GetBody(FString& Out_Body, int64& Out_BodySize)
 {
-#ifdef _WIN64
-	
 	if (this->RequestPtr == nullptr)
 	{
 		return false;
@@ -164,20 +140,20 @@ bool UHttpConnectionLhv::GetBody(FString& Out_Body, int64& Out_BodySize)
 
 	try
 	{
-		const std::string RawString = this->RequestPtr->Body();
-
+		const std::string RawString = this->RequestPtr->body;
+		
 		if (RawString.empty())
 		{
 			return false;
 		}
 
-		TempBody = UTF8_TO_TCHAR(*RawString.c_str());
-		TempLenght = this->RequestPtr->Body().size();
+		TempBody = UTF8_TO_TCHAR(RawString.c_str());
+		TempLenght = RawString.size();
 	}
 
 	catch (const std::exception& Exception)
 	{
-		FString ExceptionString = Exception.what();
+		const FString ExceptionString = Exception.what();
 		UE_LOG(LogTemp, Warning, TEXT("%s"), *ExceptionString);
 		return false;
 	}
@@ -186,94 +162,103 @@ bool UHttpConnectionLhv::GetBody(FString& Out_Body, int64& Out_BodySize)
 	Out_BodySize = (int64)TempLenght;
 
 	return true;
-#else
-	return false;
-#endif
 }
 
 bool UHttpConnectionLhv::GetPaths(FString& Out_Method, FString& Out_Scheme, FString& Out_Host, int32& Out_Port, FString& Out_Path, FString& Out_Url)
 {
-#ifdef _WIN64
 	if (this->RequestPtr == nullptr)
 	{
 		return false;
 	}
 
-	if (!this->RequestPtr.get()->scheme.empty())
+	try
 	{
-		Out_Scheme = this->RequestPtr.get()->scheme.c_str();
+		Out_Port = this->RequestPtr->port;
+
+		if (!this->RequestPtr->scheme.empty())
+		{
+			Out_Scheme = UTF8_TO_TCHAR(this->RequestPtr->scheme.c_str());
+		}
+
+		if (!this->RequestPtr->host.empty())
+		{
+			Out_Host = UTF8_TO_TCHAR(this->RequestPtr->host.c_str());
+		}
+
+		if (!this->RequestPtr->path.empty())
+		{
+			Out_Path = UTF8_TO_TCHAR(this->RequestPtr->path.c_str());
+		}
+
+		if (!this->RequestPtr->url.empty())
+		{
+			Out_Url = UTF8_TO_TCHAR(this->RequestPtr->url.c_str());
+		}
 	}
 
-	if (!this->RequestPtr.get()->host.empty())
+	catch (const std::exception& Exception)
 	{
-		Out_Host = this->RequestPtr.get()->host.c_str();
+		const FString ExceptionString = Exception.what();
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *ExceptionString);
+		return false;
 	}
 
-	if (!this->RequestPtr.get()->path.empty())
-	{
-		Out_Path = this->RequestPtr.get()->path.c_str();
-	}
-
-	if (!this->RequestPtr.get()->url.empty())
-	{
-		Out_Url = this->RequestPtr.get()->url.c_str();
-	}
-
-	this->Callback_Type_Method(this->RequestPtr.get()->method, Out_Method);
-	Out_Port = this->RequestPtr.get()->port;
-
+	Out_Method = this->Callback_Type_Method(this->RequestPtr->method);
 	return true;
-#else
-	return false;
-#endif
 }
 
 bool UHttpConnectionLhv::GetHeaders(TMap<FString, FString>& Out_Headers, FString& Out_String)
 {
-#ifdef _WIN64
 	if (this->RequestPtr == nullptr)
 	{
 		return false;
 	}
-		
-	const http_headers Headers = this->RequestPtr.get()->headers;
-	const size_t Count_Headers = Headers.size();
 	
-	TMap<FString, FString> Temp_Headers;
 	FString Header_String;
-	int Index_Header = 0;
-	
-	for (auto& Each_Header : Headers)
+	TMap<FString, FString> Temp_Headers;
+
+	try
 	{
-		FString Key = UTF8_TO_TCHAR(Each_Header.first.c_str());
-		FString Value = UTF8_TO_TCHAR(Each_Header.second.c_str());
+		const http_headers Headers = this->RequestPtr->headers;
+		const size_t Count_Headers = Headers.size();
+		
+		int Index_Header = 0;
 
-		Temp_Headers.Add(Key, Value);
-
-		if (Index_Header == (Count_Headers - 1))
+		for (const std::pair<const std::string, std::string>& Each_Header : Headers)
 		{
-			Header_String += Key + ":" + Value;
-		}
+			const FString Key = UTF8_TO_TCHAR(Each_Header.first.c_str());
+			const FString Value = UTF8_TO_TCHAR(Each_Header.second.c_str());
 
-		else
-		{
-			Header_String += Key + ":" + Value + LINE_TERMINATOR_ANSI;
-			Index_Header++;
+			Temp_Headers.Add(Key, Value);
+
+			if (Index_Header == (Count_Headers - 1))
+			{
+				Header_String += Key + ":" + Value;
+			}
+
+			else
+			{
+				Header_String += Key + ":" + Value + LINE_TERMINATOR_ANSI;
+				Index_Header++;
+			}
 		}
+	}
+
+	catch (const std::exception& Exception)
+	{
+		const FString ExceptionString = Exception.what();
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *ExceptionString);
+		return false;
 	}
 
 	Out_Headers = Temp_Headers;
 	Out_String = Header_String;
 
 	return true;
-#else
-	return false;
-#endif
 }
 
 bool UHttpConnectionLhv::FindHeader(FString Key, FString& Out_Value)
 {
-#ifdef _WIN64
 	if (this->RequestPtr == nullptr)
 	{
 		return false;
@@ -284,134 +269,179 @@ bool UHttpConnectionLhv::FindHeader(FString Key, FString& Out_Value)
 		return false;
 	}
 
-	const http_headers Headers = this->RequestPtr.get()->headers;
+	std::string Value;
 
-	if (Headers.size() == 0)
+	try
 	{
+		const http_headers Headers = this->RequestPtr->headers;
+
+		if (Headers.size() == 0)
+		{
+			return false;
+		}
+
+		if (!Headers.contains(TCHAR_TO_UTF8(*Key)))
+		{
+			return false;
+		}
+
+		Value = Headers.at(TCHAR_TO_UTF8(*Key));
+
+		if (Value.empty())
+		{
+			return false;
+		}
+	}
+
+	catch (const std::exception& Exception)
+	{
+		const FString ExceptionString = Exception.what();
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *ExceptionString);
 		return false;
 	}
 
-	if (!Headers.contains(TCHAR_TO_UTF8(*Key)))
-	{
-		return false;
-	}
-	
-	const std::string Value = Headers.at(TCHAR_TO_UTF8(*Key));
-
-	if (Value.empty())
-	{
-		return false;
-	}
-	
 	Out_Value = UTF8_TO_TCHAR(Value.c_str());
 
 	return true;
-#else
-	return false;
-#endif
 }
 
-bool UHttpConnectionLhv::GetContentType(ELibHvContentTypes& Out_Content_Type, FString& Out_Type_String)
+bool UHttpConnectionLhv::GetContentType(FString& Out_Type_String, ELibHvContentTypes& Out_Content_Type)
 {
-#ifdef _WIN64
 	if (this->RequestPtr == nullptr)
 	{
 		return false;
 	}
 
-	return this->Callback_Content_Type(this->RequestPtr.get()->content_type, Out_Content_Type, Out_Type_String);
+	this->Callback_Content_Type(Out_Content_Type, Out_Type_String, this->RequestPtr->content_type);
+	return true;
+}
 
-#else
-	return false;
-#endif
+bool UHttpConnectionLhv::GetContentLenght(int64& Out_Lenght)
+{
+	if (this->RequestPtr == nullptr)
+	{
+		return false;
+	}
+
+	size_t ContentLeght = 0;
+
+	try
+	{
+		ContentLeght = this->RequestPtr->content_length;
+	}
+
+	catch (const std::exception& Exception)
+	{
+		const FString ExceptionString = Exception.what();
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *ExceptionString);
+		return false;
+	}
+
+	Out_Lenght = ContentLeght;
+	return true;
 }
 
 bool UHttpConnectionLhv::SendString(const FString In_Response, TMap<FString, FString> In_Header, ELibHvStatusCodes StatusCode)
 {
-#ifdef _WIN64
-
 	if (this->RequestPtr == nullptr)
 	{
 		return false;
 	}
 
-	HttpResponse TempResponse;
-	TempResponse.String(TCHAR_TO_UTF8(*In_Response));
+	int ReturnValue = 0;
 
-	for (TPair<FString, FString>& EachHeader : In_Header)
+	try
 	{
-		TempResponse.SetHeader(TCHAR_TO_UTF8(*EachHeader.Key), TCHAR_TO_UTF8(*EachHeader.Value));
+		HttpResponse TempResponse;
+		TempResponse.String(TCHAR_TO_UTF8(*In_Response));
+
+		for (TPair<FString, FString>& EachHeader : In_Header)
+		{
+			TempResponse.SetHeader(TCHAR_TO_UTF8(*EachHeader.Key), TCHAR_TO_UTF8(*EachHeader.Value));
+		}
+
+		ReturnValue = ResponsePtr.get()->Begin();
+		ReturnValue = ResponsePtr.get()->WriteResponse(&TempResponse);
+		ReturnValue = ResponsePtr.get()->End();
 	}
 
-	int ReturnValue = 0;
-	ReturnValue = ResponsePtr.get()->Begin();
-	ReturnValue = ResponsePtr.get()->WriteResponse(&TempResponse);
-	ReturnValue = ResponsePtr.get()->End();
+	catch (const std::exception& Exception)
+	{
+		const FString ExceptionString = Exception.what();
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *ExceptionString);
+		return false;
+	}
 
 	return (ReturnValue == 0) ? true : false;
-
-#else
-	return false;
-#endif
 }
 
 bool UHttpConnectionLhv::SendData(TArray<uint8> In_Bytes, TMap<FString, FString> In_Header, ELibHvStatusCodes StatusCode, bool bNoCopy)
 {
-#ifdef _WIN64
-
 	if (this->RequestPtr == nullptr)
 	{
 		return false;
 	}
 
-	HttpResponse TempResponse;
-	TempResponse.Data(In_Bytes.GetData(), In_Bytes.Num(), bNoCopy);
+	int ReturnValue = 0;
 
-	for (TPair<FString, FString>& EachHeader : In_Header)
+	try
 	{
-		TempResponse.SetHeader(TCHAR_TO_UTF8(*EachHeader.Key), TCHAR_TO_UTF8(*EachHeader.Value));
+		HttpResponse TempResponse;
+		TempResponse.Data(In_Bytes.GetData(), In_Bytes.Num(), bNoCopy);
+
+		for (TPair<FString, FString>& EachHeader : In_Header)
+		{
+			TempResponse.SetHeader(TCHAR_TO_UTF8(*EachHeader.Key), TCHAR_TO_UTF8(*EachHeader.Value));
+		}
+
+		ReturnValue = ResponsePtr.get()->Begin();
+		ReturnValue = ResponsePtr.get()->WriteResponse(&TempResponse);
+		ReturnValue = ResponsePtr.get()->End();
 	}
 
-	int ReturnValue = 0;
-	ReturnValue = ResponsePtr.get()->Begin();
-	ReturnValue = ResponsePtr.get()->WriteResponse(&TempResponse);
-	ReturnValue = ResponsePtr.get()->End();
+	catch (const std::exception& Exception)
+	{
+		const FString ExceptionString = Exception.what();
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *ExceptionString);
+		return false;
+	}
 
 	return (ReturnValue == 0) ? true : false;
-
-#else
-	return false;
-#endif
 }
 
 bool UHttpConnectionLhv::SendResponse(const FString In_Response, TMap<FString, FString> In_Header, ELibHvStatusCodes StatusCode, ELibHvContentTypes ContentTypes)
 {
-#ifdef _WIN64
-
 	if (this->RequestPtr == nullptr)
 	{
 		return false;
 	}
 
-	HttpResponse TempResponse;
-	TempResponse.SetContentType(this->Callback_Content_Type_Convert(ContentTypes));
-	TempResponse.SetBody(TCHAR_TO_UTF8(*In_Response));
-	
-	for (TPair<FString, FString>& EachHeader : In_Header)
+	int ReturnValue = 0;
+
+	try
 	{
-		TempResponse.SetHeader(TCHAR_TO_UTF8(*EachHeader.Key), TCHAR_TO_UTF8(*EachHeader.Value));
+		HttpResponse TempResponse;
+		TempResponse.SetContentType(this->Callback_Content_Type_Convert(ContentTypes));
+		TempResponse.SetBody(TCHAR_TO_UTF8(*In_Response));
+
+		for (TPair<FString, FString>& EachHeader : In_Header)
+		{
+			TempResponse.SetHeader(TCHAR_TO_UTF8(*EachHeader.Key), TCHAR_TO_UTF8(*EachHeader.Value));
+		}
+
+		ReturnValue = ResponsePtr.get()->Begin();
+		ReturnValue = ResponsePtr.get()->WriteResponse(&TempResponse);
+		ReturnValue = ResponsePtr.get()->End();
 	}
 
-	int ReturnValue = 0;
-	ReturnValue = ResponsePtr.get()->Begin();
-	ReturnValue = ResponsePtr.get()->WriteResponse(&TempResponse);
-	ReturnValue = ResponsePtr.get()->End();
+	catch (const std::exception& Exception)
+	{
+		const FString ExceptionString = Exception.what();
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *ExceptionString);
+		return false;
+	}
 
 	return (ReturnValue == 0) ? true : false;
-
-#else
-	return false;
-#endif
 }
 
 #endif

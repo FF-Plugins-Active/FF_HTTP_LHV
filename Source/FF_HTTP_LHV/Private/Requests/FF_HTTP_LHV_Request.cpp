@@ -1,631 +1,590 @@
 #include "FF_HTTP_LHV_Request.h"
 
-// Method
-
-bool UHttpConnectionLhv::Callback_Type_Method(http_method Type, FString& Out_Type_String)
+FString UHttpConnectionLhv::Callback_Type_Method(http_method Type)
 {
 	switch (Type)
 	{
-	case HTTP_DELETE:
+		case HTTP_DELETE:
 
-		Out_Type_String = "DELETE";
-		return true;
+			return "DELETE";
 
-	case HTTP_GET:
+		case HTTP_GET:
 
-		Out_Type_String = "GET";
-		return true;
+			return "GET";
 
-	case HTTP_HEAD:
+		case HTTP_HEAD:
 
-		Out_Type_String = "HEAD";
-		return true;
+			return "HEAD";
 
-	case HTTP_POST:
+		case HTTP_POST:
 
-		Out_Type_String = "POST";
-		return true;
+			return "POST";
 
-	case HTTP_PUT:
+		case HTTP_PUT:
 
-		Out_Type_String = "PUT";
-		return true;
+			return "PUT";
 
-	case HTTP_CONNECT:
+		case HTTP_CONNECT:
 
-		Out_Type_String = "CONNECT";
-		return true;
+			return "CONNECT";
 
-	case HTTP_OPTIONS:
+		case HTTP_OPTIONS:
 
-		Out_Type_String = "OPTIONS";
-		return true;
+			return "OPTIONS";
 
-	case HTTP_TRACE:
+		case HTTP_TRACE:
 
-		Out_Type_String = "TRACE";
-		return true;
+			return "TRACE";
 
-	case HTTP_COPY:
+		case HTTP_COPY:
 
-		Out_Type_String = "COPY";
-		return true;
+			return "COPY";
 
-	case HTTP_LOCK:
+		case HTTP_LOCK:
 
-		Out_Type_String = "LOCK";
-		return true;
+			return "LOCK";
 
-	case HTTP_MKCOL:
+		case HTTP_MKCOL:
 
-		Out_Type_String = "MKCOL";
-		return true;
+			return "MKCOL";
 
-	case HTTP_MOVE:
+		case HTTP_MOVE:
 
-		Out_Type_String = "MOVE";
-		return true;
+			return "MOVE";
 
-	case HTTP_PROPFIND:
+		case HTTP_PROPFIND:
 
-		Out_Type_String = "PROFIND";
-		return true;
+			return "PROFIND";
 
-	case HTTP_PROPPATCH:
+		case HTTP_PROPPATCH:
 
-		Out_Type_String = "PROPPATCH";
-		return true;
+			return "PROPPATCH";
 
-	case HTTP_SEARCH:
+		case HTTP_SEARCH:
 
-		Out_Type_String = "SEARCH";
-		return true;
+			return "SEARCH";
 
-	case HTTP_UNLOCK:
+		case HTTP_UNLOCK:
 
-		Out_Type_String = "UNLOCK";
-		return true;
+			return "UNLOCK";
 
-	case HTTP_BIND:
+		case HTTP_BIND:
 
-		Out_Type_String = "BIND";
-		return true;
+			return "BIND";
 
-	case HTTP_REBIND:
+		case HTTP_REBIND:
 
-		Out_Type_String = "REBIND";
-		return true;
+			return "REBIND";
 
-	case HTTP_UNBIND:
+		case HTTP_UNBIND:
 
-		Out_Type_String = "UNBIND";
-		return true;
+			return "UNBIND";
 
-	case HTTP_ACL:
+		case HTTP_ACL:
 
-		Out_Type_String = "ACL";
-		return true;
+			return "ACL";
 
-	case HTTP_REPORT:
+		case HTTP_REPORT:
 
-		Out_Type_String = "REPORT";
-		return true;
+			return "REPORT";
 
-	case HTTP_MKACTIVITY:
+		case HTTP_MKACTIVITY:
 
-		Out_Type_String = "MKACTIVITY";
-		return true;
+			return "MKACTIVITY";
 
-	case HTTP_CHECKOUT:
+		case HTTP_CHECKOUT:
 
-		Out_Type_String = "CHECKOUT";
-		return true;
+			return "CHECKOUT";
 
-	case HTTP_MERGE:
+		case HTTP_MERGE:
 
-		Out_Type_String = "MERGE";
-		return true;
+			return "MERGE";
 
-	case HTTP_MSEARCH:
+		case HTTP_MSEARCH:
 
-		Out_Type_String = "MSEARCH";
-		return true;
+			return "MSEARCH";
 
-	case HTTP_NOTIFY:
+		case HTTP_NOTIFY:
 
-		Out_Type_String = "NOTIFY";
-		return true;
+			return "NOTIFY";
 
-	case HTTP_SUBSCRIBE:
+		case HTTP_SUBSCRIBE:
 
-		Out_Type_String = "SUBSCRIBE";
-		return true;
+			return "SUBSCRIBE";
 
-	case HTTP_UNSUBSCRIBE:
+		case HTTP_UNSUBSCRIBE:
 
-		Out_Type_String = "UNSUBSCRIBE";
-		return true;
+			return "UNSUBSCRIBE";
 
-	case HTTP_PATCH:
+		case HTTP_PATCH:
 
-		Out_Type_String = "PATCH";
-		return true;
+			return "PATCH";
 
-	case HTTP_PURGE:
+		case HTTP_PURGE:
 
-		Out_Type_String = "PURGE";
-		return true;
+			return "PURGE";
 
-	case HTTP_MKCALENDAR:
+		case HTTP_MKCALENDAR:
 
-		Out_Type_String = "MKCALENDAR";
-		return true;
+			return "MKCALENDAR";
 
-	case HTTP_LINK:
+		case HTTP_LINK:
 
-		Out_Type_String = "LINK";
-		return true;
+			return "LINK";
 
-	case HTTP_UNLINK:
+		case HTTP_UNLINK:
 
-		Out_Type_String = "UNLINK";
-		return true;
+			return "UNLINK";
 
-	case HTTP_SOURCE:
+		case HTTP_SOURCE:
 
-		Out_Type_String = "SOURCE";
-		return true;
+			return "SOURCE";
 
-	case HTTP_CUSTOM_METHOD:
+		case HTTP_CUSTOM_METHOD:
 
-		Out_Type_String = "CUSTOM_METHOD";
-		return true;
+			return "CUSTOM_METHOD";
 
-	default:
+		default:
 
-		Out_Type_String = "NONE";
-		return false;
+			return "NONE";
 	}
 }
 
-// Content
-
-bool UHttpConnectionLhv::Callback_Content_Type(http_content_type Type, ELibHvContentTypes& Out_Content_Type, FString& Out_Type_String)
+void UHttpConnectionLhv::Callback_Content_Type(ELibHvContentTypes& Out_Content_Type, FString& Out_Type_String, http_content_type Type)
 {
 	switch (Type)
 	{
+		case CONTENT_TYPE_NONE:
 
-	case CONTENT_TYPE_NONE:
+			Out_Content_Type = ELibHvContentTypes::Content_Type_NONE;
+			Out_Type_String = "";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Content_Type_NONE;
-		Out_Type_String = "";
-		return true;
+		case CONTENT_TYPE_TEXT:
 
-	case CONTENT_TYPE_TEXT:
+			Out_Content_Type = ELibHvContentTypes::Content_Type_Text;
+			Out_Type_String = "";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Content_Type_Text;
-		Out_Type_String = "";
-		return true;
+		case TEXT_PLAIN:
 
-	case TEXT_PLAIN:
+			Out_Content_Type = ELibHvContentTypes::Text_Plain;
+			Out_Type_String = "text/plain";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Text_Plain;
-		Out_Type_String = "text/plain";
-		return true;
+		case TEXT_HTML:
 
-	case TEXT_HTML:
+			Out_Content_Type = ELibHvContentTypes::Text_HTML;
+			Out_Type_String = "text/html";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Text_HTML;
-		Out_Type_String = "text/html";
-		return true;
+		case TEXT_CSS:
 
-	case TEXT_CSS:
+			Out_Content_Type = ELibHvContentTypes::Text_CSS;
+			Out_Type_String = "text/css";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Text_CSS;
-		Out_Type_String = "text/css";
-		return true;
+		case TEXT_CSV:
 
-	case TEXT_CSV:
+			Out_Content_Type = ELibHvContentTypes::Text_CSV;
+			Out_Type_String = "text/csv";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Text_CSV;
-		Out_Type_String = "text/csv";
-		return true;
+		case TEXT_MARKDOWN:
 
-	case TEXT_MARKDOWN:
+			Out_Content_Type = ELibHvContentTypes::Text_Markdown;
+			Out_Type_String = "text/markdown";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Text_Markdown;
-		Out_Type_String = "text/markdown";
-		return true;
+		case TEXT_EVENT_STREAM:
 
-	case TEXT_EVENT_STREAM:
+			Out_Content_Type = ELibHvContentTypes::Text_Event_Stream;
+			Out_Type_String = "text/event-stream";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Text_Event_Stream;
-		Out_Type_String = "text/event-stream";
-		return true;
+		case CONTENT_TYPE_APPLICATION:
 
-	case CONTENT_TYPE_APPLICATION:
+			Out_Content_Type = ELibHvContentTypes::Content_Type_Application;
+			Out_Type_String = "";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Content_Type_Application;
-		Out_Type_String = "";
-		return true;
+		case APPLICATION_JAVASCRIPT:
 
-	case APPLICATION_JAVASCRIPT:
+			Out_Content_Type = ELibHvContentTypes::Application_JS;
+			Out_Type_String = "application/javascript";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Application_JS;
-		Out_Type_String = "application/javascript";
-		return true;
+		case APPLICATION_JSON:
 
-	case APPLICATION_JSON:
+			Out_Content_Type = ELibHvContentTypes::Application_Json;
+			Out_Type_String = "application/json";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Application_Json;
-		Out_Type_String = "application/json";
-		return true;
+		case APPLICATION_XML:
 
-	case APPLICATION_XML:
+			Out_Content_Type = ELibHvContentTypes::Application_XML;
+			Out_Type_String = "application/xml";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Application_XML;
-		Out_Type_String = "application/xml";
-		return true;
+		case APPLICATION_URLENCODED:
 
-	case APPLICATION_URLENCODED:
+			Out_Content_Type = ELibHvContentTypes::Application_URLENCODED;
+			Out_Type_String = "application/x-www-form-urlencoded";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Application_URLENCODED;
-		Out_Type_String = "application/x-www-form-urlencoded";
-		return true;
+		case APPLICATION_OCTET_STREAM:
 
-	case APPLICATION_OCTET_STREAM:
+			Out_Content_Type = ELibHvContentTypes::Application_Octet_Stream;
+			Out_Type_String = "application/octet-stream";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Application_Octet_Stream;
-		Out_Type_String = "application/octet-stream";
-		return true;
+		case APPLICATION_ZIP:
 
-	case APPLICATION_ZIP:
+			Out_Content_Type = ELibHvContentTypes::Application_ZIP;
+			Out_Type_String = "application/zip";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Application_ZIP;
-		Out_Type_String = "application/zip";
-		return true;
+		case APPLICATION_GZIP:
 
-	case APPLICATION_GZIP:
+			Out_Content_Type = ELibHvContentTypes::Application_gzip;
+			Out_Type_String = "application/gzip";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Application_gzip;
-		Out_Type_String = "application/gzip";
-		return true;
+		case APPLICATION_7Z:
 
-	case APPLICATION_7Z:
+			Out_Content_Type = ELibHvContentTypes::Application_7z;
+			Out_Type_String = "application/x-7z-compressed";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Application_7z;
-		Out_Type_String = "application/x-7z-compressed";
-		return true;
+		case APPLICATION_RAR:
 
-	case APPLICATION_RAR:
+			Out_Content_Type = ELibHvContentTypes::Application_RAR;
+			Out_Type_String = "application/x-rar-compressed";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Application_RAR;
-		Out_Type_String = "application/x-rar-compressed";
-		return true;
+		case APPLICATION_PDF:
 
-	case APPLICATION_PDF:
+			Out_Content_Type = ELibHvContentTypes::Application_PDF;
+			Out_Type_String = "application/pdf";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Application_PDF;
-		Out_Type_String = "application/pdf";
-		return true;
+		case APPLICATION_RTF:
 
-	case APPLICATION_RTF:
+			Out_Content_Type = ELibHvContentTypes::Application_RTF;
+			Out_Type_String = "application/rtf";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Application_RTF;
-		Out_Type_String = "application/rtf";
-		return true;
+		case APPLICATION_GRPC:
 
-	case APPLICATION_GRPC:
+			Out_Content_Type = ELibHvContentTypes::Application_gRPC;
+			Out_Type_String = "application/grpc";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Application_gRPC;
-		Out_Type_String = "application/grpc";
-		return true;
+		case APPLICATION_WASM:
 
-	case APPLICATION_WASM:
+			Out_Content_Type = ELibHvContentTypes::Application_WASM;
+			Out_Type_String = "application/wasm";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Application_WASM;
-		Out_Type_String = "application/wasm";
-		return true;
+		case APPLICATION_JAR:
 
-	case APPLICATION_JAR:
+			Out_Content_Type = ELibHvContentTypes::Application_JAR;
+			Out_Type_String = "application/java-archive";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Application_JAR;
-		Out_Type_String = "application/java-archive";
-		return true;
+		case APPLICATION_XHTML:
 
-	case APPLICATION_XHTML:
+			Out_Content_Type = ELibHvContentTypes::Application_XHTML;
+			Out_Type_String = "application/xhtml+xml";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Application_XHTML;
-		Out_Type_String = "application/xhtml+xml";
-		return true;
+		case APPLICATION_ATOM:
 
-	case APPLICATION_ATOM:
+			Out_Content_Type = ELibHvContentTypes::Application_Atom;
+			Out_Type_String = "application/atom+xml";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Application_Atom;
-		Out_Type_String = "application/atom+xml";
-		return true;
+		case APPLICATION_RSS:
 
-	case APPLICATION_RSS:
+			Out_Content_Type = ELibHvContentTypes::Application_RSS;
+			Out_Type_String = "application/rss+xml";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Application_RSS;
-		Out_Type_String = "application/rss+xml";
-		return true;
+		case APPLICATION_WORD:
 
-	case APPLICATION_WORD:
+			Out_Content_Type = ELibHvContentTypes::Application_WORD;
+			Out_Type_String = "application/msword";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Application_WORD;
-		Out_Type_String = "application/msword";
-		return true;
+		case APPLICATION_EXCEL:
 
-	case APPLICATION_EXCEL:
+			Out_Content_Type = ELibHvContentTypes::Application_Excel;
+			Out_Type_String = "application/vnd.ms-excel";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Application_Excel;
-		Out_Type_String = "application/vnd.ms-excel";
-		return true;
+		case APPLICATION_PPT:
 
-	case APPLICATION_PPT:
+			Out_Content_Type = ELibHvContentTypes::Application_PPT;
+			Out_Type_String = "application/vnd.ms-powerpoint";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Application_PPT;
-		Out_Type_String = "application/vnd.ms-powerpoint";
-		return true;
+		case APPLICATION_EOT:
 
-	case APPLICATION_EOT:
+			Out_Content_Type = ELibHvContentTypes::Application_Eot;
+			Out_Type_String = "application/vnd.ms-fontobject";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Application_Eot;
-		Out_Type_String = "application/vnd.ms-fontobject";
-		return true;
+		case APPLICATION_M3U8:
 
-	case APPLICATION_M3U8:
+			Out_Content_Type = ELibHvContentTypes::Application_M3U8;
+			Out_Type_String = "application/vnd.apple.mpegurl";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Application_M3U8;
-		Out_Type_String = "application/vnd.apple.mpegurl";
-		return true;
+		case APPLICATION_DOCX:
 
-	case APPLICATION_DOCX:
+			Out_Content_Type = ELibHvContentTypes::Application_Docx;
+			Out_Type_String = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Application_Docx;
-		Out_Type_String = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-		return true;
+		case APPLICATION_XLSX:
 
-	case APPLICATION_XLSX:
+			Out_Content_Type = ELibHvContentTypes::Application_XLSX;
+			Out_Type_String = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Application_XLSX;
-		Out_Type_String = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-		return true;
+		case APPLICATION_PPTX:
 
-	case APPLICATION_PPTX:
+			Out_Content_Type = ELibHvContentTypes::Application_PPTX;
+			Out_Type_String = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Application_PPTX;
-		Out_Type_String = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
-		return true;
+		case CONTENT_TYPE_MULTIPART:
 
-	case CONTENT_TYPE_MULTIPART:
+			Out_Content_Type = ELibHvContentTypes::Content_Type_Multipart;
+			Out_Type_String = "";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Content_Type_Multipart;
-		Out_Type_String = "";
-		return true;
+		case MULTIPART_FORM_DATA:
 
-	case MULTIPART_FORM_DATA:
+			Out_Content_Type = ELibHvContentTypes::Multiplart_Form_Data;
+			Out_Type_String = "multipart/form-data";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Multiplart_Form_Data;
-		Out_Type_String = "multipart/form-data";
-		return true;
+		case CONTENT_TYPE_IMAGE:
 
-	case CONTENT_TYPE_IMAGE:
+			Out_Content_Type = ELibHvContentTypes::Content_Type_Image;
+			Out_Type_String = "";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Content_Type_Image;
-		Out_Type_String = "";
-		return true;
+		case IMAGE_JPEG:
 
-	case IMAGE_JPEG:
+			Out_Content_Type = ELibHvContentTypes::Image_JPG;
+			Out_Type_String = "image/jpeg";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Image_JPG;
-		Out_Type_String = "image/jpeg";
-		return true;
+		case IMAGE_PNG:
 
-	case IMAGE_PNG:
+			Out_Content_Type = ELibHvContentTypes::Image_PNG;
+			Out_Type_String = "image/png";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Image_PNG;
-		Out_Type_String = "image/png";
-		return true;
+		case IMAGE_GIF:
 
-	case IMAGE_GIF:
+			Out_Content_Type = ELibHvContentTypes::Image_GIF;
+			Out_Type_String = "image/gif";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Image_GIF;
-		Out_Type_String = "image/gif";
-		return true;
+		case IMAGE_ICO:
 
-	case IMAGE_ICO:
+			Out_Content_Type = ELibHvContentTypes::Image_ICO;
+			Out_Type_String = "image/x-icon";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Image_ICO;
-		Out_Type_String = "image/x-icon";
-		return true;
+		case IMAGE_BMP:
 
-	case IMAGE_BMP:
+			Out_Content_Type = ELibHvContentTypes::Image_BMP;
+			Out_Type_String = "image/x-ms-bmp";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Image_BMP;
-		Out_Type_String = "image/x-ms-bmp";
-		return true;
+		case IMAGE_SVG:
 
-	case IMAGE_SVG:
+			Out_Content_Type = ELibHvContentTypes::Image_SVG;
+			Out_Type_String = "image/svg+xml";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Image_SVG;
-		Out_Type_String = "image/svg+xml";
-		return true;
+		case IMAGE_TIFF:
 
-	case IMAGE_TIFF:
+			Out_Content_Type = ELibHvContentTypes::Image_TIFF;
+			Out_Type_String = "image/tiff";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Image_TIFF;
-		Out_Type_String = "image/tiff";
-		return true;
+		case IMAGE_WEBP:
 
-	case IMAGE_WEBP:
+			Out_Content_Type = ELibHvContentTypes::Image_WEBP;
+			Out_Type_String = "image/webp";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Image_WEBP;
-		Out_Type_String = "image/webp";
-		return true;
+		case CONTENT_TYPE_VIDEO:
 
-	case CONTENT_TYPE_VIDEO:
+			Out_Content_Type = ELibHvContentTypes::Content_Type_Video;
+			Out_Type_String = "";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Content_Type_Video;
-		Out_Type_String = "";
-		return true;
+		case VIDEO_MP4:
 
-	case VIDEO_MP4:
+			Out_Content_Type = ELibHvContentTypes::Video_MP4;
+			Out_Type_String = "video/mp4";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Video_MP4;
-		Out_Type_String = "video/mp4";
-		return true;
+		case VIDEO_FLV:
 
-	case VIDEO_FLV:
+			Out_Content_Type = ELibHvContentTypes::Video_FLV;
+			Out_Type_String = "video/x-flv";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Video_FLV;
-		Out_Type_String = "video/x-flv";
-		return true;
+		case VIDEO_M4V:
 
-	case VIDEO_M4V:
+			Out_Content_Type = ELibHvContentTypes::Video_M4V;
+			Out_Type_String = "video/x-m4v";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Video_M4V;
-		Out_Type_String = "video/x-m4v";
-		return true;
+		case VIDEO_MNG:
 
-	case VIDEO_MNG:
+			Out_Content_Type = ELibHvContentTypes::Video_MNG;
+			Out_Type_String = "video/x-mng";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Video_MNG;
-		Out_Type_String = "video/x-mng";
-		return true;
+		case VIDEO_TS:
 
-	case VIDEO_TS:
+			Out_Content_Type = ELibHvContentTypes::Video_TS;
+			Out_Type_String = "video/mp2t";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Video_TS;
-		Out_Type_String = "video/mp2t";
-		return true;
+		case VIDEO_MPEG:
 
-	case VIDEO_MPEG:
+			Out_Content_Type = ELibHvContentTypes::Video_MPEG;
+			Out_Type_String = "video/mpeg";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Video_MPEG;
-		Out_Type_String = "video/mpeg";
-		return true;
+		case VIDEO_WEBM:
 
-	case VIDEO_WEBM:
+			Out_Content_Type = ELibHvContentTypes::Video_WEBM;
+			Out_Type_String = "video/webm";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Video_WEBM;
-		Out_Type_String = "video/webm";
-		return true;
+		case VIDEO_MOV:
 
-	case VIDEO_MOV:
+			Out_Content_Type = ELibHvContentTypes::Video_MOV;
+			Out_Type_String = "video/quicktime";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Video_MOV;
-		Out_Type_String = "video/quicktime";
-		return true;
+		case VIDEO_3GPP:
 
-	case VIDEO_3GPP:
+			Out_Content_Type = ELibHvContentTypes::Video_3GPP;
+			Out_Type_String = "video/3gpp";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Video_3GPP;
-		Out_Type_String = "video/3gpp";
-		return true;
+		case VIDEO_AVI:
 
-	case VIDEO_AVI:
+			Out_Content_Type = ELibHvContentTypes::Video_AVI;
+			Out_Type_String = "video/x-msvideo";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Video_AVI;
-		Out_Type_String = "video/x-msvideo";
-		return true;
+		case VIDEO_WMV:
 
-	case VIDEO_WMV:
+			Out_Content_Type = ELibHvContentTypes::Video_WMV;
+			Out_Type_String = "video/x-ms-wmv";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Video_WMV;
-		Out_Type_String = "video/x-ms-wmv";
-		return true;
+		case VIDEO_ASF:
 
-	case VIDEO_ASF:
+			Out_Content_Type = ELibHvContentTypes::Video_ASF;
+			Out_Type_String = "video/x-ms-asf";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Video_ASF;
-		Out_Type_String = "video/x-ms-asf";
-		return true;
+		case CONTENT_TYPE_AUDIO:
 
-	case CONTENT_TYPE_AUDIO:
+			Out_Content_Type = ELibHvContentTypes::Content_Type_Audio;
+			Out_Type_String = "";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Content_Type_Audio;
-		Out_Type_String = "";
-		return true;
+		case AUDIO_MP3:
 
-	case AUDIO_MP3:
+			Out_Content_Type = ELibHvContentTypes::Audio_MP3;
+			Out_Type_String = "audio/mpeg";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Audio_MP3;
-		Out_Type_String = "audio/mpeg";
-		return true;
+		case AUDIO_OGG:
 
-	case AUDIO_OGG:
+			Out_Content_Type = ELibHvContentTypes::Audio_OGG;
+			Out_Type_String = "audio/ogg";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Audio_OGG;
-		Out_Type_String = "audio/ogg";
-		return true;
+		case AUDIO_M4A:
 
-	case AUDIO_M4A:
+			Out_Content_Type = ELibHvContentTypes::Audio_M4A;
+			Out_Type_String = "audio/x-m4a";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Audio_M4A;
-		Out_Type_String = "audio/x-m4a";
-		return true;
+		case AUDIO_AAC:
 
-	case AUDIO_AAC:
+			Out_Content_Type = ELibHvContentTypes::Audio_AAC;
+			Out_Type_String = "audio/aac";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Audio_AAC;
-		Out_Type_String = "audio/aac";
-		return true;
+		case AUDIO_PCMA:
 
-	case AUDIO_PCMA:
+			Out_Content_Type = ELibHvContentTypes::Audio_PCMA;
+			Out_Type_String = "audio/PCMA";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Audio_PCMA;
-		Out_Type_String = "audio/PCMA";
-		return true;
+		case AUDIO_OPUS:
 
-	case AUDIO_OPUS:
+			Out_Content_Type = ELibHvContentTypes::Audio_OPUS;
+			Out_Type_String = "audio/opus";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Audio_OPUS;
-		Out_Type_String = "audio/opus";
-		return true;
+		case CONTENT_TYPE_FONT:
 
-	case CONTENT_TYPE_FONT:
+			Out_Content_Type = ELibHvContentTypes::Content_Type_Font;
+			Out_Type_String = "";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Content_Type_Font;
-		Out_Type_String = "";
-		return true;
+		case FONT_TTF:
 
-	case FONT_TTF:
+			Out_Content_Type = ELibHvContentTypes::Font_TTF;
+			Out_Type_String = "font/ttf";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Font_TTF;
-		Out_Type_String = "font/ttf";
-		return true;
+		case FONT_OTF:
 
-	case FONT_OTF:
+			Out_Content_Type = ELibHvContentTypes::Font_OTF;
+			Out_Type_String = "font/otf";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Font_OTF;
-		Out_Type_String = "font/otf";
-		return true;
+		case FONT_WOFF:
 
-	case FONT_WOFF:
+			Out_Content_Type = ELibHvContentTypes::Font_WOFF;
+			Out_Type_String = "font/woff";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Font_WOFF;
-		Out_Type_String = "font/woff";
-		return true;
+		case FONT_WOFF2:
 
-	case FONT_WOFF2:
+			Out_Content_Type = ELibHvContentTypes::Font_WOFF2;
+			Out_Type_String = "font/woff2";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Font_WOFF2;
-		Out_Type_String = "font/woff2";
-		return true;
+		case CONTENT_TYPE_UNDEFINED:
 
-	case CONTENT_TYPE_UNDEFINED:
+			Out_Content_Type = ELibHvContentTypes::Content_Type_Undefined;
+			Out_Type_String = "";
+			return;
 
-		Out_Content_Type = ELibHvContentTypes::Content_Type_Undefined;
-		Out_Type_String = "";
-		return true;
+		default:
 
-	default:
-
-		Out_Content_Type = ELibHvContentTypes::Content_Type_NONE;
-		return false;
-	}
+			Out_Content_Type = ELibHvContentTypes::Content_Type_NONE;
+			return;
+		}
 }
 
 http_content_type UHttpConnectionLhv::Callback_Content_Type_Convert(ELibHvContentTypes Type)
@@ -849,8 +808,6 @@ http_content_type UHttpConnectionLhv::Callback_Content_Type_Convert(ELibHvConten
 		return http_content_type::TEXT_PLAIN;
 	}
 }
-
-// Status
 
 int32 UHttpConnectionLhv::Callback_Status_To_Code(ELibHvStatusCodes Status)
 {
