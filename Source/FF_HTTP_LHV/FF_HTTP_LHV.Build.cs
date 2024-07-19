@@ -18,10 +18,10 @@ public class FF_HTTP_LHV : ModuleRules
             {
                 "Core",
                 "zlib",
-                //"OpenSSL",      // We don't need OpenSSL certificate functions
                 "FF_MBedTLS",
+                "LibHv",
             }
-            );
+        );
 			
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
@@ -30,9 +30,8 @@ public class FF_HTTP_LHV : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
-                "Projects",		// We need it for LibHv DLL delayed load.
-                "LibHv",
+                "Projects",
             }
-			);
+		);
 	}
 }

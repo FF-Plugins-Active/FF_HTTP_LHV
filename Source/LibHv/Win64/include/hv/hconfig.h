@@ -94,7 +94,7 @@
 #define WITH_MBEDTLS   1
 
 /* #undef ENABLE_UDS */
-#define USE_MULTIMAP   1
+/* #undef USE_MULTIMAP */
 
 #define WITH_WEPOLL    1
 /* #undef WITH_KCP */
