@@ -12,6 +12,4 @@ public:
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;
 
-	void* Libhv_Handle = nullptr;
-
 };
