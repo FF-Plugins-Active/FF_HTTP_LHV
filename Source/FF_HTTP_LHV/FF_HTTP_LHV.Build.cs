@@ -9,15 +9,10 @@ public class FF_HTTP_LHV : ModuleRules
 	{
         PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
-        bEnableUndefinedIdentifierWarnings = false;
-        bEnableExceptions = true;
-        bUseRTTI = true;
-
         PublicDependencyModuleNames.AddRange(
             new string[]
             {
                 "Core",
-                "zlib",
                 "FF_MBedTLS",
                 "LibHv",
             }
@@ -30,7 +25,6 @@ public class FF_HTTP_LHV : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
-                "Projects",
             }
 		);
 	}
