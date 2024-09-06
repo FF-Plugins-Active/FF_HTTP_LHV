@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+	<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/semantic.min.js" integrity="sha512-Xo0Jh8MsOn72LGV8kU5LsclG7SUzJsWGhXbWcYs2MAmChkQzwiW/yTQwdJ8w6UA9C6EVG18GHb/TrYpYCjyAQw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/semantic.min.css" integrity="sha512-KXol4x3sVoO+8ZsWPFI/r5KBVB/ssCGB5tsv2nVOKwLg33wTFP3fmnXa47FdSVIshVTgsYk/1734xSk9aFIa4A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Excel File Preview</title>
+		
+		<style>
+		  table 
+		  {
+			width: 100%;
+			border-collapse: collapse;
+			margin-top: 20px;
+		  }
+
+		  table, th, td 
+		  {
+			border: 1px solid black;
+		  }
+		  
+		  th, td
+		  {
+			padding: 8px;
+			text-align: left;
+		  }
+		</style>
+	  </head>
+
+	<body>
+		<!-- File Input -->
+		<input type="file" id="fileInput" accept=".xlsx, .xls" />
+		
+		<!-- Table to display Excel data -->
+		<div id="excelData"></div>
+		<div id="buttonContainer" class="ui buttons"></div>
+
+		<script>
+
+			class SheetButton extends HTMLButtonElement
+			{
+				index = 0;
+				constructor(index)
+				{
+					super();
+					this.index = index;
+				}
+			}
+
+			// Function to handle file input change event
+			document.getElementById('fileInput').addEventListener('change', function(e)
+			{
+				const file = e.target.files[0];
+				if (!file) return;
+
+				const reader = new FileReader();
+				
+				reader.onload = function(event)
+				{
+					const data = new Uint8Array(event.target.result);
+					const workbook = XLSX.read(data, { type: 'array' });
+
+					function clickHandler(SheetButton)
+					{
+						const TargetSheetName = workbook.SheetNames[SheetButton.index];
+						const TargetSheet = workbook.Sheets[TargetSheetName];
+						const jsonData = XLSX.utils.sheet_to_json(TargetSheet, { header: 1 });
+						displayExcelData(jsonData);
+					}
+
+					// Get all sheets
+					let SheetNumber = 0;
+					workbook.SheetNames.forEach(sheetname => 
+					{
+						var Button = document.createElement('SheetButton');
+						Button.index = SheetNumber;
+						Button.classList.add('ui', 'button', 'red');
+						Button.textContent  = sheetname;
+						Button.addEventListener('click', function()
+						{
+							clickHandler(Button);
+						});
+				
+						buttonContainer.appendChild(Button);
+						SheetNumber += 1;
+					})
+
+					const firstSheetName = workbook.SheetNames[0];
+					const worksheet = workbook.Sheets[firstSheetName];
+
+					// Convert the sheet to JSON
+					const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+					// Display the data in a table
+					displayExcelData(jsonData);
+				};
+				
+				reader.readAsArrayBuffer(file);
+			});
+
+			// Function to display Excel data in a table
+			function displayExcelData(data) 
+			{
+				let table = '<table>';
+				
+				data.forEach((row, rowIndex) => 
+				{
+				table += '<tr>';
+				row.forEach((cell, colIndex) => 
+				{
+					table += `<td><button class="ui blue button" onclick="handleClick(${rowIndex}, ${colIndex}, '${cell || ''}')">${cell || ''}</button></td>`;
+				});
+				table += '</tr>';
+				});
+				
+				table += '</table>';
+				
+				document.getElementById('excelData').innerHTML = table;
+			}
+
+			function handleClick(row, col, value)
+			{
+				alert(`You clicked on cell [${row}, ${col}] with value: ${value}`);
+			}
+		</script>
+	</body>
+</html>
