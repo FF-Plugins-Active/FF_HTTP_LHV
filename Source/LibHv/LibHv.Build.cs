@@ -7,7 +7,7 @@ namespace UnrealBuildTool.Rules
         public LibHv(ReadOnlyTargetRules Target) : base(Target)
         {
     		Type = ModuleType.External;
-            bEnableUndefinedIdentifierWarnings = false;
+            UndefinedIdentifierWarningLevel = WarningLevel.Off;
             bEnableExceptions = true;
 
             if (Target.Platform == UnrealTargetPlatform.Win64)
